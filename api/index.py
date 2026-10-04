@@ -10,7 +10,6 @@ if PROJECT_ROOT not in sys.path:
 if BACKEND_DIR not in sys.path:
     sys.path.insert(0, BACKEND_DIR)
 
-from backend.app import app
+from app import app
 
-# Export app for Vercel Serverless Function entrypoint
 app = app
