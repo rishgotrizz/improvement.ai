@@ -36,7 +36,9 @@ except ImportError:
 from eda.quality import generate_quality_report
 from eda.analysis import run_full_eda_analysis
 
-FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "../frontend"))
+FRONTEND_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, "frontend"))
+if not os.path.exists(FRONTEND_DIR):
+    FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "../frontend"))
 
 # Initialize Flask application
 app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path="/static")
