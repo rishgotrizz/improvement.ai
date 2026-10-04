@@ -12,11 +12,18 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from flask import Blueprint, jsonify
-from services.student_service import (
-    get_student_profile,
-    get_student_history,
-    get_student_subjects
-)
+try:
+    from backend.services.student_service import (
+        get_student_profile,
+        get_student_history,
+        get_student_subjects
+    )
+except ImportError:
+    from services.student_service import (
+        get_student_profile,
+        get_student_history,
+        get_student_subjects
+    )
 
 student_bp = Blueprint("student_bp", __name__)
 

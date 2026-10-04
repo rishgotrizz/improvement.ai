@@ -12,10 +12,16 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from flask import Blueprint, jsonify, request
-from services.assessment_service import (
-    create_assessment,
-    get_assessment_by_id
-)
+try:
+    from backend.services.assessment_service import (
+        create_assessment,
+        get_assessment_by_id
+    )
+except ImportError:
+    from services.assessment_service import (
+        create_assessment,
+        get_assessment_by_id
+    )
 
 assessment_bp = Blueprint("assessment_bp", __name__)
 

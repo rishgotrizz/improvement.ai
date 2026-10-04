@@ -7,31 +7,22 @@ Phase 3: Real EDA & Statistical Analysis Pipeline Integration
 import os
 import sys
 
-# Ensure project root & backend directory are in sys.path for robust imports
+# Ensure project root directory is at position 0 of sys.path for robust package imports
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
-if BASE_DIR not in sys.path:
-    sys.path.insert(0, BASE_DIR)
+if PROJECT_ROOT in sys.path:
+    sys.path.remove(PROJECT_ROOT)
+sys.path.insert(0, PROJECT_ROOT)
 
 from flask import Flask, jsonify, send_from_directory, request
 
 # Import Database, Blueprint services, and EDA modules
-try:
-    from backend.services.database import init_db
-    from backend.routes.student_routes import student_bp
-    from backend.routes.assessment_routes import assessment_bp
-    from backend.services.prediction_service import fetch_trained_model_metrics, execute_ml_prediction
-    from backend.services.recommendation_service import fetch_recommendations_for_input
-    from backend.services.what_if_service import run_what_if_analysis
-except ImportError:
-    from services.database import init_db
-    from routes.student_routes import student_bp
-    from routes.assessment_routes import assessment_bp
-    from services.prediction_service import fetch_trained_model_metrics, execute_ml_prediction
-    from services.recommendation_service import fetch_recommendations_for_input
-    from services.what_if_service import run_what_if_analysis
+from backend.services.database import init_db
+from backend.routes.student_routes import student_bp
+from backend.routes.assessment_routes import assessment_bp
+from backend.services.prediction_service import fetch_trained_model_metrics, execute_ml_prediction
+from backend.services.recommendation_service import fetch_recommendations_for_input
+from backend.services.what_if_service import run_what_if_analysis
 
 from eda.quality import generate_quality_report
 from eda.analysis import run_full_eda_analysis

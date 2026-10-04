@@ -11,7 +11,10 @@ PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, "../.."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from services.database import get_db_connection
+try:
+    from backend.services.database import get_db_connection
+except ImportError:
+    from services.database import get_db_connection
 
 def get_student_profile(student_id):
     """
