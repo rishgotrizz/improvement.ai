@@ -1,9 +1,21 @@
 {
   "version": 2,
+  "cleanUrls": true,
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/app.py"
-    }
+    { "source": "/api/(.*)", "destination": "/api/index.py" },
+    { "source": "/", "destination": "/frontend/index.html" },
+    { "source": "/dashboard", "destination": "/frontend/dashboard.html" },
+    { "source": "/assessment", "destination": "/frontend/assessment.html" },
+    { "source": "/prediction", "destination": "/frontend/prediction.html" },
+    { "source": "/what-if", "destination": "/frontend/what-if.html" },
+    { "source": "/planner", "destination": "/frontend/planner.html" },
+    { "source": "/analytics", "destination": "/frontend/analytics.html" },
+    { "source": "/model", "destination": "/frontend/model.html" },
+    { "source": "/mathematics", "destination": "/frontend/mathematics.html" },
+    { "source": "/algorithms", "destination": "/frontend/algorithms.html" },
+    { "source": "/responsible-ai", "destination": "/frontend/responsible-ai.html" },
+    { "source": "/about", "destination": "/frontend/about.html" },
+    { "source": "/css/(.*)", "destination": "/frontend/css/$1" },
+    { "source": "/js/(.*)", "destination": "/frontend/js/$1" }
   ]
 }
