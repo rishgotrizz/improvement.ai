@@ -173,10 +173,13 @@ def serve_css(path):
 def serve_js(path):
     return send_from_directory(os.path.join(FRONTEND_DIR, "js"), path)
 
-if __name__ == "__main__":
-    # Initialize database on startup
+# Safe database initialization on module load (Vercel Serverless / local)
+try:
     init_db()
-    
-    port = int(os.environ.get("PORT", 5001))
+except Exception as e:
+    print(f"⚠️ [Startup DB Init Notice]: {e}")
+
+if __name__ == "__main__":
+    port = int(os.path.environ.get("PORT", 5001)) if hasattr(os, "environ") else 5001
     print(f"🚀 Starting EDUPREDICT Server on http://localhost:{port}")
     app.run(host="0.0.0.0", port=port, debug=True)

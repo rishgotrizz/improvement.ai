@@ -11,12 +11,28 @@ DB_PATH = os.path.abspath(os.path.join(BASE_DIR, "../../data/edupredict.db"))
 
 def get_db_connection():
     """Create and return a new SQLite database connection with row factory."""
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    # Enable foreign keys
-    conn.execute("PRAGMA foreign_keys = ON;")
-    return conn
+    global DB_PATH
+    try:
+        os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys = ON;")
+        return conn
+    except (sqlite3.OperationalError, OSError, PermissionError):
+        # Fallback to writable /tmp directory for serverless environments (Vercel)
+        tmp_db = "/tmp/edupredict.db"
+        if os.path.exists(DB_PATH) and not os.path.exists(tmp_db):
+            try:
+                import shutil
+                shutil.copy2(DB_PATH, tmp_db)
+            except Exception:
+                pass
+        DB_PATH = tmp_db
+        os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys = ON;")
+        return conn
 
 def init_db():
     """Initialize database tables and seed demo student records cleanly."""
