@@ -1,0 +1,21 @@
+# Python / Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDEs & System files
+.DS_Store
+.vscode/
+.idea/
+
+# Database / Local temp files
+*.sqlite3-journal
+*.log

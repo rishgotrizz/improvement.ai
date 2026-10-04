@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Model & Evaluation - EduPredict</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <h1 class="page-title">Introduction to AI: Model Architecture & Evaluation</h1>
+      <p class="page-subtitle">Supervised Learning metrics, train/test split performance, and baseline model comparison</p>
+    </div>
+
+    <!-- Overview Callout -->
+    <div class="card" style="margin-bottom: 2rem; border-left: 4px solid var(--subject-iai); background-color: #eff6ff;">
+      <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e40af; margin-bottom: 0.4rem;">
+        🤖 Supervised Learning Task Setup
+      </h3>
+      <p style="font-size: 0.88rem; color: #1e3a8a;">
+        EduPredict executes two complementary machine learning tasks using Scikit-Learn:
+        <strong>1) Risk Classification</strong> (Categorizing risk as LOW, MEDIUM, or HIGH) and 
+        <strong>2) Score Regression</strong> (Estimating expected semester percentage marks).
+      </p>
+    </div>
+
+    <!-- Model Metrics Comparison Tables -->
+    <div class="grid grid-2" style="margin-bottom: 2rem;">
+      
+      <!-- Task 1: Classification -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">Task 1: Academic Risk Classification</h3>
+          <span class="badge-demo" id="badge-clf-status">80/20 Stratified Split</span>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; margin-bottom: 1rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
+              <th style="padding: 0.5rem;">Metric</th>
+              <th style="padding: 0.5rem;">Logistic Regression</th>
+              <th style="padding: 0.5rem;">Random Forest</th>
+              <th style="padding: 0.5rem;">Dummy Baseline</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 0.6rem 0.5rem;"><strong>Accuracy</strong></td>
+              <td style="padding: 0.6rem 0.5rem; color: var(--primary); font-weight: 700;" id="clf-acc-primary">93.0%</td>
+              <td style="padding: 0.6rem 0.5rem;" id="clf-acc-comp">94.0%</td>
+              <td style="padding: 0.6rem 0.5rem; color: var(--text-muted);" id="clf-acc-dummy">45.0%</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 0.6rem 0.5rem;"><strong>Precision</strong></td>
+              <td style="padding: 0.6rem 0.5rem;" id="clf-prec-primary">93.2%</td>
+              <td style="padding: 0.6rem 0.5rem;" id="clf-prec-comp">94.1%</td>
+              <td style="padding: 0.6rem 0.5rem; color: var(--text-muted);" id="clf-prec-dummy">20.3%</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 0.6rem 0.5rem;"><strong>Recall</strong></td>
+              <td style="padding: 0.6rem 0.5rem;" id="clf-rec-primary">93.0%</td>
+              <td style="padding: 0.6rem 0.5rem;" id="clf-rec-comp">94.0%</td>
+              <td style="padding: 0.6rem 0.5rem; color: var(--text-muted);" id="clf-rec-dummy">45.0%</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.6rem 0.5rem;"><strong>F1 Score</strong></td>
+              <td style="padding: 0.6rem 0.5rem; font-weight: 700;" id="clf-f1-primary">93.0%</td>
+              <td style="padding: 0.6rem 0.5rem;" id="clf-f1-comp">94.0%</td>
+              <td style="padding: 0.6rem 0.5rem; color: var(--text-muted);" id="clf-f1-dummy">27.9%</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="font-size: 0.8rem; color: var(--text-muted);">
+          * Primary classification model is <strong>Logistic Regression</strong> ($N=100$ held-out test records). Averaging method: <em>weighted</em>.
+        </div>
+      </div>
+
+      <!-- Task 2: Regression -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">Task 2: Academic Score Regression</h3>
+          <span class="badge-demo" id="badge-reg-status">80/20 Train/Test Split</span>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; margin-bottom: 1rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
+              <th style="padding: 0.5rem;">Metric</th>
+              <th style="padding: 0.5rem;">Linear Regression</th>
+              <th style="padding: 0.5rem;">Random Forest</th>
+              <th style="padding: 0.5rem;">Mean Baseline</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 0.6rem 0.5rem;"><strong>MAE</strong> (Mean Abs Error)</td>
+              <td style="padding: 0.6rem 0.5rem; color: var(--primary); font-weight: 700;" id="reg-mae-primary">1.61%</td>
+              <td style="padding: 0.6rem 0.5rem;" id="reg-mae-comp">1.83%</td>
+              <td style="padding: 0.6rem 0.5rem; color: var(--text-muted);" id="reg-mae-dummy">11.28%</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 0.6rem 0.5rem;"><strong>RMSE</strong> (Root Mean Sq)</td>
+              <td style="padding: 0.6rem 0.5rem;" id="reg-rmse-primary">1.84%</td>
+              <td style="padding: 0.6rem 0.5rem;" id="reg-rmse-comp">2.29%</td>
+              <td style="padding: 0.6rem 0.5rem; color: var(--text-muted);" id="reg-rmse-dummy">14.45%</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.6rem 0.5rem;"><strong>R² Score</strong> (Variance)</td>
+              <td style="padding: 0.6rem 0.5rem; font-weight: 700;" id="reg-r2-primary">0.984</td>
+              <td style="padding: 0.6rem 0.5rem;" id="reg-r2-comp">0.975</td>
+              <td style="padding: 0.6rem 0.5rem; color: var(--text-muted);" id="reg-r2-dummy">-0.001</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="font-size: 0.8rem; color: var(--text-muted);">
+          * Linear Regression provides weight coefficients ($\beta$) connecting to Applied Math-I concepts.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Logistic Regression Confusion Matrix Panel -->
+    <div class="card" style="margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--dark);">
+          Logistic Regression Confusion Matrix ($N=100$ Test Records)
+        </h3>
+        <span class="badge badge-risk-low">Primary Classifier Audit</span>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 0.88rem; max-width: 600px; margin: 0 auto 1rem auto;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
+              <th style="padding: 0.6rem; text-align: left;">Actual \ Predicted</th>
+              <th style="padding: 0.6rem; color: var(--risk-high-text);">Predicted HIGH</th>
+              <th style="padding: 0.6rem; color: var(--risk-med-text);">Predicted MEDIUM</th>
+              <th style="padding: 0.6rem; color: var(--risk-low-text);">Predicted LOW</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 0.75rem 0.6rem; text-align: left;"><strong>Actual HIGH</strong> ($N=16$)</td>
+              <td style="padding: 0.75rem 0.6rem; background-color: #fef2f2; font-weight: 700; color: #dc2626;" id="cm-high-high">16</td>
+              <td style="padding: 0.75rem 0.6rem;" id="cm-high-med">0</td>
+              <td style="padding: 0.75rem 0.6rem;" id="cm-high-low">0</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 0.75rem 0.6rem; text-align: left;"><strong>Actual MEDIUM</strong> ($N=39$)</td>
+              <td style="padding: 0.75rem 0.6rem;" id="cm-med-high">0</td>
+              <td style="padding: 0.75rem 0.6rem; background-color: #fffbeb; font-weight: 700; color: #d97706;" id="cm-med-med">37</td>
+              <td style="padding: 0.75rem 0.6rem;" id="cm-med-low">2</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.75rem 0.6rem; text-align: left;"><strong>Actual LOW</strong> ($N=45$)</td>
+              <td style="padding: 0.75rem 0.6rem;" id="cm-low-high">0</td>
+              <td style="padding: 0.75rem 0.6rem;" id="cm-low-med">5</td>
+              <td style="padding: 0.75rem 0.6rem; background-color: #f0fdf4; font-weight: 700; color: #16a34a;" id="cm-low-low">40</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="font-size: 0.82rem; color: var(--text-muted); text-align: center;">
+        * Matrix indicates 93 correctly classified test profiles out of 100 total held-out observations ($93.0\%$ accuracy).
+      </div>
+    </div>
+
+    <!-- Synthetic Dataset Disclaimer Alert -->
+    <div class="alert alert-disclaimer">
+      <strong>EduPredict Disclaimer:</strong> Model results are based on a synthetic demonstration dataset ($N=500$) and should not be interpreted as real-world academic performance benchmarks.
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div>EDUPREDICT — First-Year Academic Project</div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/mathematics">Mathematics Behind System</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const metrics = await EduPredictAPI.getModelMetrics();
+        if (!metrics) return;
+
+        if (metrics.classification) {
+          const p = metrics.classification.primary || {};
+          const c = metrics.classification.comparison || {};
+          const d = metrics.classification.dummyBaseline || {};
+
+          if (p.accuracy) document.getElementById("clf-acc-primary").innerText = (p.accuracy * 100).toFixed(1) + "%";
+          if (c.accuracy) document.getElementById("clf-acc-comp").innerText = (c.accuracy * 100).toFixed(1) + "%";
+          if (d.accuracy) document.getElementById("clf-acc-dummy").innerText = (d.accuracy * 100).toFixed(1) + "%";
+
+          if (p.precision) document.getElementById("clf-prec-primary").innerText = (p.precision * 100).toFixed(1) + "%";
+          if (c.precision) document.getElementById("clf-prec-comp").innerText = (c.precision * 100).toFixed(1) + "%";
+          if (d.precision) document.getElementById("clf-prec-dummy").innerText = (d.precision * 100).toFixed(1) + "%";
+
+          if (p.recall) document.getElementById("clf-rec-primary").innerText = (p.recall * 100).toFixed(1) + "%";
+          if (c.recall) document.getElementById("clf-rec-comp").innerText = (c.recall * 100).toFixed(1) + "%";
+          if (d.recall) document.getElementById("clf-rec-dummy").innerText = (d.recall * 100).toFixed(1) + "%";
+
+          if (p.f1Score) document.getElementById("clf-f1-primary").innerText = (p.f1Score * 100).toFixed(1) + "%";
+          if (c.f1Score) document.getElementById("clf-f1-comp").innerText = (c.f1Score * 100).toFixed(1) + "%";
+          if (d.f1Score) document.getElementById("clf-f1-dummy").innerText = (d.f1Score * 100).toFixed(1) + "%";
+
+          if (p.confusionMatrix && p.confusionMatrix.matrix) {
+            const m = p.confusionMatrix.matrix;
+            document.getElementById("cm-high-high").innerText = m[0][0];
+            document.getElementById("cm-high-med").innerText = m[0][1];
+            document.getElementById("cm-high-low").innerText = m[0][2];
+
+            document.getElementById("cm-med-high").innerText = m[1][0];
+            document.getElementById("cm-med-med").innerText = m[1][1];
+            document.getElementById("cm-med-low").innerText = m[1][2];
+
+            document.getElementById("cm-low-high").innerText = m[2][0];
+            document.getElementById("cm-low-med").innerText = m[2][1];
+            document.getElementById("cm-low-low").innerText = m[2][2];
+          }
+        }
+
+        if (metrics.regression) {
+          const rp = metrics.regression.primary || {};
+          const rc = metrics.regression.comparison || {};
+          const rd = metrics.regression.dummyBaseline || {};
+
+          if (rp.mae) document.getElementById("reg-mae-primary").innerText = rp.mae.toFixed(2) + "%";
+          if (rc.mae) document.getElementById("reg-mae-comp").innerText = rc.mae.toFixed(2) + "%";
+          if (rd.mae) document.getElementById("reg-mae-dummy").innerText = rd.mae.toFixed(2) + "%";
+
+          if (rp.rmse) document.getElementById("reg-rmse-primary").innerText = rp.rmse.toFixed(2) + "%";
+          if (rc.rmse) document.getElementById("reg-rmse-comp").innerText = rc.rmse.toFixed(2) + "%";
+          if (rd.rmse) document.getElementById("reg-rmse-dummy").innerText = rd.rmse.toFixed(2) + "%";
+
+          if (rp.r2Score) document.getElementById("reg-r2-primary").innerText = rp.r2Score.toFixed(3);
+          if (rc.r2Score) document.getElementById("reg-r2-comp").innerText = rc.r2Score.toFixed(3);
+          if (rd.r2Score) document.getElementById("reg-r2-dummy").innerText = rd.r2Score.toFixed(3);
+        }
+      } catch (err) {
+        console.warn("Model metrics loading warning:", err);
+      }
+    });
+  </script>
+</body>
+</html>

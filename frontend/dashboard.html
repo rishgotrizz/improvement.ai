@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard - EduPredict</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+
+
+  <!-- Main Content Container -->
+  <main class="container">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 class="page-title">Student Dashboard</h1>
+        <p class="page-subtitle">Centralized academic performance overview connected to SQLite backend database</p>
+      </div>
+      <a href="/assessment" class="btn btn-primary">+ Run New Assessment</a>
+    </div>
+
+    <!-- System Status & UI Feedback Banner -->
+    <div id="dash-feedback" class="alert alert-info" style="display: none;">
+      ⌛ Loading academic profile from database...
+    </div>
+
+    <!-- Top KPI Cards with DB Data Badges -->
+    <div class="grid grid-4" style="margin-bottom: 2rem;">
+      <div class="card stat-card">
+        <span class="stat-label">
+          Academic Score
+          <span class="badge-demo" id="badge-score-type">SQLite DB</span>
+        </span>
+        <span class="stat-value" id="dash-score">78.4%</span>
+        <span class="stat-subtext">Estimated Semester Score</span>
+      </div>
+
+      <div class="card stat-card">
+        <span class="stat-label">
+          Attendance Rate
+          <span class="badge-demo" id="badge-att-type">SQLite DB</span>
+        </span>
+        <span class="stat-value" id="dash-attendance">87.0%</span>
+        <span class="stat-subtext">Percentage of Lectures Attended</span>
+      </div>
+
+      <div class="card stat-card">
+        <span class="stat-label">
+          Weekly Study Hours
+          <span class="badge-demo" id="badge-hours-type">SQLite DB</span>
+        </span>
+        <span class="stat-value" id="dash-hours">18 hrs</span>
+        <span class="stat-subtext">Self-Study & Revision Time</span>
+      </div>
+
+      <div class="card stat-card">
+        <span class="stat-label">
+          Academic Risk Status
+          <span class="badge-demo">Scikit-Learn ML</span>
+        </span>
+        <div style="margin-top: 0.2rem;">
+          <span class="badge badge-risk-low" id="dash-risk-badge">
+            ● AI MODEL ACTIVE
+          </span>
+        </div>
+        <span class="stat-subtext" id="dash-risk-prob">Logistic Regression & Score Regressor</span>
+      </div>
+    </div>
+
+    <!-- Main Dashboard Grid -->
+    <div class="grid grid-3" style="margin-bottom: 2rem;">
+      
+      <!-- Student Academic Subjects Performance Breakdown Table -->
+      <div class="card" style="grid-column: span 2;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">Student Performance Breakdown</h3>
+          <span class="badge-demo">SQLite Database Records</span>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
+                <th style="padding: 0.6rem;">Course Code</th>
+                <th style="padding: 0.6rem;">Academic Course Name</th>
+                <th style="padding: 0.6rem;">Score</th>
+                <th style="padding: 0.6rem;">Attendance</th>
+                <th style="padding: 0.6rem;">Study Priority</th>
+              </tr>
+            </thead>
+            <tbody id="subject-table-body">
+              <tr>
+                <td colspan="5" style="padding: 1rem; text-align: center; color: var(--text-muted);">
+                  Loading course marks from SQLite...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Quick AI Insights Panel -->
+      <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--dark);">Learning Support Insights</h3>
+          
+          <div style="margin-bottom: 1rem;">
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--dark); margin-bottom: 0.2rem;">Areas Needing Attention</div>
+            <p style="font-size: 0.82rem; color: var(--text-muted);" id="insight-attention">
+              <strong>CS102 (Data Structures)</strong> presents the largest relative performance gap. Increasing revision time by 30 mins/day will lower estimated risk.
+            </p>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--dark); margin-bottom: 0.2rem;">Attendance Status</div>
+            <p style="font-size: 0.82rem; color: var(--text-muted);" id="insight-attendance">
+              Current attendance rate is 87%, well above the 75% institutional threshold.
+            </p>
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <a href="/planner" class="btn btn-secondary" style="width: 100%; text-align: center;">View Detailed Study Plan →</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div>EDUPREDICT — First-Year Academic Project</div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/prediction">Prediction</a>
+        <a href="/planner">Planner</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Load student data from SQLite API on DOMReady
+    document.addEventListener("DOMContentLoaded", async () => {
+      const feedbackEl = document.getElementById("dash-feedback");
+      feedbackEl.style.display = "block";
+      feedbackEl.className = "alert alert-info";
+      feedbackEl.innerText = "⌛ Loading academic profile from SQLite database...";
+
+      try {
+        const student = await EduPredictAPI.getStudent("STU-2026-001");
+        
+        if (!student) {
+          feedbackEl.className = "alert alert-warning";
+          feedbackEl.innerText = "⚠️ Unable to load academic data from database. Displaying cached profile.";
+          return;
+        }
+
+        // Populate Top KPI Cards
+        document.getElementById("dash-score").innerText = student.academicScore.toFixed(1) + "%";
+        document.getElementById("dash-attendance").innerText = student.attendance.toFixed(1) + "%";
+        document.getElementById("dash-hours").innerText = student.studyHours.toFixed(1) + " hrs";
+
+        // Attendance Insight
+        const attInsight = document.getElementById("insight-attendance");
+        if (student.attendance >= 75.0) {
+          attInsight.innerText = `Current attendance rate is ${student.attendance.toFixed(1)}%, well above the 75% institutional threshold.`;
+        } else {
+          attInsight.innerHTML = `<span style="color: var(--risk-high-text);">Warning: Current attendance (${student.attendance.toFixed(1)}%) is below the 75% required threshold.</span>`;
+        }
+
+        // Fetch Phase 5 Prediction & Recommendation Insights
+        const payload = {
+          attendance: student.attendance,
+          study_hours: student.studyHours,
+          previous_semester_percentage: student.previousPercentage || 75.0,
+          assignment_average: student.assignmentAvg || 75.0,
+          internal_assessment: student.internalAssessment || 75.0,
+          quiz_average: student.quizAvg || 75.0,
+          completed_assignments: student.completedAssignments || 12,
+          total_assignments: 15,
+          backlog_count: student.backlogCount || 0,
+          studentSubjects: student.studentSubjects
+        };
+
+        const res = await EduPredictAPI.predictRisk(payload);
+        if (res && res.data && res.data.success) {
+          const recs = res.data.recommendations || [];
+          const attEl = document.getElementById("insight-attention");
+          if (recs.length > 0) {
+            const topRec = recs[0];
+            attEl.innerHTML = `<strong>Priority ${topRec.priority} (${topRec.factor}):</strong> ${topRec.recommendation} (${recs.length} total areas identified).`;
+          } else {
+            attEl.innerHTML = `<strong>All Attributes Healthy!</strong> No critical areas needing immediate intervention.`;
+          }
+        }
+
+        // Populate Table
+        const tbody = document.getElementById("subject-table-body");
+        const subjects = student.studentSubjects || [];
+        
+        if (subjects.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="padding: 1rem; text-align: center;">No subject performance records found.</td></tr>`;
+        } else {
+          tbody.innerHTML = subjects.map(s => {
+            let badgeClass = "badge-risk-low";
+            if (s.priority === "HIGH") badgeClass = "badge-risk-high";
+            else if (s.priority === "MEDIUM") badgeClass = "badge-risk-med";
+
+            return `
+              <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 0.75rem 0.6rem;"><strong>${s.code}</strong></td>
+                <td style="padding: 0.75rem 0.6rem;">${s.name}</td>
+                <td style="padding: 0.75rem 0.6rem;">${s.score.toFixed(1)}%</td>
+                <td style="padding: 0.75rem 0.6rem;">${s.attendance.toFixed(1)}%</td>
+                <td style="padding: 0.75rem 0.6rem;"><span class="badge ${badgeClass}">${s.priority}</span></td>
+              </tr>
+            `;
+          }).join("");
+        }
+
+        feedbackEl.style.display = "none";
+
+      } catch (err) {
+        console.error("Dashboard error loading DB student:", err);
+        feedbackEl.className = "alert alert-warning";
+        feedbackEl.innerText = "⚠️ Unable to load academic data. Please try again.";
+      }
+    });
+  </script>
+</body>
+</html>

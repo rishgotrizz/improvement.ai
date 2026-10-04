@@ -1,0 +1,145 @@
+{
+  "datasetInfo": {
+    "totalRecords": 500,
+    "trainRecords": 400,
+    "testRecords": 100,
+    "trainRatio": 0.8,
+    "testRatio": 0.2,
+    "randomState": 42,
+    "isStratified": true,
+    "features": [
+      "attendance",
+      "study_hours",
+      "previous_semester_percentage",
+      "assignment_average",
+      "internal_assessment",
+      "quiz_average",
+      "completed_assignments",
+      "total_assignments",
+      "backlog_count"
+    ],
+    "regressionTarget": "final_score",
+    "classificationTarget": "academic_risk_category",
+    "isSyntheticDataset": true
+  },
+  "classification": {
+    "primary": {
+      "modelName": "Logistic Regression",
+      "averagingMethod": "weighted",
+      "accuracy": 0.93,
+      "precision": 0.932,
+      "recall": 0.93,
+      "f1Score": 0.93,
+      "confusionMatrix": {
+        "labels": [
+          "HIGH",
+          "MEDIUM",
+          "LOW"
+        ],
+        "matrix": [
+          [
+            16,
+            0,
+            0
+          ],
+          [
+            0,
+            37,
+            2
+          ],
+          [
+            0,
+            5,
+            40
+          ]
+        ]
+      }
+    },
+    "comparison": {
+      "modelName": "Random Forest Classifier",
+      "averagingMethod": "weighted",
+      "accuracy": 0.94,
+      "precision": 0.941,
+      "recall": 0.94,
+      "f1Score": 0.94,
+      "confusionMatrix": {
+        "labels": [
+          "HIGH",
+          "MEDIUM",
+          "LOW"
+        ],
+        "matrix": [
+          [
+            16,
+            0,
+            0
+          ],
+          [
+            0,
+            37,
+            2
+          ],
+          [
+            0,
+            4,
+            41
+          ]
+        ]
+      }
+    },
+    "dummyBaseline": {
+      "modelName": "Dummy Classifier (Most Frequent)",
+      "averagingMethod": "weighted",
+      "accuracy": 0.45,
+      "precision": 0.203,
+      "recall": 0.45,
+      "f1Score": 0.279,
+      "confusionMatrix": {
+        "labels": [
+          "HIGH",
+          "MEDIUM",
+          "LOW"
+        ],
+        "matrix": [
+          [
+            0,
+            0,
+            16
+          ],
+          [
+            0,
+            0,
+            39
+          ],
+          [
+            0,
+            0,
+            45
+          ]
+        ]
+      }
+    }
+  },
+  "regression": {
+    "primary": {
+      "modelName": "Linear Regression",
+      "mae": 1.61,
+      "rmse": 1.84,
+      "r2Score": 0.984
+    },
+    "comparison": {
+      "modelName": "Random Forest Regressor",
+      "mae": 1.83,
+      "rmse": 2.29,
+      "r2Score": 0.975
+    },
+    "dummyBaseline": {
+      "modelName": "Dummy Regressor (Training Mean)",
+      "mae": 11.28,
+      "rmse": 14.45,
+      "r2Score": -0.001
+    }
+  },
+  "trainedAt": "2026-09-14T23:01:11.086460",
+  "disclaimer": "Model results are based on a synthetic demonstration dataset and should not be interpreted as real-world academic performance benchmarks."
+}

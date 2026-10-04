@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ethics & Responsible AI - EduPredict</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <h1 class="page-title">Ethics in Artificial Intelligence (EAI)</h1>
+      <p class="page-subtitle">Responsible AI principles: Data privacy, explainability, fairness disclaimers, limitations, and human oversight</p>
+    </div>
+
+    <!-- 4 Pillar Cards -->
+    <div class="grid grid-4" style="margin-bottom: 2.5rem;">
+      <div class="card stat-card" style="border-top: 4px solid var(--subject-eai);">
+        <span class="stat-label">Pillar 1</span>
+        <span class="stat-value" style="font-size: 1.25rem;">Data Privacy</span>
+        <span class="stat-subtext">Minimal academic data collection</span>
+      </div>
+
+      <div class="card stat-card" style="border-top: 4px solid var(--subject-eai);">
+        <span class="stat-label">Pillar 2</span>
+        <span class="stat-value" style="font-size: 1.25rem;">Explainability</span>
+        <span class="stat-subtext">Transparent feature weights</span>
+      </div>
+
+      <div class="card stat-card" style="border-top: 4px solid var(--subject-eai);">
+        <span class="stat-label">Pillar 3</span>
+        <span class="stat-value" style="font-size: 1.25rem;">Fairness</span>
+        <span class="stat-subtext">Unbiased feature selection</span>
+      </div>
+
+      <div class="card stat-card" style="border-top: 4px solid var(--subject-eai);">
+        <span class="stat-label">Pillar 4</span>
+        <span class="stat-value" style="font-size: 1.25rem;">Human Control</span>
+        <span class="stat-subtext">Decision-support tool only</span>
+      </div>
+    </div>
+
+    <!-- Detailed Ethics Sections -->
+    <div class="grid grid-2" style="margin-bottom: 2rem;">
+      
+      <!-- Privacy & Data Minimization -->
+      <div class="card">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem;">
+          1. Data Privacy & Minimization
+        </h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">
+          EduPredict enforces strict data minimization by collecting <strong>only essential academic performance metrics</strong> (e.g., attendance percentage, assignment averages, study hours). No sensitive personally identifiable information (PII) like addresses, phone numbers, or financial details is requested or stored.
+        </p>
+      </div>
+
+      <!-- Model Explainability -->
+      <div class="card">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem;">
+          2. Model Explainability
+        </h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">
+          Instead of opaque deep learning models, EduPredict employs <strong>interpretable linear regression and logistic classification models</strong>. Every prediction presents exact feature contribution weights so students understand why a specific risk status was estimated.
+        </p>
+      </div>
+
+      <!-- Fairness & Bias Evaluation -->
+      <div class="card">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem;">
+          3. Fairness & Demographic Disclaimer
+        </h3>
+        <div style="font-size: 0.88rem; color: var(--text-muted);">
+          <div style="background-color: var(--light-bg); border-left: 3px solid var(--secondary); padding: 0.6rem 0.8rem; margin-bottom: 0.5rem; font-style: italic;">
+            "The current dataset does not contain demographic or protected subgroup attributes for a meaningful subgroup fairness evaluation."
+          </div>
+          Model training relies strictly on academic metrics (attendance, study hours, assignment marks) to prevent algorithmic discrimination based on sensitive protected traits.
+        </div>
+      </div>
+
+      <!-- Model Limitations & Human Oversight -->
+      <div class="card">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem;">
+          4. Model Limitations & Human Oversight
+        </h3>
+        <ul style="font-size: 0.85rem; color: var(--text-muted); margin-left: 1.2rem; display: flex; flex-direction: column; gap: 0.3rem;">
+          <li>Predictions depend directly on historical sample data quality.</li>
+          <li>Correlation discovered during EDA does not imply direct causation.</li>
+          <li>EduPredict is a decision-support advisor; faculty and students retain final authority.</li>
+          <li>Students should never be labeled or judged solely by model output estimates.</li>
+        </ul>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div>EDUPREDICT — First-Year Academic Project</div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/about">Subject Mapping</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

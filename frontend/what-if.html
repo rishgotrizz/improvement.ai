@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What-If Academic Scenario Simulator - EduPredict</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 900px) {
+      .scenario-grid { grid-template-columns: 1fr; }
+    }
+    .dual-control {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .dual-control input[type="range"] {
+      flex: 1;
+      height: 6px;
+      accent-color: #2563eb;
+    }
+    .dual-control input[type="number"] {
+      width: 80px;
+      padding: 0.35rem 0.5rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-weight: 600;
+      text-align: right;
+    }
+    .preset-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      background-color: #f8fafc;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+    .btn-preset {
+      background-color: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-preset:hover {
+      background-color: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+    .bar-comparison-container {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.8rem;
+    }
+    .bar-label {
+      width: 140px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #334155;
+    }
+    .bar-track {
+      flex: 1;
+      height: 24px;
+      background: #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 12px;
+      transition: width 0.5s ease-in-out;
+    }
+    .bar-fill-base { background: linear-gradient(90deg, #64748b, #475569); }
+    .bar-fill-scen { background: linear-gradient(90deg, #2563eb, #1d4ed8); }
+    .bar-val {
+      width: 70px;
+      text-align: right;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-left: 0.8rem;
+    }
+    .delta-pill {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-left: 0.5rem;
+    }
+    .delta-positive { background-color: #dcfce7; color: #15803d; }
+    .delta-negative { background-color: #fee2e2; color: #b91c1c; }
+    .delta-neutral  { background-color: #f1f5f9; color: #475569; }
+    .prob-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+    }
+    .prob-table th, .prob-table td {
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.9rem;
+    }
+    .prob-table th { background-color: #f8fafc; font-weight: 600; color: #475569; }
+  </style>
+</head>
+<body>
+
+
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <h1 class="page-title">WHAT-IF ACADEMIC ANALYSIS</h1>
+      <p class="page-subtitle">Explore how changing academic inputs may affect the model's estimated outcome</p>
+    </div>
+
+    <!-- Scenario Presets Bar -->
+    <div class="preset-bar">
+      <span style="font-weight: 600; font-size: 0.9rem; color: #475569; align-self: center; margin-right: 0.5rem;">Quick Presets:</span>
+      <button type="button" class="btn-preset" onclick="applyPreset('attendance')">📈 Improve Attendance (+10%)</button>
+      <button type="button" class="btn-preset" onclick="applyPreset('study')">⏱️ Increase Study Hours (+4h)</button>
+      <button type="button" class="btn-preset" onclick="applyPreset('assignments')">📝 Complete Pending Assignments</button>
+      <button type="button" class="btn-preset" onclick="applyPreset('backlogs')">✅ Clear Active Backlogs</button>
+      <button type="button" class="btn-preset" style="color: #b91c1c;" onclick="resetScenarioToBaseline()">🔄 Reset to Baseline</button>
+    </div>
+
+    <!-- Error Alert Box -->
+    <div id="error-alert" class="card" style="display: none; background-color: #fef2f2; border-left: 4px solid #ef4444; margin-bottom: 1.5rem; color: #991b1b; padding: 1rem;">
+      <strong>Validation Error:</strong> <span id="error-msg"></span>
+    </div>
+
+    <!-- Input Panels Grid -->
+    <div class="scenario-grid">
+      <!-- Panel 1: Current Baseline Profile -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+          <h2 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0;">📌 Current Baseline Profile</h2>
+          <span class="badge" style="background-color: #e2e8f0; color: #475569;">Reference Input</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.9rem;">
+          <div class="form-group">
+            <label class="form-label">Attendance (%)</label>
+            <input type="number" id="base-attendance" class="form-input" value="65" min="0" max="100" onchange="syncBaselineToInputs()">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Weekly Study Hours</label>
+            <input type="number" id="base-study_hours" class="form-input" value="8" min="0" max="168" onchange="syncBaselineToInputs()">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Previous Semester (%)</label>
+            <input type="number" id="base-previous_semester_percentage" class="form-input" value="65" min="0" max="100" onchange="syncBaselineToInputs()">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Assignment Average (%)</label>
+            <input type="number" id="base-assignment_average" class="form-input" value="60" min="0" max="100" onchange="syncBaselineToInputs()">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Internal Assessment (%)</label>
+            <input type="number" id="base-internal_assessment" class="form-input" value="58" min="0" max="100" onchange="syncBaselineToInputs()">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Quiz Average (%)</label>
+            <input type="number" id="base-quiz_average" class="form-input" value="55" min="0" max="100" onchange="syncBaselineToInputs()">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <div class="form-group">
+              <label class="form-label">Total Assignments</label>
+              <input type="number" id="base-total_assignments" class="form-input" value="10" min="1" onchange="syncBaselineToInputs()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Completed Assignments</label>
+              <input type="number" id="base-completed_assignments" class="form-input" value="6" min="0" onchange="syncBaselineToInputs()">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Active Backlog Count</label>
+            <input type="number" id="base-backlog_count" class="form-input" value="2" min="0" onchange="syncBaselineToInputs()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 2: What-If Scenario Controls -->
+      <div class="card" style="border: 2px solid #2563eb; background-color: #f8fafc;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cbd5e1; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+          <h2 style="font-size: 1.1rem; font-weight: 700; color: #1d4ed8; margin: 0;">⚡ What-If Scenario Controls</h2>
+          <span class="badge" style="background-color: #2563eb; color: #ffffff;">Hypothetical Inputs</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+          <!-- Attendance -->
+          <div>
+            <label class="form-label">Attendance (%)</label>
+            <div class="dual-control">
+              <input type="range" id="scen-attendance-range" min="0" max="100" value="80" oninput="updateDual('attendance', 'range')">
+              <input type="number" id="scen-attendance" min="0" max="100" value="80" oninput="updateDual('attendance', 'num')">
+            </div>
+          </div>
+
+          <!-- Study Hours -->
+          <div>
+            <label class="form-label">Weekly Study Hours</label>
+            <div class="dual-control">
+              <input type="range" id="scen-study_hours-range" min="0" max="50" value="12" oninput="updateDual('study_hours', 'range')">
+              <input type="number" id="scen-study_hours" min="0" max="168" value="12" oninput="updateDual('study_hours', 'num')">
+            </div>
+          </div>
+
+          <!-- Previous Sem % -->
+          <div>
+            <label class="form-label">Previous Semester (%)</label>
+            <div class="dual-control">
+              <input type="range" id="scen-previous_semester_percentage-range" min="0" max="100" value="65" oninput="updateDual('previous_semester_percentage', 'range')">
+              <input type="number" id="scen-previous_semester_percentage" min="0" max="100" value="65" oninput="updateDual('previous_semester_percentage', 'num')">
+            </div>
+          </div>
+
+          <!-- Assignment Avg % -->
+          <div>
+            <label class="form-label">Assignment Average (%)</label>
+            <div class="dual-control">
+              <input type="range" id="scen-assignment_average-range" min="0" max="100" value="75" oninput="updateDual('assignment_average', 'range')">
+              <input type="number" id="scen-assignment_average" min="0" max="100" value="75" oninput="updateDual('assignment_average', 'num')">
+            </div>
+          </div>
+
+          <!-- Internal Assessment % -->
+          <div>
+            <label class="form-label">Internal Assessment (%)</label>
+            <div class="dual-control">
+              <input type="range" id="scen-internal_assessment-range" min="0" max="100" value="58" oninput="updateDual('internal_assessment', 'range')">
+              <input type="number" id="scen-internal_assessment" min="0" max="100" value="58" oninput="updateDual('internal_assessment', 'num')">
+            </div>
+          </div>
+
+          <!-- Quiz Average % -->
+          <div>
+            <label class="form-label">Quiz Average (%)</label>
+            <div class="dual-control">
+              <input type="range" id="scen-quiz_average-range" min="0" max="100" value="55" oninput="updateDual('quiz_average', 'range')">
+              <input type="number" id="scen-quiz_average" min="0" max="100" value="55" oninput="updateDual('quiz_average', 'num')">
+            </div>
+          </div>
+
+          <!-- Assignment Counts -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <div class="form-group">
+              <label class="form-label">Total Assignments</label>
+              <input type="number" id="scen-total_assignments" class="form-input" value="10" min="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Completed Assignments</label>
+              <input type="number" id="scen-completed_assignments" class="form-input" value="8" min="0">
+            </div>
+          </div>
+
+          <!-- Backlog Count -->
+          <div class="form-group">
+            <label class="form-label">Active Backlog Count</label>
+            <input type="number" id="scen-backlog_count" class="form-input" value="0" min="0">
+          </div>
+        </div>
+
+        <button type="button" id="runScenarioBtn" class="btn btn-primary" style="width: 100%; margin-top: 1.25rem; padding: 0.75rem; font-size: 1rem; font-weight: 700;" onclick="executeWhatIf()">
+          🚀 Analyze What-If Scenario
+        </button>
+      </div>
+    </div>
+
+    <!-- Output Simulation Results Panel -->
+    <div id="results-panel" style="display: none; margin-bottom: 2rem;">
+
+      <!-- 1. Score & Risk Transition Header -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.2rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">📊 Scenario Simulation Summary</h2>
+
+        <!-- Score Bar Visual Comparison -->
+        <div class="bar-comparison-container">
+          <div class="bar-row">
+            <div class="bar-label">Current Profile</div>
+            <div class="bar-track">
+              <div id="bar-base" class="bar-fill bar-fill-base" style="width: 0%;"></div>
+            </div>
+            <div class="bar-val" id="val-base-score">0.0%</div>
+          </div>
+
+          <div class="bar-row">
+            <div class="bar-label">What-If Scenario</div>
+            <div class="bar-track">
+              <div id="bar-scen" class="bar-fill bar-fill-scen" style="width: 0%;"></div>
+            </div>
+            <div class="bar-val" id="val-scen-score">0.0%</div>
+          </div>
+
+          <div style="margin-top: 1rem; text-align: center;">
+            Estimated Score Change: <span id="delta-score-pill" class="delta-pill delta-neutral">0.0 percentage points</span>
+          </div>
+        </div>
+
+        <!-- Risk Transition Card -->
+        <div style="display: flex; align-items: center; justify-content: space-between; background-color: #f1f5f9; padding: 1rem; border-radius: 8px;">
+          <div>
+            <span style="font-size: 0.85rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Risk Category Transition</span>
+            <div style="font-size: 1.2rem; font-weight: 700; color: #1e293b; margin-top: 0.2rem;" id="risk-transition-text">
+              HIGH → MEDIUM
+            </div>
+          </div>
+          <div id="risk-transition-badge">
+            <span class="badge" style="background-color: #2563eb; color: #fff; padding: 0.5rem 1rem; font-size: 0.95rem;">Model Simulation</span>
+          </div>
+        </div>
+
+        <p id="simulation-summary-text" style="font-size: 0.9rem; color: #475569; margin-top: 1rem; font-style: italic;"></p>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom: 1.5rem;">
+        <!-- 2. Class Probability Comparison -->
+        <div class="card">
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem;">🎯 Risk Class Probability Comparison</h3>
+          <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">Model-assigned probabilities across risk tiers:</p>
+          <table class="prob-table">
+            <thead>
+              <tr>
+                <th>Risk Tier</th>
+                <th>Current</th>
+                <th>What-If</th>
+                <th>Delta</th>
+              </tr>
+            </thead>
+            <tbody id="prob-table-body">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 3. Changed Factors Summary -->
+        <div class="card">
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem;">✏️ Modified Academic Factors</h3>
+          <div id="changed-factors-list" style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Remaining Scenario Recommendations -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">📋 Remaining Action Plan (Scenario-based)</h3>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Prioritized recommendations for areas that would still require attention under this hypothetical scenario:</p>
+        <div id="scenario-recommendations-list" style="display: flex; flex-direction: column; gap: 0.8rem;">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- 5. Limitation Disclaimer -->
+      <div class="card" style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 1rem;">
+        <strong style="color: #92400e;">⚠️ What-If Scenario Limitations Disclaimer:</strong>
+        <p style="font-size: 0.85rem; color: #78350f; margin-top: 0.3rem;" id="whatif-disclaimer-text">
+          What-if analysis runs the existing trained model on hypothetical inputs. It does not retrain the model or establish causal effects. Results are based on synthetic demonstration data.
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    // Dual range <-> numeric sync
+    function updateDual(field, source) {
+      const rangeEl = document.getElementById(`scen-${field}-range`);
+      const numEl = document.getElementById(`scen-${field}`);
+      if (!rangeEl || !numEl) return;
+      if (source === 'range') {
+        numEl.value = rangeEl.value;
+      } else {
+        rangeEl.value = numEl.value;
+      }
+    }
+
+    // Sync baseline to scenario inputs when changed
+    function syncBaselineToInputs() {
+      // Intentionally manual to allow user custom scenarios
+    }
+
+    function resetScenarioToBaseline() {
+      const fields = [
+        'attendance', 'study_hours', 'previous_semester_percentage',
+        'assignment_average', 'internal_assessment', 'quiz_average',
+        'total_assignments', 'completed_assignments', 'backlog_count'
+      ];
+      fields.forEach(f => {
+        const baseVal = document.getElementById(`base-${f}`).value;
+        const scenNum = document.getElementById(`scen-${f}`);
+        const scenRange = document.getElementById(`scen-${f}-range`);
+        if (scenNum) scenNum.value = baseVal;
+        if (scenRange) scenRange.value = baseVal;
+      });
+      document.getElementById('results-panel').style.display = 'none';
+      document.getElementById('error-alert').style.display = 'none';
+    }
+
+    function applyPreset(type) {
+      document.getElementById('error-alert').style.display = 'none';
+      if (type === 'attendance') {
+        const cur = parseFloat(document.getElementById('scen-attendance').value) || 0;
+        const next = Math.min(100, cur + 10);
+        document.getElementById('scen-attendance').value = next;
+        document.getElementById('scen-attendance-range').value = next;
+      } else if (type === 'study') {
+        const cur = parseFloat(document.getElementById('scen-study_hours').value) || 0;
+        const next = Math.min(168, cur + 4);
+        document.getElementById('scen-study_hours').value = next;
+        document.getElementById('scen-study_hours-range').value = next;
+      } else if (type === 'assignments') {
+        const total = parseInt(document.getElementById('scen-total_assignments').value) || 10;
+        document.getElementById('scen-completed_assignments').value = total;
+        document.getElementById('scen-assignment_average').value = Math.max(75, parseFloat(document.getElementById('scen-assignment_average').value) || 0);
+        document.getElementById('scen-assignment_average-range').value = document.getElementById('scen-assignment_average').value;
+      } else if (type === 'backlogs') {
+        document.getElementById('scen-backlog_count').value = 0;
+      }
+    }
+
+    function collectPayload(prefix) {
+      return {
+        attendance: parseFloat(document.getElementById(`${prefix}-attendance`).value),
+        study_hours: parseFloat(document.getElementById(`${prefix}-study_hours`).value),
+        previous_semester_percentage: parseFloat(document.getElementById(`${prefix}-previous_semester_percentage`).value),
+        assignment_average: parseFloat(document.getElementById(`${prefix}-assignment_average`).value),
+        internal_assessment: parseFloat(document.getElementById(`${prefix}-internal_assessment`).value),
+        quiz_average: parseFloat(document.getElementById(`${prefix}-quiz_average`).value),
+        total_assignments: parseInt(document.getElementById(`${prefix}-total_assignments`).value),
+        completed_assignments: parseInt(document.getElementById(`${prefix}-completed_assignments`).value),
+        backlog_count: parseInt(document.getElementById(`${prefix}-backlog_count`).value)
+      };
+    }
+
+    async function executeWhatIf() {
+      const errAlert = document.getElementById('error-alert');
+      const errText = document.getElementById('error-msg');
+      const resultsPanel = document.getElementById('results-panel');
+      errAlert.style.display = 'none';
+
+      const baseline = collectPayload('base');
+      const scenario = collectPayload('scen');
+
+      // Local Validation Checks
+      if (scenario.completed_assignments > scenario.total_assignments) {
+        errText.innerText = `Completed assignments (${scenario.completed_assignments}) cannot exceed total assignments (${scenario.total_assignments}) in What-If Scenario.`;
+        errAlert.style.display = 'block';
+        return;
+      }
+
+      if (baseline.completed_assignments > baseline.total_assignments) {
+        errText.innerText = `Completed assignments (${baseline.completed_assignments}) cannot exceed total assignments (${baseline.total_assignments}) in Baseline Profile.`;
+        errAlert.style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/what-if', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ baseline, scenario })
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+          errText.innerText = data.error || 'Failed to analyze what-if scenario.';
+          errAlert.style.display = 'block';
+          return;
+        }
+
+        renderResults(data);
+      } catch (err) {
+        errText.innerText = `Network or API error: ${err.message}`;
+        errAlert.style.display = 'block';
+      }
+    }
+
+    function renderResults(data) {
+      const baseScore = data.baseline.predicted_score;
+      const scenScore = data.scenario.predicted_score;
+      const diff = data.difference;
+
+      // Update Bar Widths & Values
+      document.getElementById('val-base-score').innerText = `${baseScore.toFixed(1)}%`;
+      document.getElementById('val-scen-score').innerText = `${scenScore.toFixed(1)}%`;
+      document.getElementById('bar-base').style.width = `${Math.min(100, Math.max(5, baseScore))}%`;
+      document.getElementById('bar-scen').style.width = `${Math.min(100, Math.max(5, scenScore))}%`;
+
+      const pill = document.getElementById('delta-score-pill');
+      pill.innerText = diff.formatted_score_change;
+      if (diff.score_change > 0) {
+        pill.className = 'delta-pill delta-positive';
+      } else if (diff.score_change < 0) {
+        pill.className = 'delta-pill delta-negative';
+      } else {
+        pill.className = 'delta-pill delta-neutral';
+      }
+
+      // Risk Transition Text
+      document.getElementById('risk-transition-text').innerText = diff.risk_transition;
+      document.getElementById('simulation-summary-text').innerText = data.simulation_summary;
+
+      // Render Class Probabilities Table
+      const tbody = document.getElementById('prob-table-body');
+      tbody.innerHTML = '';
+      const probMap = diff.probability_comparison || {};
+      ['LOW', 'MEDIUM', 'HIGH'].forEach(cls => {
+        if (probMap[cls]) {
+          const item = probMap[cls];
+          const tr = document.createElement('tr');
+          const deltaColor = item.delta_probability_points > 0 ? (cls === 'LOW' ? '#15803d' : '#b91c1c') : (item.delta_probability_points < 0 ? (cls === 'HIGH' ? '#15803d' : '#b91c1c') : '#64748b');
+          tr.innerHTML = `
+            <td><strong>${cls} RISK</strong></td>
+            <td>${item.baseline_probability.toFixed(1)}%</td>
+            <td>${item.scenario_probability.toFixed(1)}%</td>
+            <td style="font-weight: 700; color: ${deltaColor};">${item.formatted_delta}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+      });
+
+      // Render Changed Factors
+      const changedContainer = document.getElementById('changed-factors-list');
+      changedContainer.innerHTML = '';
+      if (!data.changed_factors || data.changed_factors.length === 0) {
+        changedContainer.innerHTML = `<div style="color: #64748b; font-style: italic; font-size: 0.9rem;">No input factors modified. Baseline and Scenario are identical.</div>`;
+      } else {
+        data.changed_factors.forEach(f => {
+          const div = document.createElement('div');
+          div.style.cssText = `display: flex; justify-content: space-between; background-color: #f8fafc; padding: 0.6rem 0.8rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.88rem;`;
+          div.innerHTML = `
+            <span><strong>${f.label}</strong>: ${f.baseline_formatted} → ${f.scenario_formatted}</span>
+            <span style="font-weight: 700; color: #2563eb;">${f.difference_formatted}</span>
+          `;
+          changedContainer.appendChild(div);
+        });
+      }
+
+      // Render Scenario Recommendations
+      const recsContainer = document.getElementById('scenario-recommendations-list');
+      recsContainer.innerHTML = '';
+      if (!data.recommendations || data.recommendations.length === 0) {
+        recsContainer.innerHTML = `<div style="color: #15803d; font-weight: 600; font-size: 0.9rem;">🟢 Excellent profile! No academic intervention required for this scenario.</div>`;
+      } else {
+        data.recommendations.forEach(r => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.style.cssText = `padding: 0.8rem 1rem; border-left: 4px solid var(--tier-${r.priority_tier.toLowerCase()}, #2563eb); font-size: 0.88rem;`;
+          card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+              <strong>${r.title}</strong>
+              <span class="badge" style="background-color: #e2e8f0; color: #1e293b; font-size: 0.75rem;">${r.priority_tier} PRIORITY</span>
+            </div>
+            <div style="color: #475569;">${r.recommendation}</div>
+            <div style="color: #64748b; font-size: 0.8rem; margin-top: 0.4rem;">🎯 <em>Target: ${r.suggested_action}</em></div>
+          `;
+          recsContainer.appendChild(card);
+        });
+      }
+
+      // Disclaimer Text
+      document.getElementById('whatif-disclaimer-text').innerText = data.disclaimer;
+
+      // Reveal Results
+      document.getElementById('results-panel').style.display = 'block';
+      document.getElementById('results-panel').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

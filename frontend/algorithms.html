@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Algorithms & Computational Efficiency - EduPredict</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <h1 class="page-title">Algorithms & Computational Efficiency</h1>
+      <p class="page-subtitle">Demonstration of CPA programming logic and COA memory-aware efficiency principles</p>
+    </div>
+
+    <!-- Section 1: Subject Priority Recommendation Logic (CPA) -->
+    <div class="card" id="priority-algorithm" style="margin-bottom: 2rem; border-left: 4px solid var(--subject-cpa);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--dark);">
+          1. Subject Priority Recommendation Logic (CPA)
+        </h3>
+        <span class="badge badge-subject">Deterministic Rule Engine</span>
+      </div>
+
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+        EduPredict calculates a priority score for each course based on performance gap ($G_s$), attendance deficit ($A_d$), and assignment gap ($W_a$). Courses are then ranked using Python's built-in sorting functionality (`sort()` / TimSort algorithm, $O(n \log n)$ worst-case time complexity):
+      </p>
+
+      <div style="background-color: var(--dark-surface); color: #f8fafc; padding: 1.25rem; border-radius: var(--radius-md); font-family: monospace; font-size: 0.85rem; overflow-x: auto; margin-bottom: 1.25rem; line-height: 1.5;">
+<span style="color: #93c5fd;">def</span> <span style="color: #fde047;">calculate_subject_priority</span>(subjects, overall_avg):
+    <span style="color: #94a3b8;"># Step 1: Linear scan to compute performance gaps and priority scores - O(n)</span>
+    prioritized_list = []
+    <span style="color: #93c5fd;">for</span> s <span style="color: #93c5fd;">in</span> subjects:
+        gap = overall_avg - s[<span style="color: #86efac;">'score'</span>]
+        att_penalty = max(<span style="color: #fca5a5;">0</span>, <span style="color: #fca5a5;">75</span> - s[<span style="color: #86efac;">'attendance'</span>])
+        ass_deficit = max(<span style="color: #fca5a5;">0</span>, <span style="color: #fca5a5;">80</span> - s[<span style="color: #86efac;">'assignments'</span>])
+        
+        priority_score = (<span style="color: #fca5a5;">0.50</span> * gap) + (<span style="color: #fca5a5;">0.30</span> * att_penalty) + (<span style="color: #fca5a5;">0.20</span> * ass_deficit)
+        
+        <span style="color: #93c5fd;">if</span> priority_score > <span style="color: #fca5a5;">7.0</span>:
+            category = <span style="color: #86efac;">"HIGH"</span>; rec_mins = <span style="color: #fca5a5;">45</span>
+        <span style="color: #93c5fd;">elif</span> priority_score > <span style="color: #fca5a5;">3.5</span>:
+            category = <span style="color: #86efac;">"MEDIUM"</span>; rec_mins = <span style="color: #fca5a5;">30</span>
+        <span style="color: #93c5fd;">else</span>:
+            category = <span style="color: #86efac;">"LOW"</span>; rec_mins = <span style="color: #fca5a5;">20</span>
+
+        prioritized_list.append({
+            <span style="color: #86efac;">'code'</span>: s[<span style="color: #86efac;">'code'</span>], <span style="color: #86efac;">'score'</span>: priority_score, 
+            <span style="color: #86efac;">'category'</span>: category, <span style="color: #86efac;">'minutes'</span>: rec_mins
+        })
+
+    <span style="color: #94a3b8;"># Step 2: Rank using Python's built-in sorting (TimSort algorithm) - O(n log n)</span>
+    prioritized_list.sort(key=<span style="color: #93c5fd;">lambda</span> x: x[<span style="color: #86efac;">'score'</span>], reverse=<span style="color: #86efac;">True</span>)
+    <span style="color: #93c5fd;">return</span> prioritized_list
+      </div>
+    </div>
+
+    <!-- Educational Sorting Algorithm Demonstration (CPA Viva) -->
+    <div class="card" style="margin-bottom: 2rem; background: #f8fafc;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--dark);">
+          🎓 Educational Algorithm Demonstration (CPA Viva Reference)
+        </h3>
+        <span class="badge badge-subject">Academic Demonstration</span>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+        For academic demonstration during viva examinations, below is an explicit implementation of <strong>Insertion Sort</strong> ($O(n^2)$ worst-case time complexity, $O(1)$ auxiliary space) illustrating step-by-step element swap mechanics:
+      </p>
+
+      <div style="background-color: var(--dark-surface); color: #f8fafc; padding: 1rem; border-radius: var(--radius-md); font-family: monospace; font-size: 0.82rem; overflow-x: auto; line-height: 1.5;">
+<span style="color: #93c5fd;">def</span> <span style="color: #fde047;">academic_insertion_sort</span>(arr):
+    <span style="color: #94a3b8;">"""Educational explicit sorting loop for CPA viva demonstration."""</span>
+    <span style="color: #93c5fd;">for</span> i <span style="color: #93c5fd;">in</span> range(<span style="color: #fca5a5;">1</span>, len(arr)):
+        key_item = arr[i]
+        j = i - <span style="color: #fca5a5;">1</span>
+        <span style="color: #93c5fd;">while</span> j >= <span style="color: #fca5a5;">0</span> <span style="color: #93c5fd;">and</span> arr[j][<span style="color: #86efac;">'score'</span>] < key_item[<span style="color: #86efac;">'score'</span>]:
+            arr[j + <span style="color: #fca5a5;">1</span>] = arr[j]
+            j -= <span style="color: #fca5a5;">1</span>
+        arr[j + <span style="color: #fca5a5;">1</span>] = key_item
+    <span style="color: #93c5fd;">return</span> arr
+      </div>
+    </div>
+
+    <!-- Section 2: Computational Efficiency & COA Principles -->
+    <div class="card" id="efficiency" style="margin-bottom: 2rem; border-left: 4px solid var(--subject-coa);">
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem;">
+        2. Computational Efficiency & Architecture Principles (COA)
+      </h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        EduPredict documents technical time and space complexity across dataset parsing and statistical aggregation:
+      </p>
+
+      <div class="grid grid-3" style="font-size: 0.88rem;">
+        
+        <div style="background: var(--light-bg); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+          <strong style="color: var(--dark);">In-Memory Dataset Space — O(n)</strong>
+          <p style="color: var(--text-muted); margin-top: 0.4rem; font-size: 0.82rem;">
+            When loaded into RAM, the 500-record Pandas DataFrame occupies $O(n)$ memory space (~120 KB RAM), enabling fast vectorised arithmetic.
+          </p>
+        </div>
+
+        <div style="background: var(--light-bg); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+          <strong style="color: var(--dark);">Single-Pass Aggregation — O(n) Time</strong>
+          <p style="color: var(--text-muted); margin-top: 0.4rem; font-size: 0.82rem;">
+            Descriptive statistics (Mean, Sample Variance, Min/Max) are computed in linear $O(n)$ time complexity in a single scan across feature arrays.
+          </p>
+        </div>
+
+        <div style="background: var(--light-bg); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+          <strong style="color: var(--dark);">In-Memory Cache Lookup — O(1) Time</strong>
+          <p style="color: var(--text-muted); margin-top: 0.4rem; font-size: 0.82rem;">
+            <code>_CACHED_EDA_RESULT</code> in <code>eda/analysis.py</code> provides approximately $O(1)$ dictionary key retrieval time. The memory cost is $O(k)$ proportional to the result payload size.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div>EDUPREDICT — First-Year Academic Project</div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/responsible-ai">Ethics & Responsible AI</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

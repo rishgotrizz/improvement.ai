@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mathematics Behind System - EduPredict</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <h1 class="page-title">Applied Mathematics-I (AM-I) Behind the Prediction</h1>
+      <p class="page-subtitle">First-year mathematical foundations: Statistics, linear regression, correlation, and gradient descent</p>
+    </div>
+
+    <!-- Mathematical Callout -->
+    <div class="card" style="margin-bottom: 2rem; border-left: 4px solid var(--subject-am); background-color: #faf5ff;">
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: #6b21a8; margin-bottom: 0.4rem;">
+        📐 Viva Reference: How Math Powers EduPredict
+      </h3>
+      <p style="font-size: 0.88rem; color: #581c87;">
+        Descriptive statistics and Pearson correlation formulas are implemented in <strong>Phase 3 (EDA)</strong>. Supervised Linear Regression score estimation and Logistic Regression classification are fully implemented in <strong>Phase 4 (AI/ML)</strong>.
+      </p>
+    </div>
+
+    <!-- Section 1: Descriptive Statistics & Correlation (Implemented in Phase 3) -->
+    <div class="grid grid-2" style="margin-bottom: 2rem;">
+      
+      <!-- Descriptive Statistics -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--dark);">
+            1. Descriptive Statistics (Implemented in Phase 3)
+          </h3>
+          <span class="badge badge-risk-low">Implemented in Phase 3</span>
+        </div>
+        
+        <div style="font-size: 0.88rem; display: flex; flex-direction: column; gap: 0.8rem;">
+          <div>
+            <strong>Arithmetic Mean (μ):</strong>
+            <div style="font-family: monospace; background: var(--light-bg); padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); margin-top: 0.2rem;">
+              μ = (1 / n) * Σ xᵢ
+            </div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">Used to summarize average attendance, study hours, and final score.</div>
+          </div>
+
+          <div>
+            <strong>Variance (σ²):</strong>
+            <div style="font-family: monospace; background: var(--light-bg); padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); margin-top: 0.2rem;">
+              σ² = (1 / n) * Σ (xᵢ - μ)²
+            </div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">Measures data spread around the mean.</div>
+          </div>
+
+          <div>
+            <strong>Standard Deviation (σ):</strong>
+            <div style="font-family: monospace; background: var(--light-bg); padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); margin-top: 0.2rem;">
+              σ = √(Variance)
+            </div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">Quantifies dataset variability.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pearson Correlation -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--dark);">
+            2. Pearson Correlation Coefficient (Implemented in Phase 3)
+          </h3>
+          <span class="badge badge-risk-low">Implemented in Phase 3</span>
+        </div>
+
+        <div style="font-size: 0.88rem; display: flex; flex-direction: column; gap: 0.8rem;">
+          <div>
+            <strong>Pearson Correlation Formula (r):</strong>
+            <div style="font-family: monospace; background: var(--light-bg); padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); margin-top: 0.2rem;">
+              r = Σ[(xᵢ - x̄)(yᵢ - ȳ)] / √[Σ(xᵢ - x̄)² * Σ(yᵢ - ȳ)²]
+            </div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Quantifies linear association (-1.0 to +1.0) between features (e.g. attendance ↔ final score).
+            </div>
+          </div>
+
+          <div>
+            <strong>Interquartile Range Outlier Method (IQR):</strong>
+            <div style="font-family: monospace; background: var(--light-bg); padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); margin-top: 0.2rem;">
+              IQR = Q3 - Q1 | Bounds = [Q1 - 1.5*IQR, Q3 + 1.5*IQR]
+            </div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Identifies potential statistical outliers in the dataset.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Section 2: Multiple Linear Regression & Machine Learning (Implemented in Phase 4) -->
+    <div class="card" style="margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--dark);">
+          3. Linear Regression Score Prediction Formula (Implemented in Phase 4)
+        </h3>
+        <span class="badge badge-risk-low">Implemented in Phase 4 ML</span>
+      </div>
+
+      <div style="background-color: var(--light-bg); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-family: monospace; font-size: 1.1rem; color: var(--primary); text-align: center; margin-bottom: 1.25rem;">
+        y = β₀ + β₁x₁ + β₂x₂ + β₃x₃ + ... + βₙxₙ
+      </div>
+
+      <div class="grid grid-2" style="font-size: 0.88rem;">
+        <div>
+          <strong style="color: var(--dark);">Variable Mapping:</strong>
+          <ul style="margin-left: 1.2rem; margin-top: 0.4rem; color: var(--text-muted);">
+            <li><strong>y</strong> = Predicted Semester Percentage Score (%)</li>
+            <li><strong>x₁</strong> = Lecture Attendance Rate (%)</li>
+            <li><strong>x₂</strong> = Weekly Self-Study Hours</li>
+            <li><strong>x₃</strong> = Assignment Average (%)</li>
+            <li><strong>x₄</strong> = Previous Semester Percentage (%)</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="color: var(--dark);">Coefficient Weights (β):</strong>
+          <ul style="margin-left: 1.2rem; margin-top: 0.4rem; color: var(--text-muted);">
+            <li><strong>β₀</strong> = Y-intercept (Base score bias constant = 75.25)</li>
+            <li><strong>β₁</strong> = Weight per standardized unit of attendance (+3.01)</li>
+            <li><strong>β₂</strong> = Weight per standardized unit of study (+4.64)</li>
+            <li><strong>β₃</strong> = Weight per standardized unit of assignment score (+2.33)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Phase 5 Individual Feature Contribution Mathematics -->
+    <div class="card" style="margin-bottom: 2rem; border-left: 4px solid var(--primary); background-color: #f8fafc;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">
+          4. Individual Feature Contribution Formulation (Implemented in Phase 5)
+        </h3>
+        <span class="badge badge-risk-low">Implemented in Phase 5</span>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Individual student feature explanations decompose the total prediction into feature-level contributions derived from fitted <code>StandardScaler</code> parameters ($\mu_i, \sigma_i$) and linear model weights ($\beta_i$):
+      </p>
+
+      <div style="background-color: #ffffff; padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-family: monospace; font-size: 1rem; color: var(--primary); text-align: center; margin-bottom: 1rem;">
+        zᵢ = (xᵢ - μᵢ) / σᵢ  |  contributionᵢ = βᵢ × zᵢ  |  ŷ = β₀ + Σ contributionᵢ
+      </div>
+
+      <div style="font-size: 0.85rem; color: var(--text-muted);">
+        <strong>Demonstration Note:</strong> Summing all 9 individual feature contributions ($\sum \text{contribution}_i$) with model intercept ($\beta_0$) reconstructs the predicted score ($\hat{y}$) within exact numerical tolerance ($< 10^{-5}$).
+      </div>
+    </div>
+
+    <!-- Section 4: Gradient Descent Concept -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">
+          5. Mean Squared Error & Gradient Descent Optimization
+        </h3>
+        <span class="badge-demo">Conceptual Documentation</span>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+        During model training, regression weights ($\beta_j$) were fitted using Ordinary Least Squares / Gradient Descent to minimize Mean Squared Error (MSE) loss:
+      </p>
+
+      <div style="background-color: var(--light-bg); padding: 0.85rem; border-radius: var(--radius-sm); font-family: monospace; color: var(--dark); font-size: 0.95rem; text-align: center; margin-bottom: 1rem;">
+        MSE = (1 / n) * Σ (yᵢ - ŷᵢ)²  |  θⱼ := θⱼ - α * (∂ / ∂θⱼ) J(θ)
+      </div>
+
+      <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Where <strong>α</strong> represents learning rate, and <strong>J(θ)</strong> is the cost function.
+      </div>
+    </div>
+
+    <!-- Section 6: What-If Scenario Simulation Mathematics -->
+    <div class="card" style="margin-top: 2rem; border-left: 4px solid #2563eb;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">
+          6. What-If Scenario Simulation Mathematics (Implemented in Phase 6)
+        </h3>
+        <span class="badge badge-risk-low">Implemented in Phase 6</span>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+        The What-If Scenario Simulator evaluates linear score differences between baseline and hypothetical standardized input states:
+      </p>
+
+      <div style="background-color: var(--light-bg); padding: 0.85rem; border-radius: var(--radius-sm); font-family: monospace; color: var(--dark); font-size: 0.95rem; text-align: center; margin-bottom: 1rem;">
+        Δŷ = ŷ_scenario − ŷ_baseline = Σ βᵢ ( zᵢ,scenario − zᵢ,baseline )
+      </div>
+
+      <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.5rem;">
+        <div>• <strong>z-Score Transformation:</strong> zᵢ = (xᵢ − μᵢ) / σᵢ</div>
+        <div>• <strong>Mathematical Interpretation:</strong> Δŷ represents a pure mathematical shift in model output projections without model retraining or establishing real-world causal causality.</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div>EDUPREDICT — First-Year Academic Project</div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/algorithms">Algorithms Page</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

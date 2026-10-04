@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personalized Study Planner - EduPredict</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <h1 class="page-title">Personalized Study Planner</h1>
+      <p class="page-subtitle">Deterministic study recommendation algorithm based on course performance gaps & attendance</p>
+    </div>
+
+    <!-- Algorithm Explanation Banner -->
+    <div class="card" style="margin-bottom: 2rem; border-left: 4px solid var(--subject-cpa); background-color: #f0fdfa;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="badge badge-subject" style="background: #ccfbf1; color: #0f766e; border-color: #99f6e4; margin-bottom: 0.5rem;">CPA Algorithm Implementation</span>
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f766e;">Subject Priority Recommendation Logic</h3>
+          <p style="font-size: 0.88rem; color: #115e59; margin-top: 0.3rem; max-width: 800px;">
+            Subjects are ranked using Python's built-in sorting functionality ($O(n \log n)$ comparison sort) after calculating performance gaps, attendance penalties, and assignment deficits.
+          </p>
+        </div>
+        <a href="/algorithms#priority-algorithm" class="btn btn-secondary" style="font-size: 0.85rem;">Inspect Algorithm Code →</a>
+      </div>
+    </div>
+
+    <!-- Prioritized Study List (Student Academic Performance Subjects) -->
+    <div class="grid grid-3" style="margin-bottom: 2.5rem;">
+      
+      <!-- Priority 1: High -->
+      <div class="card subject-card coa card-hover">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span class="subject-code">CS102 • Priority #1</span>
+            <span class="badge badge-risk-high">HIGH PRIORITY</span>
+          </div>
+          <h3 class="subject-title">Data Structures</h3>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Current Score: <strong>74.0%</strong> | Attendance: <strong>80.0%</strong><br>
+            Performance Gap: <span style="color: var(--risk-high-text);">+ 4.4% below avg</span>
+          </div>
+          
+          <div style="background: var(--light-bg); padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Recommended Daily Study</div>
+            <div style="font-size: 1.35rem; font-weight: 700; color: var(--dark);">45 Mins / Day</div>
+          </div>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-muted);">
+          Focus area: Linked list operations & tree traversal logic.
+        </p>
+      </div>
+
+      <!-- Priority 2: Medium -->
+      <div class="card subject-card am card-hover">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span class="subject-code">MATH101 • Priority #2</span>
+            <span class="badge badge-risk-med">MEDIUM PRIORITY</span>
+          </div>
+          <h3 class="subject-title">Mathematics</h3>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Current Score: <strong>72.0%</strong> | Attendance: <strong>85.0%</strong><br>
+            Performance Gap: <span style="color: var(--risk-med-text);">+ 6.4% below avg</span>
+          </div>
+
+          <div style="background: var(--light-bg); padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Recommended Daily Study</div>
+            <div style="font-size: 1.35rem; font-weight: 700; color: var(--dark);">35 Mins / Day</div>
+          </div>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-muted);">
+          Focus area: Partial differentiation & matrix operations.
+        </p>
+      </div>
+
+      <!-- Priority 3: Low -->
+      <div class="card subject-card eda card-hover">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span class="subject-code">PHY101 • Priority #3</span>
+            <span class="badge badge-risk-low">LOW PRIORITY</span>
+          </div>
+          <h3 class="subject-title">Physics</h3>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Current Score: <strong>81.0%</strong> | Attendance: <strong>88.0%</strong><br>
+            Performance Gap: <span style="color: var(--risk-low-text);">Above avg (+2.6%)</span>
+          </div>
+
+          <div style="background: var(--light-bg); padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Recommended Daily Study</div>
+            <div style="font-size: 1.35rem; font-weight: 700; color: var(--dark);">20 Mins / Day</div>
+          </div>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-muted);">
+          Focus area: Maintenance revision on wave mechanics.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Algorithmic Step-by-Step Breakdown -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">
+          Algorithmic Priority Score Breakdown
+        </h3>
+        <span class="badge-demo">Sample Calculation</span>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
+              <th style="padding: 0.6rem;">Course Code</th>
+              <th style="padding: 0.6rem;">Course Name</th>
+              <th style="padding: 0.6rem;">Score Gap ($G_s$)</th>
+              <th style="padding: 0.6rem;">Priority Score ($P_s$)</th>
+              <th style="padding: 0.6rem;">Sorted Rank ($O(n \log n)$)</th>
+              <th style="padding: 0.6rem;">Recommended Allocation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 0.75rem 0.6rem;"><strong>CS102</strong></td>
+              <td style="padding: 0.75rem 0.6rem;">Data Structures</td>
+              <td style="padding: 0.75rem 0.6rem;">4.4</td>
+              <td style="padding: 0.75rem 0.6rem;"><strong>8.20</strong></td>
+              <td style="padding: 0.75rem 0.6rem;">Rank 1</td>
+              <td style="padding: 0.75rem 0.6rem;">45 mins/day</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 0.75rem 0.6rem;"><strong>MATH101</strong></td>
+              <td style="padding: 0.75rem 0.6rem;">Mathematics</td>
+              <td style="padding: 0.75rem 0.6rem;">6.4</td>
+              <td style="padding: 0.75rem 0.6rem;"><strong>6.80</strong></td>
+              <td style="padding: 0.75rem 0.6rem;">Rank 2</td>
+              <td style="padding: 0.75rem 0.6rem;">35 mins/day</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 0.75rem 0.6rem;"><strong>PHY101</strong></td>
+              <td style="padding: 0.75rem 0.6rem;">Physics</td>
+              <td style="padding: 0.75rem 0.6rem;">-2.6</td>
+              <td style="padding: 0.75rem 0.6rem;"><strong>3.10</strong></td>
+              <td style="padding: 0.75rem 0.6rem;">Rank 3</td>
+              <td style="padding: 0.75rem 0.6rem;">20 mins/day</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 0.75rem 0.6rem;"><strong>EE101</strong></td>
+              <td style="padding: 0.75rem 0.6rem;">Basic Electrical Engg</td>
+              <td style="padding: 0.75rem 0.6rem;">-5.6</td>
+              <td style="padding: 0.75rem 0.6rem;"><strong>2.40</strong></td>
+              <td style="padding: 0.75rem 0.6rem;">Rank 4</td>
+              <td style="padding: 0.75rem 0.6rem;">20 mins/day</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.75rem 0.6rem;"><strong>CS101</strong></td>
+              <td style="padding: 0.75rem 0.6rem;">Computer Programming</td>
+              <td style="padding: 0.75rem 0.6rem;">-9.6</td>
+              <td style="padding: 0.75rem 0.6rem;"><strong>1.10</strong></td>
+              <td style="padding: 0.75rem 0.6rem;">Rank 5</td>
+              <td style="padding: 0.75rem 0.6rem;">15 mins/day</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div>EDUPREDICT — First-Year Academic Project</div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/algorithms">Algorithms Page</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

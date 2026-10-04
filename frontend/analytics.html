@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exploratory Data Analysis (EDA) - EduPredict</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="page-header">
+      <h1 class="page-title">Exploratory Data Analysis (EDA)</h1>
+      <p class="page-subtitle">Real dataset inspection, descriptive statistics, Pearson correlations, and histogram distributions</p>
+    </div>
+
+    <!-- EDA Feedback Banner -->
+    <div id="eda-status" class="alert alert-info" style="margin-bottom: 1.5rem;">
+      ⌛ Executing real Pandas / NumPy EDA pipeline on student dataset...
+    </div>
+
+    <!-- EDA Statistics Banner -->
+    <div class="grid grid-4" style="margin-bottom: 2rem;">
+      <div class="card stat-card">
+        <span class="stat-label">
+          Total Student Records
+          <span class="badge-demo">Pandas Verified</span>
+        </span>
+        <span class="stat-value" id="eda-records">500</span>
+        <span class="stat-subtext">Cleaned Dataset Sample Size</span>
+      </div>
+
+      <div class="card stat-card">
+        <span class="stat-label">
+          Mean Final Score
+          <span class="badge-demo">Calculated</span>
+        </span>
+        <span class="stat-value" id="eda-mean-score">--</span>
+        <span class="stat-subtext" id="eda-score-sub">Std Dev: -- | Median: --</span>
+      </div>
+
+      <div class="card stat-card">
+        <span class="stat-label">
+          Mean Attendance
+          <span class="badge-demo">Calculated</span>
+        </span>
+        <span class="stat-value" id="eda-mean-att">--</span>
+        <span class="stat-subtext" id="eda-att-sub">IQR Bounds Check</span>
+      </div>
+
+      <div class="card stat-card">
+        <span class="stat-label">
+          Mean Study Hours
+          <span class="badge-demo">Calculated</span>
+        </span>
+        <span class="stat-value" id="eda-mean-hours">--</span>
+        <span class="stat-subtext" id="eda-hours-sub">Weekly Self-Study Time</span>
+      </div>
+    </div>
+
+    <!-- Dynamic Insights Panel -->
+    <div class="card" style="margin-bottom: 2rem; border-left: 4px solid var(--subject-eda); background-color: #f0fdf4;">
+      <h3 style="font-size: 1.1rem; font-weight: 700; color: #166534; margin-bottom: 0.5rem;">
+        📊 Empirical Insights (Generated from Calculated Correlations)
+      </h3>
+      <ul id="eda-insights-list" style="font-size: 0.88rem; color: #14532d; margin-left: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem;">
+        <li>Analyzing dataset statistical relationships...</li>
+      </ul>
+    </div>
+
+    <!-- EDA Visualizations Grid -->
+    <div class="grid grid-2" style="margin-bottom: 2rem;">
+      
+      <!-- Chart 1: Attendance vs Score Scatter Plot -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--dark);">
+            1. Lecture Attendance vs. Final Score
+          </h3>
+          <span class="badge-demo" id="badge-corr-att">r = --</span>
+        </div>
+        <div style="background-color: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem; height: 240px; display: flex; align-items: flex-end; gap: 4px; position: relative;" id="chart-scatter-att">
+          <div style="margin: auto; color: var(--text-muted);">[ Attendance vs Score Correlation Plot ]</div>
+        </div>
+        <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.75rem;" id="text-corr-att">
+          Pearson correlation calculated directly from Pandas dataset. (Correlation does not imply causation).
+        </div>
+      </div>
+
+      <!-- Chart 2: Study Hours vs Score Scatter Plot -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--dark);">
+            2. Weekly Study Hours vs. Final Score
+          </h3>
+          <span class="badge-demo" id="badge-corr-hours">r = --</span>
+        </div>
+        <div style="background-color: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem; height: 240px; display: flex; align-items: flex-end; gap: 4px; position: relative;" id="chart-scatter-hours">
+          <div style="margin: auto; color: var(--text-muted);">[ Study Hours vs Score Correlation Plot ]</div>
+        </div>
+        <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.75rem;" id="text-corr-hours">
+          Linear relationship between weekly self-study hours and end-of-term score.
+        </div>
+      </div>
+
+      <!-- Chart 3: Final Score Distribution Histogram -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--dark);">
+            3. Final Score Frequency Histogram
+          </h3>
+          <span class="badge-demo">Binned Distribution</span>
+        </div>
+        <div style="background-color: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem 0.5rem 0.5rem 0.5rem; height: 240px; display: flex; align-items: flex-end; justify-content: space-between; gap: 6px;" id="chart-hist-score">
+          <div style="margin: auto; color: var(--text-muted);">[ Final Score Binned Histogram ]</div>
+        </div>
+        <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.75rem;">
+          Histogram distribution generated from continuous <code>final_score</code> column values.
+        </div>
+      </div>
+
+      <!-- Chart 4: Attendance Distribution Histogram -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--dark);">
+            4. Lecture Attendance Frequency Histogram
+          </h3>
+          <span class="badge-demo">Binned Distribution</span>
+        </div>
+        <div style="background-color: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem 0.5rem 0.5rem 0.5rem; height: 240px; display: flex; align-items: flex-end; justify-content: space-between; gap: 6px;" id="chart-hist-att">
+          <div style="margin: auto; color: var(--text-muted);">[ Attendance Binned Histogram ]</div>
+        </div>
+        <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.75rem;">
+          Attendance rate frequency spread across student cohort.
+        </div>
+      </div>
+
+      <!-- Chart 5: Correlation Heatmap Matrix Table -->
+      <div class="card" style="grid-column: span 2;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">
+            5. Pearson Correlation Heatmap Matrix (-1.0 ≤ r ≤ +1.0)
+          </h3>
+          <span class="badge-demo">Calculated Matrix</span>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem;" id="table-corr-matrix">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
+                <th style="padding: 0.5rem; text-align: left;">Feature</th>
+                <th style="padding: 0.5rem;">Attendance</th>
+                <th style="padding: 0.5rem;">Study Hours</th>
+                <th style="padding: 0.5rem;">Prev %</th>
+                <th style="padding: 0.5rem;">Assignment %</th>
+                <th style="padding: 0.5rem;">Internal %</th>
+                <th style="padding: 0.5rem;">Backlogs</th>
+                <th style="padding: 0.5rem;">Final Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="8" style="padding: 1rem; color: var(--text-muted);">Computing correlation matrix...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Card 6: Risk Classification Status Notice -->
+      <div class="card" style="grid-column: span 2; border-left: 4px solid var(--secondary); background-color: #f1f5f9;">
+        <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 0.4rem;">
+          6. Academic Risk Classification Status
+        </h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">
+          <em>Risk distribution visualization will become available after Phase 4 supervised machine learning classification.</em>
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div>EDUPREDICT — First-Year Academic Project</div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/model">AI Model</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Fetch real EDA Analysis payload from /api/analytics
+    document.addEventListener("DOMContentLoaded", async () => {
+      const statusEl = document.getElementById("eda-status");
+      try {
+        const res = await fetch("/api/analytics");
+        if (!res.ok) throw new Error("API status " + res.status);
+        const data = await res.json();
+
+        statusEl.style.display = "none";
+
+        // 1. Top Stat Cards
+        const stats = data.statistics || {};
+        const scoreStats = stats.final_score || {};
+        const attStats = stats.attendance || {};
+        const hoursStats = stats.study_hours || {};
+
+        document.getElementById("eda-records").innerText = (data.dataset ? data.dataset.records : 500);
+        document.getElementById("eda-mean-score").innerText = (scoreStats.mean ? scoreStats.mean + "%" : "--");
+        document.getElementById("eda-score-sub").innerText = `Std Dev: ${scoreStats.std || '--'}% | Median: ${scoreStats.median || '--'}%`;
+
+        document.getElementById("eda-mean-att").innerText = (attStats.mean ? attStats.mean + "%" : "--");
+        document.getElementById("eda-att-sub").innerText = `Std Dev: ${attStats.std || '--'}% | Range: ${attStats.min || 0}-${attStats.max || 100}%`;
+
+        document.getElementById("eda-mean-hours").innerText = (hoursStats.mean ? hoursStats.mean + " hrs" : "--");
+        document.getElementById("eda-hours-sub").innerText = `Std Dev: ${hoursStats.std || '--'} hrs | Range: ${hoursStats.min || 0}-${hoursStats.max || 30} hrs`;
+
+        // 2. Dynamic Insights
+        const insightsList = document.getElementById("eda-insights-list");
+        const insights = data.insights || [];
+        if (insights.length > 0) {
+          insightsList.innerHTML = insights.map(i => `<li>${i}</li>`).join("");
+        }
+
+        // 3. Correlations Badges
+        const corrs = data.correlations || {};
+        const finalCorrs = corrs.final_score || {};
+
+        if (finalCorrs.attendance !== undefined) {
+          document.getElementById("badge-corr-att").innerText = `r = +${finalCorrs.attendance}`;
+          document.getElementById("text-corr-att").innerText = `Pearson correlation coefficient r = +${finalCorrs.attendance} computed across 500 cohort records.`;
+        }
+
+        if (finalCorrs.study_hours !== undefined) {
+          document.getElementById("badge-corr-hours").innerText = `r = +${finalCorrs.study_hours}`;
+          document.getElementById("text-corr-hours").innerText = `Pearson correlation coefficient r = +${finalCorrs.study_hours} computed across 500 cohort records.`;
+        }
+
+        // 4. Render Binned Histogram Visuals
+        const dists = data.distributions || {};
+        renderHistogram("chart-hist-score", dists.scoreDistribution);
+        renderHistogram("chart-hist-att", dists.attendanceDistribution);
+
+        // 5. Render Correlation Matrix Table
+        renderCorrelationTable(corrs);
+
+      } catch (e) {
+        console.error("Error loading EDA data:", e);
+        statusEl.className = "alert alert-warning";
+        statusEl.innerText = "⚠️ Failed to execute EDA pipeline. Please check backend server log.";
+      }
+    });
+
+    // Simple CSS/HTML Histogram Renderer
+    function renderHistogram(containerId, distData) {
+      const container = document.getElementById(containerId);
+      if (!distData || !distData.counts || distData.counts.length === 0) return;
+
+      const maxCount = Math.max(...distData.counts);
+      
+      container.innerHTML = distData.counts.map((count, i) => {
+        const heightPct = Math.max(10, Math.round((count / maxCount) * 100));
+        const label = distData.bins[i] || "";
+        return `
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end;">
+            <div style="font-size: 0.7rem; font-weight: 600; color: var(--primary); margin-bottom: 2px;">${count}</div>
+            <div style="width: 100%; background: linear-gradient(to top, #2563eb, #60a5fa); height: ${heightPct}%; border-radius: 4px 4px 0 0;" title="${label}: ${count} students"></div>
+            <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; transform: rotate(-30deg); white-space: nowrap;">${label}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // Render Correlation Matrix Table
+    function renderCorrelationTable(corrMatrix) {
+      const tbody = document.querySelector("#table-corr-matrix tbody");
+      if (!corrMatrix || Object.keys(corrMatrix).length === 0) return;
+
+      const targetCols = [
+        ["attendance", "Attendance"],
+        ["study_hours", "Study Hours"],
+        ["previous_semester_percentage", "Prev %"],
+        ["assignment_average", "Assignment %"],
+        ["internal_assessment", "Internal %"],
+        ["backlog_count", "Backlogs"],
+        ["final_score", "Final Score"]
+      ];
+
+      tbody.innerHTML = targetCols.map(([rowKey, rowLabel]) => {
+        const cells = targetCols.map(([colKey]) => {
+          const r = (corrMatrix[rowKey] && corrMatrix[rowKey][colKey] !== undefined) ? corrMatrix[rowKey][colKey] : 0.0;
+          
+          let bgColor = "#ffffff";
+          let textColor = "var(--text-main)";
+          if (r > 0.6) { bgColor = "#dcfce7"; textColor = "#15803d"; }
+          else if (r > 0.3) { bgColor = "#eff6ff"; textColor = "#1d4ed8"; }
+          else if (r < -0.3) { bgColor = "#fee2e2"; textColor = "#b91c1c"; }
+
+          return `<td style="padding: 0.5rem; background-color: ${bgColor}; color: ${textColor}; font-weight: 600;">${r > 0 ? '+' + r : r}</td>`;
+        }).join("");
+
+        return `
+          <tr style="border-bottom: 1px solid var(--border-color);">
+            <td style="padding: 0.6rem; font-weight: 600; text-align: left;">${rowLabel}</td>
+            ${cells}
+          </tr>
+        `;
+      }).join("");
+    }
+  </script>
+</body>
+</html>
