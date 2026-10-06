@@ -1,0 +1,14 @@
+EDUPREDICT - 5-FOLD CROSS-VALIDATION SUMMARY (REGRESSION)
+Pipeline: StandardScaler + LinearRegression()
+
+R2 Score : Mean = 0.9846, SD = 0.0020
+MAE      : Mean = 1.5105, SD = 0.0608
+RMSE     : Mean = 1.7420, SD = 0.0363
+
+Per-Fold Results:
+ Fold  R2_Score    MAE   RMSE
+    1    0.9867 1.4726 1.7335
+    2    0.9812 1.5533 1.7675
+    3    0.9852 1.4956 1.7079
+    4    0.9838 1.6019 1.7983
+    5    0.9862 1.4290 1.7028

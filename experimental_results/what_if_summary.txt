@@ -1,0 +1,45 @@
+EDUPREDICT - WHAT-IF ACADEMIC SCENARIO ANALYSIS SUMMARY
+
+Baseline Profile Inputs:
+{
+  "attendance": 65.0,
+  "study_hours": 8.0,
+  "previous_semester_percentage": 65.0,
+  "assignment_average": 60.0,
+  "internal_assessment": 58.0,
+  "quiz_average": 55.0,
+  "completed_assignments": 6,
+  "total_assignments": 10,
+  "backlog_count": 2
+}
+
+--- Scenario A (Attendance Increase) ---
+  Baseline Score: 53.2% (HIGH Risk)
+  Scenario Score: 57.5% (HIGH Risk)
+  Score Change  : +4.3 percentage points
+  Risk Transition: HIGH (Unchanged)
+
+--- Scenario B (Study Hours Increase) ---
+  Baseline Score: 53.2% (HIGH Risk)
+  Scenario Score: 58.3% (HIGH Risk)
+  Score Change  : +5.1 percentage points
+  Risk Transition: HIGH (Unchanged)
+
+--- Scenario C (Assignment Improvement) ---
+  Baseline Score: 53.2% (HIGH Risk)
+  Scenario Score: 56.1% (HIGH Risk)
+  Score Change  : +2.9 percentage points
+  Risk Transition: HIGH (Unchanged)
+
+--- Scenario D (Backlog Clearance) ---
+  Baseline Score: 53.2% (HIGH Risk)
+  Scenario Score: 58.6% (HIGH Risk)
+  Score Change  : +5.4 percentage points
+  Risk Transition: HIGH (Unchanged)
+
+--- Scenario E (Combined Improvement) ---
+  Baseline Score: 53.2% (HIGH Risk)
+  Scenario Score: 74.9% (MEDIUM Risk)
+  Score Change  : +21.7 percentage points
+  Risk Transition: HIGH → MEDIUM
+

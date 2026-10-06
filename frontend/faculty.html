@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Dashboard - EduPredict Analytics</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Faculty Dashboard Custom Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-card {
+      background: var(--white);
+      width: 90%;
+      max-width: 900px;
+      max-height: 90vh;
+      border-radius: 12px;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      padding: 2rem;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: var(--bg-alt);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+    }
+    .student-row {
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .student-row:hover {
+      background: var(--bg-alt);
+    }
+    .filter-btn.active {
+      background: var(--primary) !important;
+      color: var(--white) !important;
+    }
+    .class-code-badge {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px dashed #3b82f6;
+      font-family: monospace;
+      font-weight: bold;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="brand">
+        <span class="brand-icon">🎓</span>
+        <span class="brand-text">EduPredict</span>
+        <span class="badge badge-warning" style="margin-left: 0.5rem; font-size: 0.72rem;">Faculty Portal</span>
+      </a>
+
+      <nav class="nav-menu">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/faculty" class="nav-link active">Faculty Dashboard</a>
+        <a href="/dashboard" class="nav-link">Student View</a>
+        <a href="/analytics" class="nav-link">Analytics</a>
+        <a href="/model" class="nav-link">Model Specs</a>
+        <a href="#" id="btn-nav-logout" class="nav-link" style="color: #dc2626; font-weight: 600;">Logout 🚪</a>
+      </nav>
+
+      <button class="mobile-toggle" aria-label="Toggle Navigation">☰</button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="container">
+    
+    <!-- Page Header -->
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span class="badge badge-subject" style="margin-bottom: 0.5rem;">Academic Early Warning System (EWS)</span>
+        <h1 class="page-title">Faculty Monitoring Dashboard</h1>
+        <p class="page-subtitle">Manage classes, student join codes, risk classification, XAI audit, and intervention tracking</p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+        <button type="button" id="btn-create-class-modal" class="btn btn-secondary btn-sm">+ Create New Class</button>
+        <button type="button" id="btn-add-student-modal" class="btn btn-primary btn-sm">+ Manually Add Student</button>
+        <span class="badge badge-success" id="faculty-user-badge">👩‍🏫 Logged in as Faculty</span>
+      </div>
+    </div>
+
+    <!-- Alert / System Feedback Banner -->
+    <div id="faculty-alert" class="alert alert-info" style="display: none; margin-bottom: 1.5rem;">
+      ⌛ Loading student cohort statistics...
+    </div>
+
+    <!-- Managed Classes Cards Grid -->
+    <div style="margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">My Academic Classes & Join Codes</h3>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Share Join Codes with students to auto-enroll</span>
+      </div>
+      <div class="grid grid-3" id="faculty-classes-container" style="gap: 1rem;">
+        <div class="card" style="padding: 1rem; text-align: center; color: var(--text-muted);">Loading managed classes...</div>
+      </div>
+    </div>
+
+    <!-- Overview KPI Cards Section -->
+    <div class="grid grid-6" style="gap: 1rem; margin-bottom: 2rem;">
+      <div class="card stat-card">
+        <span class="stat-label">Total Students</span>
+        <span class="stat-value" id="kpi-total">10</span>
+        <span class="stat-subtext">Active Cohort Records</span>
+      </div>
+
+      <div class="card stat-card" style="border-top: 3px solid #dc2626;">
+        <span class="stat-label">HIGH Risk</span>
+        <span class="stat-value" id="kpi-high" style="color: #dc2626;">0</span>
+        <span class="stat-subtext">Score &lt; 60% Target</span>
+      </div>
+
+      <div class="card stat-card" style="border-top: 3px solid #d97706;">
+        <span class="stat-label">MEDIUM Risk</span>
+        <span class="stat-value" id="kpi-medium" style="color: #d97706;">0</span>
+        <span class="stat-subtext">60% - 75% Score Tier</span>
+      </div>
+
+      <div class="card stat-card" style="border-top: 3px solid #16a34a;">
+        <span class="stat-label">LOW Risk</span>
+        <span class="stat-value" id="kpi-low" style="color: #16a34a;">0</span>
+        <span class="stat-subtext">Score &ge; 75% On Track</span>
+      </div>
+
+      <div class="card stat-card" style="border-top: 3px solid #7c3aed;">
+        <span class="stat-label">Need Attention</span>
+        <span class="stat-value" id="kpi-attention" style="color: #7c3aed;">0</span>
+        <span class="stat-subtext">HIGH Risk or Backlogs</span>
+      </div>
+
+      <div class="card stat-card" style="border-top: 3px solid #0284c7;">
+        <span class="stat-label">Improving</span>
+        <span class="stat-value" id="kpi-improving" style="color: #0284c7;">0</span>
+        <span class="stat-subtext" id="kpi-improving-note">Multi-submission trend</span>
+      </div>
+    </div>
+
+    <!-- Faculty Analytics: Classification & Cohort Progress -->
+    <div class="grid grid-2" style="gap: 1.5rem; margin-bottom: 2rem;">
+      <!-- Student Risk Classification Bar Chart -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">📊 Student Risk Classification</h3>
+          <span class="badge-demo">Enrolled Classroom Cohort</span>
+        </div>
+        <div id="faculty-risk-dist-container" style="min-height: 200px; display: flex; align-items: center; justify-content: center; background: var(--bg-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem;">
+          <span style="color: var(--text-muted); font-size: 0.88rem;">Loading risk classification distribution...</span>
+        </div>
+      </div>
+
+      <!-- Cohort Risk Trend Over Time -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">📈 Risk Classification Over Time</h3>
+          <span class="badge-demo">Class Cohort Trend</span>
+        </div>
+        <div id="faculty-risk-time-container" style="min-height: 200px; display: flex; align-items: center; justify-content: center; background: var(--bg-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem;">
+          <span style="color: var(--text-muted); font-size: 0.88rem;">Loading cohort risk timeline...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student Roster Monitoring Section -->
+    <div class="card" style="margin-bottom: 2.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <div>
+          <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--dark);">Student Risk & Metric Monitoring Roster</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">Click any student row to view full XAI model explanations, recommendations, and log interventions.</p>
+        </div>
+
+        <!-- Search, Class Filter, Risk Filter & Sort Controls -->
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
+          <!-- Class Filter Dropdown -->
+          <select id="class-filter-select" class="form-control" style="width: 180px; padding: 0.45rem 0.6rem; font-size: 0.85rem;">
+            <option value="">All Classes</option>
+          </select>
+
+          <!-- Search Box -->
+          <input type="text" id="student-search" class="form-control" placeholder="🔍 Search name or ID..." style="width: 180px; padding: 0.45rem 0.75rem; font-size: 0.88rem;">
+
+          <!-- Risk Filter Buttons -->
+          <div style="display: flex; gap: 0.25rem; background: var(--bg-alt); padding: 3px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <button type="button" class="btn btn-sm filter-btn active" data-filter="ALL" style="font-size: 0.78rem; padding: 0.35rem 0.6rem;">ALL</button>
+            <button type="button" class="btn btn-sm filter-btn" data-filter="HIGH" style="font-size: 0.78rem; padding: 0.35rem 0.6rem; color: #dc2626;">HIGH</button>
+            <button type="button" class="btn btn-sm filter-btn" data-filter="MEDIUM" style="font-size: 0.78rem; padding: 0.35rem 0.6rem; color: #d97706;">MEDIUM</button>
+            <button type="button" class="btn btn-sm filter-btn" data-filter="LOW" style="font-size: 0.78rem; padding: 0.35rem 0.6rem; color: #16a34a;">LOW</button>
+          </div>
+
+          <!-- Sort Select Dropdown -->
+          <select id="student-sort" class="form-control" style="width: 150px; padding: 0.45rem 0.6rem; font-size: 0.85rem;">
+            <option value="risk">Sort by Risk Priority</option>
+            <option value="score_asc">Lowest Score First</option>
+            <option value="score_desc">Highest Score First</option>
+            <option value="attendance">Lowest Attendance</option>
+            <option value="name">Student Name (A-Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Student Roster Table -->
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted); background: var(--bg-alt);">
+              <th style="padding: 0.75rem 0.6rem;">Student ID</th>
+              <th style="padding: 0.75rem 0.6rem;">Student Name</th>
+              <th style="padding: 0.75rem 0.6rem;">Class</th>
+              <th style="padding: 0.75rem 0.6rem;">Risk Status</th>
+              <th style="padding: 0.75rem 0.6rem;">Est. Score</th>
+              <th style="padding: 0.75rem 0.6rem;">Attendance</th>
+              <th style="padding: 0.75rem 0.6rem;">Study Hrs</th>
+              <th style="padding: 0.75rem 0.6rem;">Assignment Avg</th>
+              <th style="padding: 0.75rem 0.6rem;">Backlogs</th>
+              <th style="padding: 0.75rem 0.6rem; text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="faculty-roster-body">
+            <tr>
+              <td colspan="10" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                ⌛ Loading student cohort from SQLite database...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL 1: Create New Class -->
+  <div id="modal-create-class" class="modal-overlay">
+    <div class="modal-card" style="max-width: 500px;">
+      <button class="modal-close" onclick="closeModal('modal-create-class')">&times;</button>
+      <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--dark);">➕ Create New Academic Class</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">A unique 6-character Class Join Code will be generated automatically for students to enroll.</p>
+
+      <form id="form-create-class">
+        <div style="margin-bottom: 1rem;">
+          <label class="form-label" style="font-size: 0.85rem; font-weight: 600;">Class / Section Name</label>
+          <input type="text" id="new-class-name" class="form-control" placeholder="e.g. FY Computer Engineering Section C" required style="width: 100%;">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label class="form-label" style="font-size: 0.85rem; font-weight: 600;">Custom Join Code (Optional)</label>
+          <input type="text" id="new-class-code" class="form-control" placeholder="e.g. EDU-FYCS-103 (Leave blank to auto-generate)" style="width: 100%; text-transform: uppercase;">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Create Class & Generate Code</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Manually Add Student & Metrics -->
+  <div id="modal-manual-student" class="modal-overlay">
+    <div class="modal-card" style="max-width: 650px;">
+      <button class="modal-close" onclick="closeModal('modal-manual-student')">&times;</button>
+      <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--dark);">➕ Manually Add Student & Academic Metrics</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">Add a student directly to one of your classes along with their academic indicators.</p>
+
+      <form id="form-manual-student">
+        <div class="grid grid-2" style="gap: 0.85rem; margin-bottom: 1rem;">
+          <div>
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Student Full Name</label>
+            <input type="text" id="man-name" class="form-control" placeholder="e.g. Vikramaditya Singh" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Target Class</label>
+            <select id="man-class-id" class="form-control" required style="width: 100%;"></select>
+          </div>
+        </div>
+
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin: 1rem 0 0.5rem 0;">Academic Factor Inputs</h4>
+        <div class="grid grid-3" style="gap: 0.75rem; margin-bottom: 1.5rem;">
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">Attendance (%)</label>
+            <input type="number" id="man-att" class="form-control" value="75" min="0" max="100" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">Weekly Study Hrs</label>
+            <input type="number" id="man-hrs" class="form-control" value="10" min="0" max="40" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">Prior Semester (%)</label>
+            <input type="number" id="man-prev" class="form-control" value="70" min="0" max="100" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">Assignment Avg (%)</label>
+            <input type="number" id="man-ass" class="form-control" value="70" min="0" max="100" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">Internal Exam (%)</label>
+            <input type="number" id="man-int" class="form-control" value="70" min="0" max="100" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">Quiz Avg (%)</label>
+            <input type="number" id="man-quiz" class="form-control" value="70" min="0" max="100" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">Completed Assg</label>
+            <input type="number" id="man-comp" class="form-control" value="10" min="0" max="15" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">Total Assg</label>
+            <input type="number" id="man-tot" class="form-control" value="15" min="1" max="15" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">Backlog Count</label>
+            <input type="number" id="man-back" class="form-control" value="0" min="0" max="10" required style="width: 100%;">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Save Student & Calculate Risk Profile</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Detailed Student Profile Audit Modal -->
+  <div id="student-modal" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal('student-modal')">&times;</button>
+      
+      <!-- Modal Header -->
+      <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span class="badge badge-subject" id="modal-student-id">STU-2026-001</span>
+            <h2 style="font-size: 1.6rem; font-weight: 700; color: var(--dark); margin: 0.3rem 0;" id="modal-student-name">Student Name</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted);" id="modal-student-meta">Semester 2 | Computer Engineering</p>
+          </div>
+          <div style="text-align: right;">
+            <div id="modal-risk-badge" class="badge badge-risk-low" style="font-size: 1rem; padding: 0.4rem 0.8rem;">● LOW RISK</div>
+            <div style="font-size: 1.25rem; font-weight: 700; margin-top: 0.3rem; color: var(--primary);" id="modal-predicted-score">78.4% Est. Score</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Content Tabs -->
+      <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; overflow-x: auto;">
+        <button type="button" class="btn modal-tab-btn active" data-tab="tab-overview" style="border: none; border-bottom: 2px solid var(--primary); border-radius: 0; background: transparent; font-weight: 600; color: var(--primary);">
+          📊 Factors & XAI Signals
+        </button>
+        <button type="button" class="btn modal-tab-btn" data-tab="tab-recs" style="border: none; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; font-weight: 600; color: var(--text-muted);">
+          🎯 Recommendations
+        </button>
+        <button type="button" class="btn modal-tab-btn" data-tab="tab-interventions" style="border: none; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; font-weight: 600; color: var(--text-muted);">
+          📋 Faculty Interventions
+        </button>
+        <button type="button" class="btn modal-tab-btn" data-tab="tab-history" style="border: none; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; font-weight: 600; color: var(--text-muted);">
+          📈 Submission History
+        </button>
+      </div>
+
+      <!-- Tab 1: Factors & XAI Signals -->
+      <div id="tab-overview" class="modal-tab-content">
+        <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--dark);">Academic Factors (Input Features)</h4>
+        <div class="grid grid-3" style="gap: 0.75rem; margin-bottom: 1.75rem;" id="modal-factors-grid"></div>
+
+        <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--dark);">Explainable AI (XAI) Model Feature Contributions</h4>
+        <div class="grid grid-2" style="gap: 1rem;">
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 1rem; border-radius: 8px;">
+            <h5 style="color: #16a34a; font-weight: 700; margin-bottom: 0.5rem;">🟢 Strong Positive Signals</h5>
+            <div id="modal-positive-signals" style="font-size: 0.85rem; color: #15803d;">Loading signals...</div>
+          </div>
+
+          <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 1rem; border-radius: 8px;">
+            <h5 style="color: #dc2626; font-weight: 700; margin-bottom: 0.5rem;">🔴 Downward Pull Signals</h5>
+            <div id="modal-negative-signals" style="font-size: 0.85rem; color: #b91c1c;">Loading signals...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Recommendations -->
+      <div id="tab-recs" class="modal-tab-content" style="display: none;">
+        <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--dark);">Deterministic Academic Recommendations</h4>
+        <div id="modal-recs-list">Loading recommendations...</div>
+      </div>
+
+      <!-- Tab 3: Faculty Interventions -->
+      <div id="tab-interventions" class="modal-tab-content" style="display: none;">
+        <div style="background: var(--bg-alt); border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--dark);">➕ Log New Faculty Intervention Action</h4>
+          <form id="intervention-form">
+            <input type="hidden" id="interv-student-id">
+            <div class="grid grid-2" style="gap: 0.75rem; margin-bottom: 0.75rem;">
+              <div>
+                <label class="form-label" style="font-size: 0.82rem;">Intervention / Action Title</label>
+                <input type="text" id="interv-title" class="form-control" placeholder="e.g. Attendance Counseling Meeting" required style="width: 100%; font-size: 0.85rem;">
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 0.82rem;">Status</label>
+                <select id="interv-status" class="form-control" style="width: 100%; font-size: 0.85rem;">
+                  <option value="Assigned">Assigned</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Recommended">Recommended</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-2" style="gap: 0.75rem; margin-bottom: 0.75rem;">
+              <div>
+                <label class="form-label" style="font-size: 0.82rem;">Follow-up Target Date</label>
+                <input type="date" id="interv-date" class="form-control" style="width: 100%; font-size: 0.85rem;">
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 0.82rem;">Faculty Notes / Comments</label>
+                <input type="text" id="interv-notes" class="form-control" placeholder="Specific notes or targets..." style="width: 100%; font-size: 0.85rem;">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm" style="font-weight: 600;">Record Action Item</button>
+          </form>
+        </div>
+
+        <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--dark);">Recorded Interventions History</h4>
+        <div id="modal-interventions-list">No interventions logged yet.</div>
+      </div>
+
+      <!-- Tab 4: Submission History -->
+      <div id="tab-history" class="modal-tab-content" style="display: none;">
+        <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--dark);">Assessment Submissions Log</h4>
+        <div id="modal-history-list">Loading history...</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container" style="text-align: center;">
+      <p>EduPredict Learning Analytics & Early Warning System | Faculty Monitoring Portal</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    let currentRoster = [];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      setupFacultySession();
+      await loadFacultyClasses();
+      await loadFacultyOverview();
+      await loadFacultyRoster();
+      setupRosterControls();
+      setupModalTabs();
+      setupInterventionForm();
+      setupClassModals();
+    });
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("active");
+    }
+
+    function setupFacultySession() {
+      const userRaw = localStorage.getItem("edupredict_user");
+      if (userRaw) {
+        try {
+          const u = JSON.parse(userRaw);
+          if (u.name) {
+            document.getElementById("faculty-user-badge").textContent = `👩‍🏫 ${u.name}`;
+          }
+        } catch(e) {}
+      }
+
+      document.getElementById("btn-nav-logout").addEventListener("click", async (e) => {
+        e.preventDefault();
+        try { await fetch("/api/auth/logout", { method: "POST" }); } catch(err) {}
+        localStorage.removeItem("edupredict_user");
+        window.location.href = "/login";
+      });
+    }
+
+    async function loadFacultyClasses() {
+      const container = document.getElementById("faculty-classes-container");
+      const select = document.getElementById("class-filter-select");
+      const manSelect = document.getElementById("man-class-id");
+
+      try {
+        const res = await fetch("/api/faculty/classes");
+        const data = await res.json();
+        if (res.ok && data.success && data.classes) {
+          const classes = data.classes;
+          if (classes.length === 0) {
+            container.innerHTML = `<div class="card" style="padding: 1rem; grid-column: span 3; color: var(--text-muted);">No active classes created yet. Click "+ Create New Class" to generate your first Class Join Code.</div>`;
+            return;
+          }
+
+          let html = "";
+          let selectOptions = `<option value="">All Classes (${classes.length})</option>`;
+          let manOptions = "";
+
+          classes.forEach(c => {
+            selectOptions += `<option value="${c.class_id}">${c.class_name}</option>`;
+            manOptions += `<option value="${c.class_id}">${c.class_name}</option>`;
+
+            html += `
+              <div class="card" style="padding: 1.25rem; border-top: 3px solid var(--primary);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <h4 style="font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.3rem;">${c.class_name}</h4>
+                  <span class="badge badge-info">${c.student_count} Students</span>
+                </div>
+                <div style="margin-top: 0.75rem; font-size: 0.85rem;">
+                  <span style="color: var(--text-muted);">Join Code:</span>
+                  <span class="class-code-badge">${c.class_code}</span>
+                </div>
+              </div>
+            `;
+          });
+
+          container.innerHTML = html;
+          select.innerHTML = selectOptions;
+          manSelect.innerHTML = manOptions;
+        }
+      } catch (err) {
+        container.innerHTML = `<div class="card" style="padding: 1rem; color: #dc2626;">Error loading classes.</div>`;
+      }
+    }
+
+    async function loadFacultyOverview() {
+      try {
+        const res = await fetch("/api/faculty/overview");
+        const data = await res.json();
+        if (res.ok && data.success && data.overview) {
+          const ov = data.overview;
+          document.getElementById("kpi-total").textContent = ov.totalStudents;
+          document.getElementById("kpi-high").textContent = ov.highRiskCount;
+          document.getElementById("kpi-medium").textContent = ov.mediumRiskCount;
+          document.getElementById("kpi-low").textContent = ov.lowRiskCount;
+          document.getElementById("kpi-attention").textContent = ov.requiringAttentionCount;
+          document.getElementById("kpi-improving").textContent = ov.improvingCount;
+          document.getElementById("kpi-improving-note").textContent = ov.improvingNote;
+          renderFacultyRiskTime(ov);
+        }
+      } catch (err) {}
+    }
+
+    async function loadFacultyRoster() {
+      const search = document.getElementById("student-search").value;
+      const activeFilterBtn = document.querySelector(".filter-btn.active");
+      const risk = activeFilterBtn ? activeFilterBtn.dataset.filter : "ALL";
+      const sort = document.getElementById("student-sort").value;
+      const classId = document.getElementById("class-filter-select").value;
+
+      const tbody = document.getElementById("faculty-roster-body");
+      tbody.innerHTML = `<tr><td colspan="10" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">⌛ Updating student roster...</td></tr>`;
+
+      try {
+        let url = `/api/faculty/students?search=${encodeURIComponent(search)}&risk=${encodeURIComponent(risk)}&sort=${encodeURIComponent(sort)}`;
+        if (classId) url += `&class_id=${encodeURIComponent(classId)}`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (res.ok && data.success && data.students) {
+          currentRoster = data.students;
+          renderRosterTable(data.students);
+          renderFacultyRiskDist(data.students);
+        } else {
+          tbody.innerHTML = `<tr><td colspan="10" style="padding: 1.5rem; text-align: center; color: #dc2626;">Failed to load student roster.</td></tr>`;
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="10" style="padding: 1.5rem; text-align: center; color: #dc2626;">Network error connecting to faculty API.</td></tr>`;
+      }
+    }
+
+    function renderRosterTable(students) {
+      const tbody = document.getElementById("faculty-roster-body");
+      if (!students || students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" style="padding: 2rem; text-align: center; color: var(--text-muted);">No students found matching current search/filter criteria.</td></tr>`;
+        return;
+      }
+
+      let html = "";
+      students.forEach(s => {
+        let badgeClass = "badge-risk-low";
+        let riskText = "● LOW";
+        if (s.riskLevel === "HIGH") {
+          badgeClass = "badge-risk-high";
+          riskText = "● HIGH";
+        } else if (s.riskLevel === "MEDIUM") {
+          badgeClass = "badge-risk-medium";
+          riskText = "● MEDIUM";
+        }
+
+        html += `
+          <tr class="student-row" onclick="openStudentModal('${s.studentId}')">
+            <td style="padding: 0.75rem 0.6rem; font-weight: 600; color: var(--primary);">${s.studentId}</td>
+            <td style="padding: 0.75rem 0.6rem; font-weight: 600;">${s.name}</td>
+            <td style="padding: 0.75rem 0.6rem; font-size: 0.8rem; color: var(--text-muted);">${s.className}</td>
+            <td style="padding: 0.75rem 0.6rem;"><span class="badge ${badgeClass}">${riskText}</span></td>
+            <td style="padding: 0.75rem 0.6rem; font-weight: 700; color: var(--dark);">${s.predictedScore}%</td>
+            <td style="padding: 0.75rem 0.6rem;">${s.attendance}%</td>
+            <td style="padding: 0.75rem 0.6rem;">${s.studyHours} hrs</td>
+            <td style="padding: 0.75rem 0.6rem;">${s.assignmentAvg}%</td>
+            <td style="padding: 0.75rem 0.6rem;">${s.backlogCount > 0 ? `<span style="color:#dc2626; font-weight:bold;">${s.backlogCount}</span>` : '0'}</td>
+            <td style="padding: 0.75rem 0.6rem; text-align: right;"><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); openStudentModal('${s.studentId}');">Audit →</button></td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function setupRosterControls() {
+      document.getElementById("student-search").addEventListener("input", debounce(loadFacultyRoster, 300));
+      document.getElementById("student-sort").addEventListener("change", loadFacultyRoster);
+      document.getElementById("class-filter-select").addEventListener("change", loadFacultyRoster);
+
+      document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+          e.target.classList.add("active");
+          loadFacultyRoster();
+        });
+      });
+    }
+
+    function setupClassModals() {
+      document.getElementById("btn-create-class-modal").addEventListener("click", () => {
+        document.getElementById("modal-create-class").classList.add("active");
+      });
+      document.getElementById("btn-add-student-modal").addEventListener("click", () => {
+        document.getElementById("modal-manual-student").classList.add("active");
+      });
+
+      document.getElementById("form-create-class").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const className = document.getElementById("new-class-name").value;
+        const classCode = document.getElementById("new-class-code").value;
+
+        try {
+          const res = await fetch("/api/faculty/classes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ className, classCode })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            alert(`✅ Class Created Successfully!\nJoin Code: ${data.class.classCode}`);
+            closeModal("modal-create-class");
+            document.getElementById("new-class-name").value = "";
+            document.getElementById("new-class-code").value = "";
+            await loadFacultyClasses();
+          } else {
+            alert(data.error || "Failed to create class.");
+          }
+        } catch(err) {
+          alert("Network error creating class.");
+        }
+      });
+
+      document.getElementById("form-manual-student").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = document.getElementById("man-name").value;
+        const classId = document.getElementById("man-class-id").value;
+
+        const metrics = {
+          attendance: parseFloat(document.getElementById("man-att").value),
+          study_hours: parseFloat(document.getElementById("man-hrs").value),
+          previous_semester_percentage: parseFloat(document.getElementById("man-prev").value),
+          assignment_average: parseFloat(document.getElementById("man-ass").value),
+          internal_assessment: parseFloat(document.getElementById("man-int").value),
+          quiz_average: parseFloat(document.getElementById("man-quiz").value),
+          completed_assignments: parseInt(document.getElementById("man-comp").value),
+          total_assignments: parseInt(document.getElementById("man-tot").value),
+          backlog_count: parseInt(document.getElementById("man-back").value)
+        };
+
+        try {
+          const res = await fetch(`/api/faculty/classes/${classId}/students`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, metrics })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            alert(`✅ ${data.message}`);
+            closeModal("modal-manual-student");
+            document.getElementById("man-name").value = "";
+            await loadFacultyOverview();
+            await loadFacultyRoster();
+          } else {
+            alert(data.error || "Failed to add student.");
+          }
+        } catch(err) {
+          alert("Network error adding student.");
+        }
+      });
+    }
+
+    function setupModalTabs() {
+      document.querySelectorAll(".modal-tab-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          document.querySelectorAll(".modal-tab-btn").forEach(b => {
+            b.classList.remove("active");
+            b.style.color = "var(--text-muted)";
+            b.style.borderBottomColor = "transparent";
+          });
+          e.target.classList.add("active");
+          e.target.style.color = "var(--primary)";
+          e.target.style.borderBottomColor = "var(--primary)";
+
+          const targetTab = e.target.dataset.tab;
+          document.querySelectorAll(".modal-tab-content").forEach(tc => tc.style.display = "none");
+          document.getElementById(targetTab).style.display = "block";
+        });
+      });
+    }
+
+    async function openStudentModal(studentId) {
+      const modal = document.getElementById("student-modal");
+      document.getElementById("interv-student-id").value = studentId;
+
+      try {
+        const res = await fetch(`/api/faculty/students/${studentId}`);
+        const data = await res.json();
+        if (res.ok && data.success && data.student) {
+          const s = data.student;
+          
+          document.getElementById("modal-student-id").textContent = s.studentId;
+          document.getElementById("modal-student-name").textContent = s.name;
+          document.getElementById("modal-student-meta").textContent = `Semester ${s.semester} | ${s.branch}`;
+          
+          const riskCat = s.prediction.risk_category || "LOW";
+          let badgeClass = "badge-risk-low";
+          if (riskCat === "HIGH") badgeClass = "badge-risk-high";
+          else if (riskCat === "MEDIUM") badgeClass = "badge-risk-medium";
+          
+          const rBadge = document.getElementById("modal-risk-badge");
+          rBadge.className = `badge ${badgeClass}`;
+          rBadge.textContent = `● ${riskCat} RISK`;
+          
+          document.getElementById("modal-predicted-score").textContent = `${s.prediction.predicted_score}% Est. Score`;
+
+          const m = s.metrics;
+          const factorsHtml = `
+            <div class="card" style="padding: 0.6rem 0.8rem; font-size: 0.82rem;"><strong>Attendance:</strong> ${m.attendance}%</div>
+            <div class="card" style="padding: 0.6rem 0.8rem; font-size: 0.82rem;"><strong>Study Hours:</strong> ${m.study_hours} hrs</div>
+            <div class="card" style="padding: 0.6rem 0.8rem; font-size: 0.82rem;"><strong>Prior Semester:</strong> ${m.previous_semester_percentage}%</div>
+            <div class="card" style="padding: 0.6rem 0.8rem; font-size: 0.82rem;"><strong>Assignment Avg:</strong> ${m.assignment_average}%</div>
+            <div class="card" style="padding: 0.6rem 0.8rem; font-size: 0.82rem;"><strong>Internal Exam:</strong> ${m.internal_assessment}%</div>
+            <div class="card" style="padding: 0.6rem 0.8rem; font-size: 0.82rem;"><strong>Quiz Avg:</strong> ${m.quiz_average}%</div>
+            <div class="card" style="padding: 0.6rem 0.8rem; font-size: 0.82rem;"><strong>Completed Assg:</strong> ${m.completed_assignments}/${m.total_assignments}</div>
+            <div class="card" style="padding: 0.6rem 0.8rem; font-size: 0.82rem;"><strong>Backlogs:</strong> ${m.backlog_count}</div>
+            <div class="card" style="padding: 0.6rem 0.8rem; font-size: 0.82rem;"><strong>Final Model Score:</strong> ${s.prediction.predicted_score}%</div>
+          `;
+          document.getElementById("modal-factors-grid").innerHTML = factorsHtml;
+
+          const pos = s.explanation.positive_signals || [];
+          if (pos.length > 0) {
+            document.getElementById("modal-positive-signals").innerHTML = pos.map(p => `<div style="margin-bottom: 0.4rem;">• <strong>${p.name}:</strong> +${p.contribution} pts contribution</div>`).join("");
+          } else {
+            document.getElementById("modal-positive-signals").textContent = "No strong positive signals above threshold.";
+          }
+
+          const neg = s.explanation.negative_signals || [];
+          if (neg.length > 0) {
+            document.getElementById("modal-negative-signals").innerHTML = neg.map(n => `<div style="margin-bottom: 0.4rem;">• <strong>${n.name}:</strong> ${n.contribution} pts pull</div>`).join("");
+          } else {
+            document.getElementById("modal-negative-signals").textContent = "No negative pull signals detected.";
+          }
+
+          const recs = s.recommendations || [];
+          if (recs.length > 0) {
+            document.getElementById("modal-recs-list").innerHTML = recs.map(r => `
+              <div class="card" style="margin-bottom: 0.75rem; padding: 1rem; border-left: 4px solid ${r.priority_tier === 'URGENT' ? '#dc2626' : (r.priority_tier === 'HIGH' ? '#d97706' : '#2563eb')};">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                  <strong style="font-size: 0.95rem;">${r.title || r.recommendation}</strong>
+                  <span class="badge ${r.priority_tier === 'URGENT' ? 'badge-risk-high' : 'badge-warning'}">${r.priority_tier}</span>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">${r.action_plan || r.summary || ''}</p>
+              </div>
+            `).join("");
+          } else {
+            document.getElementById("modal-recs-list").innerHTML = "<p style='color:var(--text-muted);'>No active priority recommendations.</p>";
+          }
+
+          renderModalInterventions(s.interventions || []);
+
+          const hist = s.history || [];
+          if (hist.length > 0) {
+            document.getElementById("modal-history-list").innerHTML = `
+              <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                <thead><tr style="color: var(--text-muted); border-bottom: 1px solid var(--border-color);"><th style="padding: 0.5rem;">Date</th><th style="padding: 0.5rem;">Score</th><th style="padding: 0.5rem;">Attendance</th><th style="padding: 0.5rem;">Backlogs</th></tr></thead>
+                <tbody>
+                  ${hist.map(h => `<tr style="border-bottom: 1px solid var(--border-color);"><td style="padding: 0.5rem;">${h.submitted_at || 'Recent'}</td><td style="padding: 0.5rem; font-weight:bold;">${h.final_score}%</td><td style="padding: 0.5rem;">${h.attendance}%</td><td style="padding: 0.5rem;">${h.backlog_count}</td></tr>`).join("")}
+                </tbody>
+              </table>
+            `;
+          } else {
+            document.getElementById("modal-history-list").textContent = "Single assessment on record.";
+          }
+
+          modal.classList.add("active");
+        }
+      } catch (err) {}
+    }
+
+    function renderModalInterventions(interventions) {
+      const container = document.getElementById("modal-interventions-list");
+      if (!interventions || interventions.length === 0) {
+        container.innerHTML = "<p style='color: var(--text-muted); font-size: 0.88rem;'>No interventions logged yet for this student.</p>";
+        return;
+      }
+
+      container.innerHTML = interventions.map(i => `
+        <div class="card" style="margin-bottom: 0.75rem; padding: 0.85rem; font-size: 0.85rem; border-left: 3px solid var(--primary);">
+          <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.2rem;">
+            <span>${i.action_title}</span>
+            <span class="badge badge-info">${i.status}</span>
+          </div>
+          <p style="color: var(--text-muted); margin: 0.2rem 0;">${i.notes || 'No detailed notes.'}</p>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.4rem; display: flex; justify-content: space-between;">
+            <span>Logged by: ${i.faculty_username}</span>
+            <span>Follow-up: ${i.follow_up_date || 'N/A'}</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function setupInterventionForm() {
+      document.getElementById("intervention-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const studentId = document.getElementById("interv-student-id").value;
+        const actionTitle = document.getElementById("interv-title").value;
+        const status = document.getElementById("interv-status").value;
+        const followUpDate = document.getElementById("interv-date").value;
+        const notes = document.getElementById("interv-notes").value;
+
+        try {
+          const res = await fetch("/api/faculty/interventions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ studentId, actionTitle, status, followUpDate, notes })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            alert("✅ Faculty intervention recorded successfully!");
+            document.getElementById("interv-title").value = "";
+            document.getElementById("interv-notes").value = "";
+            openStudentModal(studentId);
+          } else {
+            alert(data.error || "Failed to record intervention.");
+          }
+        } catch (err) {
+          alert("Network error saving intervention.");
+        }
+      });
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
+    function renderFacultyRiskDist(students) {
+      const container = document.getElementById("faculty-risk-dist-container");
+      if (!students || students.length === 0) {
+        container.innerHTML = `<span style="color:var(--text-muted); font-size:0.88rem;">No classroom students enrolled yet. Share Join Code to start tracking cohort risk distribution.</span>`;
+        return;
+      }
+
+      const high = students.filter(s => s.riskLevel === "HIGH").length;
+      const med = students.filter(s => s.riskLevel === "MEDIUM").length;
+      const low = students.filter(s => s.riskLevel === "LOW").length;
+      const total = students.length;
+
+      const highPct = ((high / total) * 100).toFixed(1);
+      const medPct = ((med / total) * 100).toFixed(1);
+      const lowPct = ((low / total) * 100).toFixed(1);
+
+      let html = `
+        <div style="width:100%; display:flex; flex-direction:column; gap:1rem;">
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600; margin-bottom:0.25rem;">
+              <span style="color:#dc2626;">🔴 HIGH RISK (&lt;60%)</span>
+              <span>${high} students (${highPct}%)</span>
+            </div>
+            <div style="background:#fee2e2; height:18px; border-radius:9px; overflow:hidden; border:1px solid #fca5a5;">
+              <div style="background:#dc2626; height:100%; width:${highPct}%; transition:width 0.5s ease;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600; margin-bottom:0.25rem;">
+              <span style="color:#d97706;">🟡 MEDIUM RISK (60-75%)</span>
+              <span>${med} students (${medPct}%)</span>
+            </div>
+            <div style="background:#fef3c7; height:18px; border-radius:9px; overflow:hidden; border:1px solid #fde68a;">
+              <div style="background:#d97706; height:100%; width:${medPct}%; transition:width 0.5s ease;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600; margin-bottom:0.25rem;">
+              <span style="color:#16a34a;">🟢 LOW RISK (&ge;75%)</span>
+              <span>${low} students (${lowPct}%)</span>
+            </div>
+            <div style="background:#dcfce7; height:18px; border-radius:9px; overflow:hidden; border:1px solid #86efac;">
+              <div style="background:#16a34a; height:100%; width:${lowPct}%; transition:width 0.5s ease;"></div>
+            </div>
+          </div>
+        </div>
+      `;
+      container.innerHTML = html;
+    }
+
+    function renderFacultyRiskTime(overview) {
+      const container = document.getElementById("faculty-risk-time-container");
+      if (!overview || !overview.historicalDataAvailable) {
+        container.innerHTML = `
+          <div class="alert alert-info" style="margin: 0; width: 100%; text-align: center; font-size: 0.88rem;">
+            ℹ️ Cohort historical trend data unavailable.<br>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Requires multiple assessment submission cycles across enrolled classroom records.</span>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div style="text-align:center; width:100%;">
+          <span class="badge badge-success" style="margin-bottom:0.5rem; font-size:0.88rem;">🟢 Multi-Assessment Submission Trend Active</span>
+          <p style="font-size:0.88rem; color:var(--text-dark); margin-top:0.4rem;">
+            <strong>${overview.improvingCount} Students</strong> showing upward academic score progression across recent assessment submissions.
+          </p>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

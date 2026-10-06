@@ -1,0 +1,11 @@
+feature_name,min_val,max_val,mean_val,median_val,std_val
+attendance,50.1,97.9,79.88,81.2,10.6
+study_hours,3.1,28.0,15.12,14.8,5.5
+previous_semester_percentage,45.2,95.0,72.61,72.6,11.49
+assignment_average,45.5,97.8,76.14,76.35,12.23
+internal_assessment,40.2,94.9,74.0,75.2,12.59
+quiz_average,41.1,96.0,72.78,74.35,13.03
+completed_assignments,6.0,15.0,12.12,13.0,2.23
+total_assignments,15.0,15.0,15.0,15.0,0.0
+backlog_count,0.0,3.0,0.36,0.0,0.71
+final_score,38.7,99.0,75.18,74.0,14.19

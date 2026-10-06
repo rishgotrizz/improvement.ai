@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Registration - EduPredict</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .post-reg-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+    .post-reg-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .post-reg-card {
+      background: #ffffff;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 14px;
+      border: 2px solid #18181b;
+      box-shadow: 6px 6px 0px #18181b;
+      padding: 2.25rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body class="paper-theme">
+
+  <!-- Top Navigation Header -->
+  <header class="navbar" style="background: #ffffff; border-bottom: 1.5px solid #18181b; position: sticky; top: 0; z-index: 100;">
+    <div class="container navbar-container" style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem;">
+      <a href="/" class="brand" style="text-decoration: none; color: #18181b; font-weight: 800; font-size: 1.3rem; display: flex; align-items: center; gap: 0.4rem;">
+        <span style="font-size: 1.5rem;">🎓</span>
+        <span>EduPredict</span>
+      </a>
+
+      <nav class="nav-menu" style="display: flex; gap: 1.5rem; align-items: center;">
+        <a href="/" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">Home</a>
+        <a href="/#how-it-works" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">How It Works</a>
+        <a href="/#students" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">For Students</a>
+        <a href="/#faculty" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">For Faculty</a>
+        <a href="/about" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">About</a>
+      </nav>
+
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="/login" class="btn-paper-outline" style="padding: 0.5rem 1.1rem; font-size: 0.9rem;">Log In</a>
+        <a href="/register" class="btn-lime" style="padding: 0.55rem 1.25rem; font-size: 0.9rem;">Register</a>
+      </div>
+
+      <button class="mobile-toggle" aria-label="Toggle Navigation">☰</button>
+    </div>
+  </header>
+
+  <!-- Student Registration Form Container -->
+  <main class="container" style="max-width: 520px; padding: 3.5rem 1rem;">
+    <div class="paper-card" style="padding: 2.5rem 2rem;">
+      <div style="text-align: center; margin-bottom: 1.75rem;">
+        <span class="badge-lime" style="margin-bottom: 0.5rem; display: inline-block;">👨‍🎓 Student Account</span>
+        <h1 style="font-size: 1.8rem; font-weight: 800; color: #18181b; margin-bottom: 0.3rem;">Register as Student</h1>
+        <p style="color: #52525b; font-size: 0.9rem;">Create your personal academic tracking account</p>
+      </div>
+
+      <!-- Feedback Alert -->
+      <div id="reg-alert" class="alert alert-danger" style="display: none; margin-bottom: 1.25rem;"></div>
+
+      <form id="student-reg-form">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label for="reg-name" class="form-label" style="font-size: 0.85rem; font-weight: 700;">Full Name</label>
+          <input type="text" id="reg-name" class="form-control" placeholder="e.g. Aarav Sharma" required style="width: 100%;">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label for="reg-username" class="form-label" style="font-size: 0.85rem; font-weight: 700;">Username / Email</label>
+          <input type="text" id="reg-username" class="form-control" placeholder="Choose a username or email..." required style="width: 100%;">
+        </div>
+
+        <div class="grid grid-2" style="gap: 0.75rem; margin-bottom: 1rem;">
+          <div>
+            <label for="reg-password" class="form-label" style="font-size: 0.82rem; font-weight: 700;">Password</label>
+            <input type="password" id="reg-password" class="form-control" placeholder="At least 6 chars" required style="width: 100%;">
+          </div>
+          <div>
+            <label for="reg-confirm" class="form-label" style="font-size: 0.82rem; font-weight: 700;">Confirm Password</label>
+            <input type="password" id="reg-confirm" class="form-control" placeholder="Re-enter password" required style="width: 100%;">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label for="reg-roll" class="form-label" style="font-size: 0.85rem; font-weight: 700;">Student ID / Roll Number (Optional)</label>
+          <input type="text" id="reg-roll" class="form-control" placeholder="e.g. CS2026-088" style="width: 100%;">
+        </div>
+
+        <button type="submit" id="btn-reg-submit" class="btn-lime" style="width: 100%; justify-content: center; font-size: 1rem;">
+          Create Student Account →
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 1.5rem; font-size: 0.88rem; color: #52525b;">
+        Already have an account? <a href="/login/student" style="color: #18181b; font-weight: 700;">Log In as Student</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- STUDENT POST-REGISTRATION MODAL (Join Classroom vs Skip) -->
+  <div id="post-reg-modal" class="post-reg-overlay">
+    <div class="post-reg-card">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎉</div>
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: #18181b; margin-bottom: 0.5rem;">Welcome to EduPredict!</h2>
+      <p style="font-size: 0.9rem; color: #52525b; margin-bottom: 1.5rem;">Your student account has been created. Join a faculty classroom now using your class code.</p>
+
+      <div id="join-code-box" style="margin-bottom: 1.5rem; display: none; text-align: left; background: #fafaf9; border: 1.5px solid #18181b; padding: 1.25rem; border-radius: 8px;">
+        <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">Enter Class Join Code</label>
+        <div style="display: flex; gap: 0.5rem; margin-top: 0.4rem;">
+          <input type="text" id="post-class-code" class="form-control" placeholder="e.g. EDU-A7K92P" style="flex: 1; text-transform: uppercase;">
+          <button type="button" id="btn-submit-code" class="btn-lime" style="padding: 0.5rem 1rem; font-size: 0.88rem;">Join</button>
+        </div>
+        <div id="join-feedback" style="font-size: 0.82rem; margin-top: 0.4rem; color: #dc2626; display: none;"></div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+        <button type="button" id="btn-show-code-input" class="btn-lime" style="font-size: 0.92rem;">
+          👨‍🏫 Join a Classroom
+        </button>
+        <button type="button" id="btn-skip-post-reg" class="btn-paper-outline" style="font-size: 0.92rem;">
+          ⏩ Skip for Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer" style="background: #18181b; color: #ffffff; padding: 2.5rem 0; margin-top: 4rem;">
+    <div class="container" style="text-align: center;">
+      <p style="font-size: 0.85rem; color: #a1a1aa;">EduPredict Learning Analytics & Early Warning System</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const alertBox = document.getElementById("reg-alert");
+
+      document.getElementById("student-reg-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        alertBox.style.display = "none";
+
+        const name = document.getElementById("reg-name").value.trim();
+        const username = document.getElementById("reg-username").value.trim();
+        const password = document.getElementById("reg-password").value;
+        const confirm = document.getElementById("reg-confirm").value;
+        const rollNumber = document.getElementById("reg-roll").value.trim();
+
+        if (password !== confirm) {
+          alertBox.textContent = "Passwords do not match. Please re-enter.";
+          alertBox.style.display = "block";
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username,
+              password,
+              role: "student",
+              name,
+              rollNumber
+            })
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            localStorage.setItem("edupredict_user", JSON.stringify(data.user));
+            document.getElementById("post-reg-modal").classList.add("active");
+          } else {
+            alertBox.textContent = data.error || "Student registration failed.";
+            alertBox.style.display = "block";
+          }
+        } catch(err) {
+          alertBox.textContent = "Network error registering student account.";
+          alertBox.style.display = "block";
+        }
+      });
+
+      const codeBox = document.getElementById("join-code-box");
+      document.getElementById("btn-show-code-input").addEventListener("click", () => {
+        codeBox.style.display = "block";
+      });
+
+      document.getElementById("btn-skip-post-reg").addEventListener("click", () => {
+        window.location.href = "/dashboard";
+      });
+
+      document.getElementById("btn-submit-code").addEventListener("click", async () => {
+        const code = document.getElementById("post-class-code").value.trim();
+        const fb = document.getElementById("join-feedback");
+        fb.style.display = "none";
+
+        if (!code) {
+          fb.textContent = "Please enter a class join code.";
+          fb.style.display = "block";
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/student/join-class", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ classCode: code })
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            alert(`✅ ${data.message}`);
+            window.location.href = "/dashboard";
+          } else {
+            fb.textContent = data.error || "Invalid join code.";
+            fb.style.display = "block";
+          }
+        } catch(err) {
+          fb.textContent = "Error joining classroom.";
+          fb.style.display = "block";
+        }
+      });
+    });
+  </script>
+</body>
+</html>

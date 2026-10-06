@@ -1,0 +1,47 @@
+EDUPREDICT - AUTOMATED UNIT & INTEGRATION TEST EXECUTION REPORT
+=================================================================
+
+Total Tests Executed : 33
+Passed Tests         : 33
+Failed Tests         : 0
+Skipped Tests        : 0
+Pass Percentage      : 100.0%
+
+Test Modules Executed:
+  - Phase 5 Test Suite (tests/test_phase5.py): 13 Unit & Integration Tests
+  - Phase 6 Test Suite (tests/test_phase6.py): 20 Unit & Integration Tests
+
+Detailed Test Results:
+  [PASS] tests.test_phase5.test_deterministic_recommendation_ordering
+  [PASS] tests.test_phase5.test_explanation_output_exists
+  [PASS] tests.test_phase5.test_feature_contributions_contain_all_features
+  [PASS] tests.test_phase5.test_invalid_input
+  [PASS] tests.test_phase5.test_missing_subject_data
+  [PASS] tests.test_phase5.test_multiclass_coefficient_selection
+  [PASS] tests.test_phase5.test_no_phase6_what_if_in_response
+  [PASS] tests.test_phase5.test_phase4_prediction_output_functional
+  [PASS] tests.test_phase5.test_recommendation_does_not_mutate_prediction
+  [PASS] tests.test_phase5.test_recommendations_at_risk_profile
+  [PASS] tests.test_phase5.test_recommendations_healthy_profile
+  [PASS] tests.test_phase5.test_regression_contribution_reconstruction
+  [PASS] tests.test_phase5.test_signal_extraction
+  [PASS] tests.test_phase6.test_01_valid_baseline_scenario_request
+  [PASS] tests.test_phase6.test_02_identical_baseline_and_scenario
+  [PASS] tests.test_phase6.test_03_attendance_only_change
+  [PASS] tests.test_phase6.test_04_study_hours_only_change
+  [PASS] tests.test_phase6.test_05_multiple_factor_change
+  [PASS] tests.test_phase6.test_06_backlog_reduction
+  [PASS] tests.test_phase6.test_07_invalid_attendance
+  [PASS] tests.test_phase6.test_08_invalid_study_hours
+  [PASS] tests.test_phase6.test_09_negative_backlog
+  [PASS] tests.test_phase6.test_10_completed_greater_than_total_assignments
+  [PASS] tests.test_phase6.test_11_missing_required_field
+  [PASS] tests.test_phase6.test_12_probability_comparison
+  [PASS] tests.test_phase6.test_13_risk_category_comparison
+  [PASS] tests.test_phase6.test_14_changed_factor_detection
+  [PASS] tests.test_phase6.test_15_scenario_recommendations_generated_from_scenario_values
+  [PASS] tests.test_phase6.test_16_existing_phase4_prediction_still_works
+  [PASS] tests.test_phase6.test_17_existing_phase5_recommendations_still_work
+  [PASS] tests.test_phase6.test_18_what_if_does_not_retrain_model
+  [PASS] tests.test_phase6.test_19_deterministic_output_for_identical_inputs
+  [PASS] tests.test_phase6.test_20_no_causal_language_in_output

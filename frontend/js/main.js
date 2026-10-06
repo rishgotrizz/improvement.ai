@@ -203,7 +203,38 @@ const EduPredictAPI = {
 document.addEventListener("DOMContentLoaded", () => {
   highlightActiveNavLink();
   setupMobileNavigation();
+  updateUserSessionUI();
 });
+
+// Update navbar and role badges based on session state
+async function updateUserSessionUI() {
+  let user = null;
+  const localRaw = localStorage.getItem("edupredict_user");
+  if (localRaw) {
+    try { user = JSON.parse(localRaw); } catch(e) {}
+  }
+
+  try {
+    const res = await fetch("/api/auth/me");
+    if (res.ok) {
+      const data = await res.json();
+      if (data.authenticated && data.user) {
+        user = data.user;
+        localStorage.setItem("edupredict_user", JSON.stringify(user));
+      }
+    }
+  } catch(e) {}
+
+  const navMenu = document.querySelector(".nav-menu");
+  if (navMenu && user) {
+    let facultyLink = navMenu.querySelector('a[href="/faculty"]');
+    if (user.role === "faculty" && !facultyLink) {
+      const linkHtml = `<a href="/faculty" class="nav-link">Faculty Dashboard</a>`;
+      navMenu.insertAdjacentHTML("afterbegin", linkHtml);
+      highlightActiveNavLink();
+    }
+  }
+}
 
 // Highlight current active route link in navbar
 function highlightActiveNavLink() {

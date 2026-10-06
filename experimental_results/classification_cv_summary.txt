@@ -1,0 +1,15 @@
+EDUPREDICT - 5-FOLD CROSS-VALIDATION SUMMARY (CLASSIFICATION)
+Pipeline: StandardScaler + LogisticRegression (max_iter=1000, random_state=42)
+
+Accuracy  : Mean = 0.9260, SD = 0.0273
+Precision : Mean = 0.9307, SD = 0.0258
+Recall    : Mean = 0.9260, SD = 0.0273
+F1-Score  : Mean = 0.9260, SD = 0.0274
+
+Per-Fold Results:
+ Fold  Accuracy  Precision  Recall  F1_Score
+    1      0.89     0.9021    0.89    0.8898
+    2      0.93     0.9356    0.93    0.9300
+    3      0.95     0.9521    0.95    0.9501
+    4      0.96     0.9638    0.96    0.9601
+    5      0.90     0.9000    0.90    0.9000

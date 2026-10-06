@@ -1,0 +1,2 @@
+Test_Samples,Correct_Predictions,Incorrect_Predictions,Accuracy,Precision_Weighted,Recall_Weighted,F1_Score_Weighted,Pred_Dist_HIGH_Pct,Pred_Dist_MEDIUM_Pct,Pred_Dist_LOW_Pct
+100,93,7,0.93,0.9321,0.93,0.9301,16.0,42.0,42.0

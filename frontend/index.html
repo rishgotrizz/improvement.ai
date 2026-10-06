@@ -3,176 +3,413 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduPredict - Academic Risk & Performance Analysis</title>
+  <title>EduPredict - Explainable Academic Risk & Performance Intelligence</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Public Prediction Modal Styling */
+    .public-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+    .public-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .public-modal-card {
+      background: #ffffff;
+      width: 92%;
+      max-width: 820px;
+      max-height: 90vh;
+      border-radius: 14px;
+      border: 2px solid #18181b;
+      box-shadow: 8px 8px 0px #18181b;
+      overflow-y: auto;
+      padding: 2.25rem;
+      position: relative;
+    }
+    .public-modal-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: #f4f4f5;
+      border: 1.5px solid #18181b;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #18181b;
+    }
+  </style>
 </head>
-<body>
+<body class="paper-theme">
 
+  <!-- Public Top Navigation Bar -->
+  <header class="navbar" style="background: #ffffff; border-bottom: 1.5px solid #18181b; position: sticky; top: 0; z-index: 100;">
+    <div class="container navbar-container" style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem;">
+      
+      <!-- Brand Logo (Top Left) -->
+      <a href="/" class="brand" style="text-decoration: none; color: #18181b; font-weight: 800; font-size: 1.3rem; display: flex; align-items: center; gap: 0.4rem;">
+        <span style="font-size: 1.5rem;">🎓</span>
+        <span>EduPredict</span>
+      </a>
 
+      <!-- Center Nav Links -->
+      <nav class="nav-menu" style="display: flex; gap: 1.5rem; align-items: center;">
+        <a href="/" class="nav-link active" style="color: #18181b; font-weight: 600; text-decoration: none;">Home</a>
+        <a href="#how-it-works" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">How It Works</a>
+        <a href="/about" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">About</a>
+      </nav>
 
-  <!-- Main Content -->
-  <main class="container">
-    
-    <!-- Hero Section -->
-    <section class="card card-hover" style="text-align: center; padding: 3.5rem 2rem; margin-bottom: 2.5rem; background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%); border-color: #bfdbfe;">
-      <span class="badge badge-subject" style="margin-bottom: 1rem;">First-Year Engineering Academic Project</span>
-      <h1 class="page-title" style="font-size: 2.5rem; line-height: 1.2; margin-bottom: 1rem; color: #0f172a;">
-        Understand Your Academic Performance<br><span style="color: var(--primary);">Before It's Too Late</span>
-      </h1>
-      <p class="page-subtitle" style="max-width: 780px; margin: 0 auto 2rem auto; font-size: 1.1rem; color: #475569;">
-        EduPredict uses student academic data, exploratory analysis, and machine learning to estimate academic risk, explain influencing factors, and provide interpretable study recommendations.
-      </p>
-      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <a href="/assessment" class="btn btn-primary" style="padding: 0.8rem 1.75rem; font-size: 1rem;">Analyze My Performance →</a>
-        <a href="#pipeline" class="btn btn-secondary" style="padding: 0.8rem 1.75rem; font-size: 1rem;">How It Works</a>
-      </div>
-    </section>
-
-    <!-- Project Pipeline Section -->
-    <section id="pipeline" style="margin-bottom: 3rem;">
-      <div style="text-align: center; margin-bottom: 1.75rem;">
-        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--dark);">System Architecture Pipeline</h2>
-        <p style="color: var(--text-muted); font-size: 0.95rem;">From student raw inputs to interpretable risk estimation and study planning</p>
+      <!-- Right Single LOGIN & REGISTER Action Buttons -->
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="/login" class="btn-paper-outline" style="padding: 0.55rem 1.25rem; font-size: 0.9rem; text-decoration: none; font-weight: 700;">LOGIN</a>
+        <a href="/register" class="btn-lime" style="padding: 0.55rem 1.25rem; font-size: 0.9rem; text-decoration: none; font-weight: 700;">REGISTER</a>
       </div>
 
-      <div class="grid grid-6" style="gap: 0.8rem; text-align: center;">
-        <div class="card" style="padding: 1rem; font-size: 0.88rem;">
-          <div style="font-size: 1.5rem; margin-bottom: 0.3rem;">📋</div>
-          <strong>1. Student Data</strong>
-          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem;">Attendance, study hours, assignments & marks</div>
-        </div>
-        <div class="card" style="padding: 1rem; font-size: 0.88rem;">
-          <div style="font-size: 1.5rem; margin-bottom: 0.3rem;">⚙️</div>
-          <strong>2. Processing</strong>
-          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem;">COA memory & CPA input validation</div>
-        </div>
-        <div class="card" style="padding: 1rem; font-size: 0.88rem;">
-          <div style="font-size: 1.5rem; margin-bottom: 0.3rem;">📊</div>
-          <strong>3. EDA</strong>
-          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem;">Correlations, distributions & statistics</div>
-        </div>
-        <div class="card" style="padding: 1rem; font-size: 0.88rem;">
-          <div style="font-size: 1.5rem; margin-bottom: 0.3rem;">🤖</div>
-          <strong>4. AI Model</strong>
-          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem;">IAI Risk classifier & Score regressor</div>
-        </div>
-        <div class="card" style="padding: 1rem; font-size: 0.88rem;">
-          <div style="font-size: 1.5rem; margin-bottom: 0.3rem;">🔍</div>
-          <strong>5. Explanation</strong>
-          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem;">AM-I regression weight analysis</div>
-        </div>
-        <div class="card" style="padding: 1rem; font-size: 0.88rem;">
-          <div style="font-size: 1.5rem; margin-bottom: 0.3rem;">🎯</div>
-          <strong>6. Planner</strong>
-          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem;">Subject priority recommendation</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- First-Year Project Subjects Mapping Grid -->
-    <section style="margin-bottom: 3rem;">
-      <div style="text-align: center; margin-bottom: 1.75rem;">
-        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--dark);">Built Using First-Year Engineering Concepts</h2>
-        <p style="color: var(--text-muted); font-size: 0.95rem;">Every component of EduPredict directly maps back to our academic syllabus</p>
-      </div>
-
-      <div class="grid grid-3">
-        <!-- AM-I -->
-        <div class="card subject-card am card-hover">
-          <div>
-            <div class="subject-code">AM-I</div>
-            <h3 class="subject-title">Applied Mathematics-I</h3>
-            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
-              Descriptive statistics (Mean, Variance, Std Dev), Linear Regression formula, Pearson correlation coefficients, and Mean Squared Error.
-            </p>
-          </div>
-          <a href="/mathematics" style="font-size: 0.85rem; font-weight: 600;">Explore Math Behind Model →</a>
-        </div>
-
-        <!-- CPA -->
-        <div class="card subject-card cpa card-hover">
-          <div>
-            <div class="subject-code">CPA</div>
-            <h3 class="subject-title">Computer Programming & Algorithms</h3>
-            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
-              Structured data input validation, subject priority scoring algorithm, built-in sorting routines, and deterministic recommendation logic.
-            </p>
-          </div>
-          <a href="/algorithms" style="font-size: 0.85rem; font-weight: 600;">View Algorithmic Logic →</a>
-        </div>
-
-        <!-- COA -->
-        <div class="card subject-card coa card-hover">
-          <div>
-            <div class="subject-code">COA</div>
-            <h3 class="subject-title">Computer Organization & Architecture</h3>
-            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
-              Memory-aware data handling, single-pass processing, time complexity ($O(n)$, $O(n \log n)$), and auxiliary space optimization.
-            </p>
-          </div>
-          <a href="/algorithms#efficiency" style="font-size: 0.85rem; font-weight: 600;">Read Computational Efficiency →</a>
-        </div>
-
-        <!-- IAI -->
-        <div class="card subject-card iai card-hover">
-          <div>
-            <div class="subject-code">IAI</div>
-            <h3 class="subject-title">Introduction to Artificial Intelligence</h3>
-            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
-              Supervised machine learning pipeline: Academic risk classification (Logistic Regression) and grade estimation (Linear Regression).
-            </p>
-          </div>
-          <a href="/model" style="font-size: 0.85rem; font-weight: 600;">Inspect AI Model Metrics →</a>
-        </div>
-
-        <!-- EDA -->
-        <div class="card subject-card eda card-hover">
-          <div>
-            <div class="subject-code">EDA</div>
-            <h3 class="subject-title">Exploratory Data Analysis</h3>
-            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
-              Dataset cleaning, outlier detection, feature distribution visualization, and correlation matrices rendered via Pandas & Matplotlib.
-            </p>
-          </div>
-          <a href="/analytics" style="font-size: 0.85rem; font-weight: 600;">View Analytics Dashboard →</a>
-        </div>
-
-        <!-- EAI -->
-        <div class="card subject-card eai card-hover">
-          <div>
-            <div class="subject-code">EAI</div>
-            <h3 class="subject-title">Ethics in Artificial Intelligence</h3>
-            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
-              Responsible AI framework: Data privacy, feature explainability, bias evaluation disclaimers, and human oversight principles.
-            </p>
-          </div>
-          <a href="/responsible-ai" style="font-size: 0.85rem; font-weight: 600;">Explore Responsible AI →</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Ethical Decision-Support Notice Alert -->
-    <div class="alert alert-disclaimer">
-      <strong>Academic Decision-Support Tool Notice:</strong> EduPredict provides an estimate based on available academic data. It is intended as a learning-support tool and should not be treated as a definitive judgment of a student's future performance.
+      <button class="mobile-toggle" aria-label="Toggle Navigation">☰</button>
     </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="container" style="padding-top: 3.5rem; padding-bottom: 4rem;">
+    <section id="hero" style="margin-bottom: 4rem;">
+      <div style="max-width: 920px; margin: 0 auto; text-align: center;">
+        <div style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+          <span class="badge-lime">First-Year Engineering & Learning Analytics Platform</span>
+        </div>
+
+        <h1 class="hero-heading" style="margin-bottom: 1.5rem;">
+          Understand academic performance.<br>
+          <span style="background: #d9f99d; padding: 0 0.4rem; border-radius: 6px; border: 1.5px solid #18181b;">Predict risk. Know what to improve.</span>
+        </h1>
+
+        <p style="font-size: 1.2rem; color: #52525b; max-width: 760px; margin: 0 auto 2.5rem auto; line-height: 1.6;">
+          EduPredict analyzes student academic metrics to estimate semester scores, classify academic risk, explain influencing factors with standardized XAI signals, and deliver actionable recommendations.
+        </p>
+
+        <div style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap;">
+          <button type="button" id="btn-hero-try" class="btn-lime" style="padding: 0.9rem 1.75rem; font-size: 1.05rem;">
+            TRY A PREDICTION →
+          </button>
+          <a href="/login" class="btn-paper-outline" style="padding: 0.9rem 1.75rem; font-size: 1.05rem; text-decoration: none; font-weight: 700;">
+            LOGIN
+          </a>
+          <a href="/register" class="btn-paper-outline" style="padding: 0.9rem 1.75rem; font-size: 1.05rem; text-decoration: none; font-weight: 700;">
+            CREATE ACCOUNT
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visual Feature Overview Cards -->
+    <section style="margin-bottom: 4.5rem;">
+      <div class="grid grid-4" style="gap: 1.25rem;">
+        <div class="paper-card" style="padding: 1.75rem;">
+          <div style="font-size: 2rem; margin-bottom: 0.75rem;">🎯</div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem;">Risk Classification</h3>
+          <p style="font-size: 0.9rem; color: #52525b; line-height: 1.5;">
+            Supervised Logistic Regression categorizing student risk into <strong style="color: #dc2626;">HIGH</strong>, <strong style="color: #d97706;">MEDIUM</strong>, and <strong style="color: #16a34a;">LOW</strong> tiers ($93.0\%$ accuracy).
+          </p>
+        </div>
+
+        <div class="paper-card" style="padding: 1.75rem;">
+          <div style="font-size: 2rem; margin-bottom: 0.75rem;">📈</div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem;">Score Regression</h3>
+          <p style="font-size: 0.9rem; color: #52525b; line-height: 1.5;">
+            Continuous Linear Regression estimating final semester percentage ($R^2 = 0.984$, MAE $= 1.61\%$).
+          </p>
+        </div>
+
+        <div class="paper-card" style="padding: 1.75rem;">
+          <div style="font-size: 2rem; margin-bottom: 0.75rem;">🔍</div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem;">Explainable AI (XAI)</h3>
+          <p style="font-size: 0.9rem; color: #52525b; line-height: 1.5;">
+            Mathematically derived feature contributions ($\text{contrib}_i = \beta_i \cdot z_i$) proving exact linear score reconstruction.
+          </p>
+        </div>
+
+        <div class="paper-card" style="padding: 1.75rem;">
+          <div style="font-size: 2rem; margin-bottom: 0.75rem;">🔄</div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem;">What-If Simulator</h3>
+          <p style="font-size: 0.9rem; color: #52525b; line-height: 1.5;">
+            Simulate hypothetical study changes ($\Delta \hat{y}$) without triggering model retraining or modifying saved baseline data.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Architecture Section -->
+    <section id="how-it-works" class="paper-card" style="padding: 3rem 2rem; margin-bottom: 4rem; text-align: center;">
+      <span class="badge-lime" style="margin-bottom: 1rem; display: inline-block;">System Pipeline</span>
+      <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 2rem;">How EduPredict Processes Data</h2>
+
+      <div class="grid grid-6" style="gap: 1rem; text-align: left;">
+        <div style="background: #f4f4f5; border: 1px solid #18181b; padding: 1rem; border-radius: 8px;">
+          <strong style="font-size: 0.9rem; display: block; margin-bottom: 0.3rem;">1. Data Input</strong>
+          <span style="font-size: 0.8rem; color: #52525b;">9 continuous student academic attributes</span>
+        </div>
+        <div style="background: #f4f4f5; border: 1px solid #18181b; padding: 1rem; border-radius: 8px;">
+          <strong style="font-size: 0.9rem; display: block; margin-bottom: 0.3rem;">2. Scaler</strong>
+          <span style="font-size: 0.8rem; color: #52525b;">Z-score standardization ($z_i = \frac{x_i - \mu}{\sigma}$)</span>
+        </div>
+        <div style="background: #f4f4f5; border: 1px solid #18181b; padding: 1rem; border-radius: 8px;">
+          <strong style="font-size: 0.9rem; display: block; margin-bottom: 0.3rem;">3. AI Model</strong>
+          <span style="font-size: 0.8rem; color: #52525b;">Logistic Classifier & Linear Regressor</span>
+        </div>
+        <div style="background: #f4f4f5; border: 1px solid #18181b; padding: 1rem; border-radius: 8px;">
+          <strong style="font-size: 0.9rem; display: block; margin-bottom: 0.3rem;">4. XAI Signals</strong>
+          <span style="font-size: 0.8rem; color: #52525b;">Feature contributions ($\beta_i \cdot z_i$)</span>
+        </div>
+        <div style="background: #f4f4f5; border: 1px solid #18181b; padding: 1rem; border-radius: 8px;">
+          <strong style="font-size: 0.9rem; display: block; margin-bottom: 0.3rem;">5. Rules Engine</strong>
+          <span style="font-size: 0.8rem; color: #52525b;">Deterministic threshold priorities</span>
+        </div>
+        <div style="background: #f4f4f5; border: 1px solid #18181b; padding: 1rem; border-radius: 8px;">
+          <strong style="font-size: 0.9rem; display: block; margin-bottom: 0.3rem;">6. Intervention</strong>
+          <span style="font-size: 0.8rem; color: #52525b;">Action items & progress monitoring</span>
+        </div>
+      </div>
+    </section>
 
   </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-container">
-      <div>
-        <strong>EDUPREDICT</strong> — First-Year College Academic Project | AI-Powered Academic Risk Analysis System
+  <!-- PUBLIC "TRY A PREDICTION" MODAL -->
+  <div id="public-try-modal" class="public-modal-overlay">
+    <div class="public-modal-card">
+      <button class="public-modal-close" id="btn-close-try-modal">&times;</button>
+
+      <div style="margin-bottom: 1.5rem; border-bottom: 1.5px solid #18181b; padding-bottom: 1rem;">
+        <span class="badge-lime">Public Demo Mode</span>
+        <h2 style="font-size: 1.6rem; font-weight: 800; color: #18181b; margin-top: 0.4rem;">Try EduPredict ML Prediction</h2>
+        <p style="font-size: 0.9rem; color: #52525b;">No account or login required. Enter your academic indicators below to test the real backend Scikit-Learn models.</p>
       </div>
-      <div class="footer-links">
-        <a href="/about">About Project</a>
-        <a href="/responsible-ai">Ethics & Privacy</a>
-        <a href="/mathematics">Mathematics</a>
-        <a href="/algorithms">Algorithms</a>
+
+      <form id="public-pred-form" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <strong style="font-size: 0.95rem;">Input Academic Factors</strong>
+          <button type="button" id="btn-fill-sample" class="btn-paper-outline" style="font-size: 0.78rem; padding: 0.3rem 0.6rem;">⚡ Load Sample Profile</button>
+        </div>
+
+        <div class="grid grid-3" style="gap: 0.85rem; margin-bottom: 1.25rem;">
+          <div>
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Attendance Rate (%)</label>
+            <input type="number" id="pub-att" class="form-control" min="0" max="100" value="85" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Weekly Study Hours</label>
+            <input type="number" id="pub-hrs" class="form-control" min="0" max="40" value="14" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Prev Semester (%)</label>
+            <input type="number" id="pub-prev" class="form-control" min="0" max="100" value="78" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Assignment Avg (%)</label>
+            <input type="number" id="pub-asgn" class="form-control" min="0" max="100" value="82" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Internal Assessment (%)</label>
+            <input type="number" id="pub-ia" class="form-control" min="0" max="100" value="80" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Quiz Average (%)</label>
+            <input type="number" id="pub-quiz" class="form-control" min="0" max="100" value="76" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Completed Assignments</label>
+            <input type="number" id="pub-comp" class="form-control" min="0" max="50" value="9" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Total Assignments</label>
+            <input type="number" id="pub-tot" class="form-control" min="1" max="50" value="10" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Active Backlog Count</label>
+            <input type="number" id="pub-back" class="form-control" min="0" max="10" value="0" required style="width: 100%;">
+          </div>
+        </div>
+
+        <button type="submit" id="btn-pub-submit" class="btn-lime" style="width: 100%; justify-content: center; font-size: 1rem; padding: 0.75rem;">
+          Run Scikit-Learn Prediction →
+        </button>
+      </form>
+
+      <!-- Public Prediction Results Area -->
+      <div id="public-pred-results" style="display: none; border-top: 1.5px solid #18181b; padding-top: 1.5rem; margin-top: 1.5rem;">
+        <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1rem; color: #18181b;">Real Model Predictions & Explanations</h3>
+
+        <div class="grid grid-2" style="gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="background: #f4f4f5; border: 1.5px solid #18181b; padding: 1.25rem; border-radius: 8px; text-align: center;">
+            <span style="font-size: 0.82rem; font-weight: 700; color: #52525b; text-transform: uppercase;">Predicted Risk Tier</span>
+            <div id="pub-res-risk" style="font-size: 1.6rem; font-weight: 800; margin-top: 0.3rem;">--</div>
+          </div>
+          <div style="background: #f4f4f5; border: 1.5px solid #18181b; padding: 1.25rem; border-radius: 8px; text-align: center;">
+            <span style="font-size: 0.82rem; font-weight: 700; color: #52525b; text-transform: uppercase;">Estimated Semester Score</span>
+            <div id="pub-res-score" style="font-size: 1.6rem; font-weight: 800; margin-top: 0.3rem;">--</div>
+          </div>
+        </div>
+
+        <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; color: #18181b;">Key Influencing Factors (XAI Analysis)</h4>
+          <ul id="pub-res-xai" style="margin: 0; padding-left: 1.25rem; font-size: 0.88rem; color: #3f3f46; line-height: 1.6;"></ul>
+        </div>
+
+        <div style="background: #f4f4f5; border: 1.5px solid #18181b; padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; color: #18181b;">Deterministic Academic Recommendations</h4>
+          <div id="pub-res-recs" style="font-size: 0.88rem; color: #3f3f46; line-height: 1.6;"></div>
+        </div>
+
+        <div style="text-align: center; background: #e0f2fe; border: 1.5px solid #0284c7; padding: 1.25rem; border-radius: 8px;">
+          <p style="font-size: 0.9rem; font-weight: 700; color: #0369a1; margin-bottom: 0.5rem;">
+            Want to view detailed feature contribution weights and What-If scenario simulations?
+          </p>
+          <div style="display: flex; gap: 0.75rem; justify-content: center;">
+            <a href="/prediction" class="btn-lime" style="font-size: 0.88rem; padding: 0.45rem 1rem;">View Full XAI Breakdown →</a>
+            <a href="/what-if" class="btn-paper-outline" style="font-size: 0.88rem; padding: 0.45rem 1rem;">Open What-If Simulator →</a>
+          </div>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <footer class="footer" style="background: #18181b; color: #ffffff; padding: 2.5rem 0; margin-top: 4rem;">
+    <div class="container" style="text-align: center;">
+      <p style="font-size: 0.85rem; color: #a1a1aa;">EduPredict Learning Analytics & Early Warning System</p>
     </div>
   </footer>
 
   <script src="js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const tryModal = document.getElementById("public-try-modal");
+      const btnHeroTry = document.getElementById("btn-hero-try");
+      const btnCloseTry = document.getElementById("btn-close-try-modal");
+      const btnFillSample = document.getElementById("btn-fill-sample");
+      const predForm = document.getElementById("public-pred-form");
+      const resultsDiv = document.getElementById("public-pred-results");
+
+      if (btnHeroTry) {
+        btnHeroTry.addEventListener("click", () => {
+          tryModal.classList.add("active");
+        });
+      }
+
+      if (btnCloseTry) {
+        btnCloseTry.addEventListener("click", () => {
+          tryModal.classList.remove("active");
+        });
+      }
+
+      if (btnFillSample) {
+        btnFillSample.addEventListener("click", () => {
+          document.getElementById("pub-att").value = "62";
+          document.getElementById("pub-hrs").value = "6";
+          document.getElementById("pub-prev").value = "58";
+          document.getElementById("pub-asgn").value = "65";
+          document.getElementById("pub-ia").value = "55";
+          document.getElementById("pub-quiz").value = "50";
+          document.getElementById("pub-comp").value = "5";
+          document.getElementById("pub-tot").value = "10";
+          document.getElementById("pub-back").value = "2";
+        });
+      }
+
+      if (predForm) {
+        predForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          
+          const payload = {
+            attendance: parseFloat(document.getElementById("pub-att").value),
+            study_hours: parseFloat(document.getElementById("pub-hrs").value),
+            previous_semester_percentage: parseFloat(document.getElementById("pub-prev").value),
+            assignment_average: parseFloat(document.getElementById("pub-asgn").value),
+            internal_assessment: parseFloat(document.getElementById("pub-ia").value),
+            quiz_average: parseFloat(document.getElementById("pub-quiz").value),
+            completed_assignments: parseFloat(document.getElementById("pub-comp").value),
+            total_assignments: parseFloat(document.getElementById("pub-tot").value),
+            backlog_count: parseFloat(document.getElementById("pub-back").value)
+          };
+
+          try {
+            const res = await fetch("/api/predict", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+              // Cache payload and response for prediction.html and what-if.html
+              localStorage.setItem("edupredict_last_input", JSON.stringify(payload));
+              localStorage.setItem("edupredict_last_prediction", JSON.stringify(data));
+
+              const riskCategory = data.risk_category || "LOW";
+              const predictedScore = typeof data.predicted_score === 'number' ? data.predicted_score.toFixed(1) : data.predicted_score;
+
+              const riskElem = document.getElementById("pub-res-risk");
+              riskElem.textContent = riskCategory;
+              if (riskCategory === "HIGH") {
+                riskElem.style.color = "#dc2626";
+              } else if (riskCategory === "MEDIUM") {
+                riskElem.style.color = "#d97706";
+              } else {
+                riskElem.style.color = "#16a34a";
+              }
+
+              document.getElementById("pub-res-score").textContent = `${predictedScore}%`;
+
+              const xaiUl = document.getElementById("pub-res-xai");
+              xaiUl.innerHTML = "";
+              if (data.explanation && data.explanation.positive_signals) {
+                data.explanation.positive_signals.forEach(f => {
+                  const li = document.createElement("li");
+                  li.innerHTML = `<strong style="color: #16a34a;">+ Positive:</strong> ${f.name || f.feature} (Contribution: +${f.contribution.toFixed(2)})`;
+                  xaiUl.appendChild(li);
+                });
+              }
+              if (data.explanation && data.explanation.negative_signals) {
+                data.explanation.negative_signals.forEach(f => {
+                  const li = document.createElement("li");
+                  li.innerHTML = `<strong style="color: #dc2626;">- Concern:</strong> ${f.name || f.feature} (Contribution: ${f.contribution.toFixed(2)})`;
+                  xaiUl.appendChild(li);
+                });
+              }
+
+              const recsDiv = document.getElementById("pub-res-recs");
+              if (data.recommendations && data.recommendations.length > 0) {
+                recsDiv.innerHTML = data.recommendations.map((r, i) => {
+                  const txt = typeof r === 'string' ? r : (r.recommendation || r.reason);
+                  return `<div style="margin-bottom: 0.4rem;">👉 <strong>Priority ${i+1}:</strong> ${txt}</div>`;
+                }).join("");
+              } else {
+                recsDiv.textContent = "Maintain current academic habits and attend tutorials.";
+              }
+
+              resultsDiv.style.display = "block";
+              resultsDiv.scrollIntoView({ behavior: 'smooth' });
+            } else {
+              alert("Error running prediction: " + (data.error || "Server error"));
+            }
+          } catch(err) {
+            alert("Network error connecting to prediction API.");
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>

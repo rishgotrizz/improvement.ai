@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Login - EduPredict</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="paper-theme">
+
+  <!-- Top Navigation Header -->
+  <header class="navbar" style="background: #ffffff; border-bottom: 1.5px solid #18181b; position: sticky; top: 0; z-index: 100;">
+    <div class="container navbar-container" style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem;">
+      <a href="/" class="brand" style="text-decoration: none; color: #18181b; font-weight: 800; font-size: 1.3rem; display: flex; align-items: center; gap: 0.4rem;">
+        <span style="font-size: 1.5rem;">🎓</span>
+        <span>EduPredict</span>
+      </a>
+
+      <nav class="nav-menu" style="display: flex; gap: 1.5rem; align-items: center;">
+        <a href="/" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">Home</a>
+        <a href="/#how-it-works" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">How It Works</a>
+        <a href="/#students" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">For Students</a>
+        <a href="/#faculty" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">For Faculty</a>
+        <a href="/about" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">About</a>
+      </nav>
+
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="/login" class="btn-paper-outline" style="padding: 0.5rem 1.1rem; font-size: 0.9rem;">Log In</a>
+        <a href="/register" class="btn-lime" style="padding: 0.55rem 1.25rem; font-size: 0.9rem;">Register</a>
+      </div>
+
+      <button class="mobile-toggle" aria-label="Toggle Navigation">☰</button>
+    </div>
+  </header>
+
+  <!-- Student Login Form Container -->
+  <main class="container" style="max-width: 480px; padding: 4rem 1rem;">
+    <div class="paper-card" style="padding: 2.5rem 2rem;">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.4rem;">👨‍🎓</div>
+        <h1 style="font-size: 1.75rem; font-weight: 800; color: #18181b; margin-bottom: 0.3rem;">Student Sign In</h1>
+        <p style="color: #52525b; font-size: 0.9rem;">Access your personalized student academic dashboard</p>
+      </div>
+
+      <!-- Feedback Alert -->
+      <div id="login-alert" class="alert alert-danger" style="display: none; margin-bottom: 1.25rem;"></div>
+
+      <form id="student-login-form">
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label for="username" class="form-label" style="font-size: 0.85rem; font-weight: 700;">Username / Email</label>
+          <input type="text" id="username" class="form-control" placeholder="Enter student username..." required value="student" style="width: 100%;">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.75rem;">
+          <label for="password" class="form-label" style="font-size: 0.85rem; font-weight: 700;">Password</label>
+          <input type="password" id="password" class="form-control" placeholder="Enter password..." required value="student123" style="width: 100%;">
+        </div>
+
+        <button type="submit" id="btn-login-submit" class="btn-lime" style="width: 100%; justify-content: center; font-size: 1rem; margin-bottom: 1.5rem;">
+          Sign In to Student Portal →
+        </button>
+      </form>
+
+      <!-- Quick Demo Fill -->
+      <div style="border-top: 1px solid #e4e4e7; padding-top: 1rem; text-align: center; font-size: 0.85rem; color: #52525b;">
+        <p style="margin-bottom: 0.75rem; font-weight: 700; color: #18181b;">⚡ Quick Demo Account</p>
+        <button type="button" id="demo-student-fill" class="btn-paper-outline" style="font-size: 0.82rem; padding: 0.4rem 0.85rem; width: 100%;">
+          Fill Demo Credentials (student / student123)
+        </button>
+      </div>
+
+      <div style="text-align: center; margin-top: 1.5rem; font-size: 0.88rem; color: #52525b;">
+        Don't have a student account? <a href="/register/student" style="color: #18181b; font-weight: 700;">Register as Student</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer" style="background: #18181b; color: #ffffff; padding: 2.5rem 0; margin-top: 4rem;">
+    <div class="container" style="text-align: center;">
+      <p style="font-size: 0.85rem; color: #a1a1aa;">EduPredict Learning Analytics & Early Warning System</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const usernameInput = document.getElementById("username");
+      const passwordInput = document.getElementById("password");
+      const loginForm = document.getElementById("student-login-form");
+      const alertBox = document.getElementById("login-alert");
+
+      document.getElementById("demo-student-fill").addEventListener("click", () => {
+        usernameInput.value = "student";
+        passwordInput.value = "student123";
+      });
+
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        alertBox.style.display = "none";
+
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        try {
+          const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            localStorage.setItem("edupredict_user", JSON.stringify(data.user));
+            window.location.href = "/dashboard";
+          } else {
+            alertBox.textContent = data.error || "Authentication failed. Invalid credentials.";
+            alertBox.style.display = "block";
+          }
+        } catch(err) {
+          alertBox.textContent = "Network error connecting to login service.";
+          alertBox.style.display = "block";
+        }
+      });
+    });
+  </script>
+</body>
+</html>

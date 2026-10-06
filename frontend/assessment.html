@@ -5,187 +5,424 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Academic Assessment - EduPredict</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .dynamic-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      font-size: 0.88rem;
+    }
+    .dynamic-table th, .dynamic-table td {
+      border: 1px solid var(--border-color);
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+    }
+    .dynamic-table th {
+      background: #f4f4f5;
+      font-weight: 700;
+    }
+    .empty-notice {
+      padding: 1rem;
+      background: #fafaf9;
+      border: 1.5px dashed #18181b;
+      border-radius: 8px;
+      color: #71717a;
+      font-size: 0.88rem;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+  </style>
 </head>
-<body>
+<body class="paper-theme">
 
+  <!-- Top Navigation Header -->
+  <header class="navbar" style="background: #ffffff; border-bottom: 1.5px solid #18181b; position: sticky; top: 0; z-index: 100;">
+    <div class="container navbar-container" style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem;">
+      <a href="/" class="brand" style="text-decoration: none; color: #18181b; font-weight: 800; font-size: 1.3rem; display: flex; align-items: center; gap: 0.4rem;">
+        <span style="font-size: 1.5rem;">🎓</span>
+        <span>EduPredict</span>
+      </a>
 
+      <nav class="nav-menu" style="display: flex; gap: 1.5rem; align-items: center;">
+        <a href="/" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">Home</a>
+        <a href="/dashboard" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">Dashboard</a>
+        <a href="/prediction" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">Prediction</a>
+        <a href="/about" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">About</a>
+      </nav>
+
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="/login" class="btn-paper-outline" style="padding: 0.55rem 1.25rem; font-size: 0.9rem;">LOGIN</a>
+        <a href="/register" class="btn-lime" style="padding: 0.55rem 1.25rem; font-size: 0.9rem;">REGISTER</a>
+      </div>
+
+      <button class="mobile-toggle" aria-label="Toggle Navigation">☰</button>
+    </div>
+  </header>
 
   <!-- Main Container -->
-  <main class="container" style="max-width: 900px;">
-    <div class="page-header">
-      <h1 class="page-title">Academic Assessment Profile</h1>
-      <p class="page-subtitle">Enter student academic metrics and course marks for AI risk evaluation</p>
+  <main class="container" style="max-width: 900px; padding-top: 2.5rem; padding-bottom: 4rem;">
+    <div class="page-header" style="margin-bottom: 2rem;">
+      <h1 class="page-title" style="font-size: 2rem; font-weight: 800; color: #18181b;">Dynamic Academic Assessment Profile</h1>
+      <p class="page-subtitle" style="color: #52525b;">Enter raw class records, individual test marks, and quiz topics. EduPredict automatically calculates aggregates and runs Scikit-Learn predictions.</p>
     </div>
 
-    <div class="card" style="padding: 2rem;">
-      <form id="assessment-form">
+    <div class="paper-card" style="padding: 2.25rem;">
+      <form id="dynamic-assessment-form">
         
-        <!-- General Academic Attributes -->
-        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--dark); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
-          1. Overall Academic Performance Metrics
+        <!-- 1. Attendance & Self-Study Raw Inputs -->
+        <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 1rem; color: #18181b; border-bottom: 1.5px solid #18181b; padding-bottom: 0.4rem;">
+          1. Attendance & Self-Study Activity
         </h3>
 
-        <div class="grid grid-2">
-          <div class="form-group">
-            <label class="form-label" for="attendance">Attendance Rate (%) *</label>
-            <input type="number" id="attendance" class="form-control" min="0" max="100" value="87" required>
-            <div class="form-help">Percentage of total lectures attended (0 to 100%).</div>
-            <div class="form-error" id="err-attendance">Attendance must be between 0 and 100.</div>
+        <div class="grid grid-2" style="gap: 1rem; margin-bottom: 1.75rem;">
+          <div>
+            <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">Classes Attended / Classes Held *</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="number" id="att-attended" class="form-control" placeholder="Attended (e.g. 45)" min="0" value="45" required style="flex: 1;">
+              <span style="font-weight: 800;">/</span>
+              <input type="number" id="att-held" class="form-control" placeholder="Held (e.g. 50)" min="1" value="50" required style="flex: 1;">
+            </div>
+            <div id="att-calc-badge" style="font-size: 0.8rem; font-weight: 700; color: #16a34a; margin-top: 0.35rem;">Calculated Attendance: 90.0%</div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="study_hours">Weekly Self-Study Hours *</label>
-            <input type="number" id="study_hours" class="form-control" min="0" max="70" value="18" required>
-            <div class="form-help">Average hours spent studying per week.</div>
-            <div class="form-error" id="err-study_hours">Study hours must be non-negative.</div>
+          <div>
+            <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">Weekly Self-Study Hours *</label>
+            <input type="number" id="study_hours" class="form-control" min="0" max="70" value="18" required style="width: 100%;">
+            <div style="font-size: 0.78rem; color: #52525b; margin-top: 0.25rem;">Average hours spent studying per week</div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="previous_score">Previous Semester Percentage (%) *</label>
-            <input type="number" id="previous_score" class="form-control" min="0" max="100" step="0.1" value="79.0" required>
-            <div class="form-help">Overall percentage score achieved in previous term.</div>
+          <div>
+            <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">Previous Semester Score *</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="number" id="prev-obtained" class="form-control" placeholder="Marks (395)" value="395" style="flex: 1;">
+              <span style="font-weight: 800;">/</span>
+              <input type="number" id="prev-max" class="form-control" placeholder="Max (500)" value="500" style="flex: 1;">
+            </div>
+            <div id="prev-calc-badge" style="font-size: 0.8rem; font-weight: 700; color: #16a34a; margin-top: 0.35rem;">Calculated Previous Term: 79.0%</div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="assignment_avg">Assignment Average (%) *</label>
-            <input type="number" id="assignment_avg" class="form-control" min="0" max="100" step="0.1" value="82.5" required>
-            <div class="form-help">Mean score achieved in coursework assignments.</div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="internal_score">Internal Assessment Score (%) *</label>
-            <input type="number" id="internal_score" class="form-control" min="0" max="100" step="0.1" value="76.0" required>
-            <div class="form-help">Mid-term or internal exam percentage score.</div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="quiz_avg">Quiz Average (%) *</label>
-            <input type="number" id="quiz_avg" class="form-control" min="0" max="100" step="0.1" value="80.0" required>
-            <div class="form-help">Mean percentage score in short quizzes.</div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="completed_assignments">Completed Assignments Count *</label>
-            <input type="number" id="completed_assignments" class="form-control" min="0" max="30" value="14" required>
-            <div class="form-help">Total assignments submitted on time.</div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="backlog_count">Active Backlogs / Failed Subjects *</label>
-            <input type="number" id="backlog_count" class="form-control" min="0" max="10" value="0" required>
-            <div class="form-help">Number of uncleared subjects.</div>
+          <div>
+            <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">Active Backlogs / Failed Subjects *</label>
+            <input type="number" id="backlog_count" class="form-control" min="0" max="10" value="0" required style="width: 100%;">
+            <div style="font-size: 0.78rem; color: #52525b; margin-top: 0.25rem;">Number of uncleared subjects</div>
           </div>
         </div>
 
-        <!-- Student Academic Performance Subjects -->
-        <h3 style="font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 1.25rem; color: var(--dark); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
-          2. Course-wise Percentage Marks (%)
-        </h3>
-
-        <div class="grid grid-2">
-          <div class="form-group">
-            <label class="form-label" for="score_cs102">CS102: Data Structures (%)</label>
-            <input type="number" id="score_cs102" class="form-control" min="0" max="100" value="74">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="score_math101">MATH101: Mathematics (%)</label>
-            <input type="number" id="score_math101" class="form-control" min="0" max="100" value="72">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="score_phy101">PHY101: Physics (%)</label>
-            <input type="number" id="score_phy101" class="form-control" min="0" max="100" value="81">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="score_cs101">CS101: Computer Programming (%)</label>
-            <input type="number" id="score_cs101" class="form-control" min="0" max="100" value="88">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="score_ee101">EE101: Basic Electrical Engg (%)</label>
-            <input type="number" id="score_ee101" class="form-control" min="0" max="100" value="84">
-          </div>
+        <!-- 2. Dynamic Assessments Section -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #18181b; padding-bottom: 0.4rem; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #18181b; margin: 0;">
+            2. Assessments & Mid-Terms
+          </h3>
+          <button type="button" id="btn-add-assess-row" class="btn-lime" style="padding: 0.35rem 0.85rem; font-size: 0.82rem;">
+            + Add Assessment
+          </button>
         </div>
 
-        <!-- Status indicator -->
-        <div id="assessment-status" class="alert alert-info" style="display: none; margin-top: 1.5rem;">
-          ⌛ Evaluating academic profile using ML risk classification and grade estimation...
+        <div id="assessments-list-container">
+          <!-- Dynamic assessment rows inserted here -->
         </div>
+        <div id="assess-calc-summary" style="font-size: 0.85rem; font-weight: 700; color: #18181b; margin-top: 0.5rem; margin-bottom: 1.75rem;"></div>
+
+        <!-- 3. Dynamic Quizzes Section -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #18181b; padding-bottom: 0.4rem; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #18181b; margin: 0;">
+            3. Dynamic Quizzes & Topic Performance
+          </h3>
+          <button type="button" id="btn-add-quiz-row" class="btn-lime" style="padding: 0.35rem 0.85rem; font-size: 0.82rem;">
+            + Add Quiz
+          </button>
+        </div>
+
+        <div id="quizzes-list-container">
+          <!-- Dynamic quiz rows inserted here -->
+        </div>
+        <div id="quiz-calc-summary" style="font-size: 0.85rem; font-weight: 700; color: #18181b; margin-top: 0.5rem; margin-bottom: 2rem;"></div>
 
         <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
-          <button type="reset" class="btn btn-secondary">Reset Fields</button>
-          <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem;">Run Academic Prediction →</button>
+          <button type="submit" id="btn-run-dyn-pred" class="btn-lime" style="padding: 0.85rem 2.25rem; font-size: 1.05rem;">
+            Calculate Aggregates & Run AI Prediction →
+          </button>
         </div>
 
       </form>
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-container">
-      <div>EDUPREDICT — First-Year Academic Project</div>
-      <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/prediction">Prediction</a>
-      </div>
+  <footer class="footer" style="background: #18181b; color: #ffffff; padding: 2.5rem 0; margin-top: 4rem;">
+    <div class="container" style="text-align: center;">
+      <p style="font-size: 0.85rem; color: #a1a1aa;">EduPredict Learning Analytics & Early Warning System</p>
     </div>
   </footer>
 
   <script src="js/main.js"></script>
   <script>
-    // Form submission handler using EduPredictAPI service layer
-    document.getElementById("assessment-form").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      
-      const attendance = parseFloat(document.getElementById("attendance").value);
-      const studyHours = parseFloat(document.getElementById("study_hours").value);
-      
-      let isValid = true;
-      if (isNaN(attendance) || attendance < 0 || attendance > 100) {
-        document.getElementById("err-attendance").style.display = "block";
-        isValid = false;
-      } else {
-        document.getElementById("err-attendance").style.display = "none";
+    document.addEventListener("DOMContentLoaded", () => {
+      // Sample initial assessment and quiz records
+      let assessments = [
+        { id: 1, title: "Internal Assessment 1", obtained: 24, max: 30, date: "2026-02-15" },
+        { id: 2, title: "Unit Test 1", obtained: 18, max: 25, date: "2026-03-01" },
+        { id: 3, title: "Mid Semester", obtained: 61, max: 75, date: "2026-03-20" }
+      ];
+
+      let quizzes = [
+        { id: 1, title: "Matrices Quiz", topic: "Matrices", obtained: 8, max: 10, date: "2026-02-10" },
+        { id: 2, title: "Determinants Quiz", topic: "Determinants", obtained: 7, max: 10, date: "2026-02-22" },
+        { id: 3, title: "Differentiation Quiz", topic: "Differentiation", obtained: 5, max: 10, date: "2026-03-12" }
+      ];
+
+      // Calculation Badges Handlers
+      const attAttended = document.getElementById("att-attended");
+      const attHeld = document.getElementById("att-held");
+      const attBadge = document.getElementById("att-calc-badge");
+
+      function updateAttendance() {
+        const att = parseFloat(attAttended.value) || 0;
+        const held = parseFloat(attHeld.value) || 1;
+        if (held > 0 && att <= held) {
+          const pct = ((att / held) * 100).toFixed(1);
+          attBadge.textContent = `Calculated Attendance: ${pct}% (${att}/${held})`;
+          attBadge.style.color = "#16a34a";
+        } else {
+          attBadge.textContent = `Invalid: Attended (${att}) cannot exceed Held (${held})`;
+          attBadge.style.color = "#dc2626";
+        }
       }
 
-      if (isNaN(studyHours) || studyHours < 0) {
-        document.getElementById("err-study_hours").style.display = "block";
-        isValid = false;
-      } else {
-        document.getElementById("err-study_hours").style.display = "none";
+      attAttended.addEventListener("input", updateAttendance);
+      attHeld.addEventListener("input", updateAttendance);
+      updateAttendance();
+
+      const prevObtained = document.getElementById("prev-obtained");
+      const prevMax = document.getElementById("prev-max");
+      const prevBadge = document.getElementById("prev-calc-badge");
+
+      function updatePrevTerm() {
+        const obt = parseFloat(prevObtained.value) || 0;
+        const max = parseFloat(prevMax.value) || 100;
+        if (max > 0 && obt <= max) {
+          const pct = ((obt / max) * 100).toFixed(1);
+          prevBadge.textContent = `Calculated Previous Term: ${pct}% (${obt}/${max})`;
+          prevBadge.style.color = "#16a34a";
+        } else {
+          prevBadge.textContent = `Invalid score entry`;
+          prevBadge.style.color = "#dc2626";
+        }
+      }
+      prevObtained.addEventListener("input", updatePrevTerm);
+      prevMax.addEventListener("input", updatePrevTerm);
+      updatePrevTerm();
+
+      // Render Dynamic Assessments List
+      const assessContainer = document.getElementById("assessments-list-container");
+      const assessSummary = document.getElementById("assess-calc-summary");
+
+      function renderAssessments() {
+        if (assessments.length === 0) {
+          assessContainer.innerHTML = `<div class="empty-notice">No assessments recorded yet. Click "+ Add Assessment" above to record one.</div>`;
+          assessSummary.textContent = "Assessment Aggregate: No assessments recorded yet.";
+          return;
+        }
+
+        let totalObtained = 0;
+        let totalMax = 0;
+
+        let html = `<table class="dynamic-table">
+          <thead>
+            <tr>
+              <th>Assessment Name</th>
+              <th>Marks Obtained</th>
+              <th>Maximum Marks</th>
+              <th>Percentage</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>`;
+
+        assessments.forEach((item, index) => {
+          totalObtained += item.obtained;
+          totalMax += item.max;
+          const pct = ((item.obtained / item.max) * 100).toFixed(1);
+          html += `<tr>
+            <td><strong>${item.title}</strong></td>
+            <td>${item.obtained}</td>
+            <td>${item.max}</td>
+            <td><span class="badge-lime" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">${pct}%</span></td>
+            <td>
+              <button type="button" onclick="deleteAssessment(${index})" style="background: #fee2e2; border: 1px solid #18181b; border-radius: 4px; color: #dc2626; cursor: pointer; padding: 0.2rem 0.5rem; font-size: 0.78rem; font-weight: 700;">Delete</button>
+            </td>
+          </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        assessContainer.innerHTML = html;
+
+        const aggPct = ((totalObtained / totalMax) * 100).toFixed(1);
+        assessSummary.textContent = `Calculated Assessment Aggregate: ${aggPct}% (${totalObtained} / ${totalMax} total marks across ${assessments.length} assessments)`;
       }
 
-      if (isValid) {
-        const statusEl = document.getElementById("assessment-status");
-        statusEl.style.display = "block";
+      window.deleteAssessment = function(index) {
+        assessments.splice(index, 1);
+        renderAssessments();
+      };
+
+      document.getElementById("btn-add-assess-row").addEventListener("click", () => {
+        const title = prompt("Enter Assessment Name (e.g. Unit Test 2):");
+        if (!title) return;
+        const obtainedStr = prompt("Enter Marks Obtained:");
+        if (obtainedStr === null) return;
+        const maxStr = prompt("Enter Maximum Marks:");
+        if (maxStr === null) return;
+
+        const obtained = parseFloat(obtainedStr);
+        const max = parseFloat(maxStr);
+
+        if (isNaN(obtained) || isNaN(max) || max <= 0 || obtained > max || obtained < 0) {
+          alert("Invalid marks input. Marks obtained must be between 0 and Maximum Marks.");
+          return;
+        }
+
+        assessments.push({ id: Date.now(), title, obtained, max });
+        renderAssessments();
+      });
+
+      renderAssessments();
+
+      // Render Dynamic Quizzes List
+      const quizContainer = document.getElementById("quizzes-list-container");
+      const quizSummary = document.getElementById("quiz-calc-summary");
+
+      function renderQuizzes() {
+        if (quizzes.length === 0) {
+          quizContainer.innerHTML = `<div class="empty-notice">No quizzes recorded yet. Click "+ Add Quiz" above to record one.</div>`;
+          quizSummary.textContent = "Quiz Aggregate: No quizzes recorded yet.";
+          return;
+        }
+
+        let totalObtained = 0;
+        let totalMax = 0;
+
+        let html = `<table class="dynamic-table">
+          <thead>
+            <tr>
+              <th>Quiz Name</th>
+              <th>Topic</th>
+              <th>Score</th>
+              <th>Accuracy</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>`;
+
+        quizzes.forEach((item, index) => {
+          totalObtained += item.obtained;
+          totalMax += item.max;
+          const pct = ((item.obtained / item.max) * 100).toFixed(1);
+          html += `<tr>
+            <td><strong>${item.title}</strong></td>
+            <td><span class="badge badge-info" style="font-size: 0.78rem;">${item.topic}</span></td>
+            <td>${item.obtained} / ${item.max}</td>
+            <td><span class="badge-lime" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">${pct}%</span></td>
+            <td>
+              <button type="button" onclick="deleteQuiz(${index})" style="background: #fee2e2; border: 1px solid #18181b; border-radius: 4px; color: #dc2626; cursor: pointer; padding: 0.2rem 0.5rem; font-size: 0.78rem; font-weight: 700;">Delete</button>
+            </td>
+          </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        quizContainer.innerHTML = html;
+
+        const aggPct = ((totalObtained / totalMax) * 100).toFixed(1);
+        quizSummary.textContent = `Calculated Quiz Aggregate: ${aggPct}% (${totalObtained} / ${totalMax} total marks across ${quizzes.length} quizzes)`;
+      }
+
+      window.deleteQuiz = function(index) {
+        quizzes.splice(index, 1);
+        renderQuizzes();
+      };
+
+      document.getElementById("btn-add-quiz-row").addEventListener("click", () => {
+        const title = prompt("Enter Quiz Name (e.g. Integration Quiz):");
+        if (!title) return;
+        const topic = prompt("Enter Topic (e.g. Integration):") || "General";
+        const obtainedStr = prompt("Enter Marks Obtained:");
+        if (obtainedStr === null) return;
+        const maxStr = prompt("Enter Maximum Marks:");
+        if (maxStr === null) return;
+
+        const obtained = parseFloat(obtainedStr);
+        const max = parseFloat(maxStr);
+
+        if (isNaN(obtained) || isNaN(max) || max <= 0 || obtained > max || obtained < 0) {
+          alert("Invalid marks input. Marks obtained must be between 0 and Maximum Marks.");
+          return;
+        }
+
+        quizzes.push({ id: Date.now(), title, topic, obtained, max });
+        renderQuizzes();
+      });
+
+      renderQuizzes();
+
+      // Form Submit -> Run Scikit-Learn Prediction
+      document.getElementById("dynamic-assessment-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const attAtt = parseFloat(attAttended.value);
+        const attH = parseFloat(attHeld.value);
+        const attendance = ((attAtt / attH) * 100);
+
+        const studyHours = parseFloat(document.getElementById("study_hours").value);
+
+        const prevObt = parseFloat(prevObtained.value);
+        const prevM = parseFloat(prevMax.value);
+        const previous_semester_percentage = ((prevObt / prevM) * 100);
+
+        let internal_assessment = 76.0;
+        if (assessments.length > 0) {
+          const totObt = assessments.reduce((sum, a) => sum + a.obtained, 0);
+          const totMx = assessments.reduce((sum, a) => sum + a.max, 0);
+          internal_assessment = (totObt / totMx) * 100;
+        }
+
+        let quiz_average = 80.0;
+        if (quizzes.length > 0) {
+          const totObt = quizzes.reduce((sum, q) => sum + q.obtained, 0);
+          const totMx = quizzes.reduce((sum, q) => sum + q.max, 0);
+          quiz_average = (totObt / totMx) * 100;
+        }
+
+        const backlog_count = parseInt(document.getElementById("backlog_count").value);
 
         const payload = {
-          attendance: attendance,
+          attendance,
           study_hours: studyHours,
-          previous_semester_percentage: parseFloat(document.getElementById("previous_score").value),
-          assignment_average: parseFloat(document.getElementById("assignment_avg").value),
-          internal_assessment: parseFloat(document.getElementById("internal_score").value),
-          quiz_average: parseFloat(document.getElementById("quiz_avg").value),
-          completed_assignments: parseInt(document.getElementById("completed_assignments").value),
+          previous_semester_percentage,
+          assignment_average: 82.5,
+          internal_assessment,
+          quiz_average,
+          completed_assignments: 14,
           total_assignments: 15,
-          backlog_count: parseInt(document.getElementById("backlog_count").value)
+          backlog_count
         };
 
-        const res = await EduPredictAPI.predictRisk(payload);
-        if (res && res.data && res.data.success) {
-          localStorage.setItem("edupredict_last_prediction", JSON.stringify({
-            inputs: payload,
-            output: res.data
-          }));
+        try {
+          const res = await fetch("/api/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            alert(`✅ Dynamic Prediction Calculated!\nRisk Category: ${data.prediction.risk_category}\nEstimated Semester Score: ${data.prediction.predicted_score}%`);
+            window.location.href = "/prediction";
+          } else {
+            alert("Error running prediction: " + (data.error || "Server error"));
+          }
+        } catch(err) {
+          alert("Network error running prediction.");
         }
-        
-        setTimeout(() => {
-          window.location.href = "/prediction";
-        }, 500);
-      }
+      });
     });
   </script>
 </body>

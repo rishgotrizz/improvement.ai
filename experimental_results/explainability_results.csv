@@ -1,0 +1,6 @@
+student_id,actual_model_prediction,reconstructed_prediction,intercept,sum_contributions,absolute_reconstruction_error
+STU-2026-284,88.7,88.7,75.25,13.427,0.0
+STU-2026-298,72.9,72.9,75.25,-2.375,0.0
+STU-2026-293,97.6,97.6,75.25,22.399,0.0
+STU-2026-120,53.4,53.4,75.25,-21.884,0.0
+STU-2026-302,52.6,52.6,75.25,-22.651,0.0

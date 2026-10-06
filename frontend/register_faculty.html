@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Registration - EduPredict</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="paper-theme">
+
+  <!-- Top Navigation Header -->
+  <header class="navbar" style="background: #ffffff; border-bottom: 1.5px solid #18181b; position: sticky; top: 0; z-index: 100;">
+    <div class="container navbar-container" style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem;">
+      <a href="/" class="brand" style="text-decoration: none; color: #18181b; font-weight: 800; font-size: 1.3rem; display: flex; align-items: center; gap: 0.4rem;">
+        <span style="font-size: 1.5rem;">🎓</span>
+        <span>EduPredict</span>
+      </a>
+
+      <nav class="nav-menu" style="display: flex; gap: 1.5rem; align-items: center;">
+        <a href="/" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">Home</a>
+        <a href="/#how-it-works" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">How It Works</a>
+        <a href="/#students" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">For Students</a>
+        <a href="/#faculty" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">For Faculty</a>
+        <a href="/about" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">About</a>
+      </nav>
+
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="/login" class="btn-paper-outline" style="padding: 0.5rem 1.1rem; font-size: 0.9rem;">Log In</a>
+        <a href="/register" class="btn-lime" style="padding: 0.55rem 1.25rem; font-size: 0.9rem;">Register</a>
+      </div>
+
+      <button class="mobile-toggle" aria-label="Toggle Navigation">☰</button>
+    </div>
+  </header>
+
+  <!-- Faculty Registration Form Container -->
+  <main class="container" style="max-width: 520px; padding: 3.5rem 1rem;">
+    <div class="paper-card" style="padding: 2.5rem 2rem;">
+      <div style="text-align: center; margin-bottom: 1.75rem;">
+        <span class="badge-lime" style="margin-bottom: 0.5rem; display: inline-block; background: #18181b; color: #ffffff;">👩‍🏫 Faculty Account</span>
+        <h1 style="font-size: 1.8rem; font-weight: 800; color: #18181b; margin-bottom: 0.3rem;">Register as Faculty</h1>
+        <p style="color: #52525b; font-size: 0.9rem;">Set up your faculty profile to manage classrooms and students</p>
+      </div>
+
+      <!-- Feedback Alert -->
+      <div id="reg-alert" class="alert alert-danger" style="display: none; margin-bottom: 1.25rem;"></div>
+
+      <form id="faculty-reg-form">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label for="reg-name" class="form-label" style="font-size: 0.85rem; font-weight: 700;">Full Name</label>
+          <input type="text" id="reg-name" class="form-control" placeholder="e.g. Prof. Sunita Rao" required style="width: 100%;">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label for="reg-username" class="form-label" style="font-size: 0.85rem; font-weight: 700;">Username / Email</label>
+          <input type="text" id="reg-username" class="form-control" placeholder="Choose a username or email..." required style="width: 100%;">
+        </div>
+
+        <div class="grid grid-2" style="gap: 0.75rem; margin-bottom: 1rem;">
+          <div>
+            <label for="reg-password" class="form-label" style="font-size: 0.82rem; font-weight: 700;">Password</label>
+            <input type="password" id="reg-password" class="form-control" placeholder="At least 6 chars" required style="width: 100%;">
+          </div>
+          <div>
+            <label for="reg-confirm" class="form-label" style="font-size: 0.82rem; font-weight: 700;">Confirm Password</label>
+            <input type="password" id="reg-confirm" class="form-control" placeholder="Re-enter password" required style="width: 100%;">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label for="reg-dept" class="form-label" style="font-size: 0.85rem; font-weight: 700;">Department / Discipline (Optional)</label>
+          <input type="text" id="reg-dept" class="form-control" placeholder="e.g. Computer Engineering" style="width: 100%;">
+        </div>
+
+        <button type="submit" id="btn-reg-submit" class="btn-paper-outline" style="width: 100%; justify-content: center; font-size: 1rem; background: #18181b; color: #ffffff;">
+          Create Faculty Account →
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 1.5rem; font-size: 0.88rem; color: #52525b;">
+        Already have an account? <a href="/login/faculty" style="color: #18181b; font-weight: 700;">Log In as Faculty</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer" style="background: #18181b; color: #ffffff; padding: 2.5rem 0; margin-top: 4rem;">
+    <div class="container" style="text-align: center;">
+      <p style="font-size: 0.85rem; color: #a1a1aa;">EduPredict Learning Analytics & Early Warning System</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const alertBox = document.getElementById("reg-alert");
+
+      document.getElementById("faculty-reg-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        alertBox.style.display = "none";
+
+        const name = document.getElementById("reg-name").value.trim();
+        const username = document.getElementById("reg-username").value.trim();
+        const password = document.getElementById("reg-password").value;
+        const confirm = document.getElementById("reg-confirm").value;
+        const department = document.getElementById("reg-dept").value.trim();
+
+        if (password !== confirm) {
+          alertBox.textContent = "Passwords do not match. Please re-enter.";
+          alertBox.style.display = "block";
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username,
+              password,
+              role: "faculty",
+              name,
+              department
+            })
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            localStorage.setItem("edupredict_user", JSON.stringify(data.user));
+            window.location.href = "/faculty";
+          } else {
+            alertBox.textContent = data.error || "Faculty registration failed.";
+            alertBox.style.display = "block";
+          }
+        } catch(err) {
+          alertBox.textContent = "Network error registering faculty account.";
+          alertBox.style.display = "block";
+        }
+      });
+    });
+  </script>
+</body>
+</html>

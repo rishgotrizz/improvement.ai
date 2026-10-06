@@ -1,0 +1,39 @@
+EDUPREDICT - DATASET VALIDATION REPORT
+======================================
+
+Dataset File Path  : data/students.csv
+Total Records (N)  : 500
+Total Features     : 9 Model Features (11 Columns Total)
+Duplicate Records  : 0
+Missing Values     : 0
+
+Column Data Types:
+  - student_id: str
+  - attendance: float64
+  - study_hours: float64
+  - previous_semester_percentage: float64
+  - assignment_average: float64
+  - internal_assessment: float64
+  - quiz_average: float64
+  - completed_assignments: int64
+  - total_assignments: int64
+  - backlog_count: int64
+  - final_score: float64
+
+Risk-Class Target Distribution (Derived from final_score):
+  - HIGH Risk: 81 records (16.20%)
+  - MEDIUM Risk: 193 records (38.60%)
+  - LOW Risk: 226 records (45.20%)
+
+Numerical Features Statistics:
+                feature_name  min_val  max_val  mean_val  median_val  std_val
+                  attendance     50.1     97.9     79.88       81.20    10.60
+                 study_hours      3.1     28.0     15.12       14.80     5.50
+previous_semester_percentage     45.2     95.0     72.61       72.60    11.49
+          assignment_average     45.5     97.8     76.14       76.35    12.23
+         internal_assessment     40.2     94.9     74.00       75.20    12.59
+                quiz_average     41.1     96.0     72.78       74.35    13.03
+       completed_assignments      6.0     15.0     12.12       13.00     2.23
+           total_assignments     15.0     15.0     15.00       15.00     0.00
+               backlog_count      0.0      3.0      0.36        0.00     0.71
+                 final_score     38.7     99.0     75.18       74.00    14.19

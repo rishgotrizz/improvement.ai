@@ -20,6 +20,8 @@ from flask import Flask, jsonify, send_from_directory, request
 from backend.services.database import init_db
 from backend.routes.student_routes import student_bp
 from backend.routes.assessment_routes import assessment_bp
+from backend.routes.auth_routes import auth_bp
+from backend.routes.faculty_routes import faculty_bp
 from backend.services.prediction_service import fetch_trained_model_metrics, execute_ml_prediction
 from backend.services.recommendation_service import fetch_recommendations_for_input
 from backend.services.what_if_service import run_what_if_analysis
@@ -33,10 +35,13 @@ if not os.path.exists(FRONTEND_DIR):
 
 # Initialize Flask application
 app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path="/static")
+app.secret_key = os.environ.get("SECRET_KEY", "edupredict-secret-key-2026-pbl")
 
 # Register API Blueprints
 app.register_blueprint(student_bp)
 app.register_blueprint(assessment_bp)
+app.register_blueprint(auth_bp)
+app.register_blueprint(faculty_bp)
 
 # ==============================================================================
 # BASE REST API ENDPOINTS (/api/...)
@@ -113,9 +118,37 @@ def run_what_if():
 def serve_index():
     return send_from_directory(FRONTEND_DIR, "index.html")
 
+@app.route("/register")
+def serve_register():
+    return send_from_directory(FRONTEND_DIR, "register.html")
+
+@app.route("/register/student")
+def serve_register_student():
+    return send_from_directory(FRONTEND_DIR, "register_student.html")
+
+@app.route("/register/faculty")
+def serve_register_faculty():
+    return send_from_directory(FRONTEND_DIR, "register_faculty.html")
+
+@app.route("/login")
+def serve_login():
+    return send_from_directory(FRONTEND_DIR, "login.html")
+
+@app.route("/login/student")
+def serve_login_student():
+    return send_from_directory(FRONTEND_DIR, "login_student.html")
+
+@app.route("/login/faculty")
+def serve_login_faculty():
+    return send_from_directory(FRONTEND_DIR, "login_faculty.html")
+
 @app.route("/dashboard")
 def serve_dashboard():
     return send_from_directory(FRONTEND_DIR, "dashboard.html")
+
+@app.route("/faculty")
+def serve_faculty():
+    return send_from_directory(FRONTEND_DIR, "faculty.html")
 
 @app.route("/assessment")
 def serve_assessment():
@@ -173,6 +206,6 @@ except Exception as e:
     print(f"⚠️ [Startup DB Init Notice]: {e}")
 
 if __name__ == "__main__":
-    port = int(os.path.environ.get("PORT", 5001)) if hasattr(os, "environ") else 5001
+    port = int(os.environ.get("PORT", 5001)) if hasattr(os, "environ") else 5001
     print(f"🚀 Starting EDUPREDICT Server on http://localhost:{port}")
     app.run(host="0.0.0.0", port=port, debug=True)

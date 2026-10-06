@@ -413,3 +413,99 @@ a:hover {
     text-align: center;
   }
 }
+
+
+/* ==========================================================================
+   EDITORIAL PAPER THEME & LANDING PAGE STYLES (INPIRED BY MODERN STARTUP DESIGN)
+   ========================================================================== */
+
+body.paper-theme {
+  background-color: #fbfbf6;
+  color: #18181b;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
+  background-image: radial-gradient(#e4e4e7 0.75px, transparent 0.75px);
+  background-size: 24px 24px;
+}
+
+.paper-card {
+  background: #ffffff;
+  border: 1.5px solid #18181b;
+  border-radius: 14px;
+  box-shadow: 4px 4px 0px #18181b;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.paper-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0px #18181b;
+}
+
+.btn-lime {
+  background-color: #bef264;
+  color: #18181b;
+  border: 1.5px solid #18181b;
+  font-weight: 700;
+  border-radius: 8px;
+  box-shadow: 3px 3px 0px #18181b;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-lime:hover {
+  background-color: #a3e635;
+  transform: translateY(-1px);
+  box-shadow: 4px 4px 0px #18181b;
+  color: #18181b;
+}
+
+.btn-paper-outline {
+  background-color: #ffffff;
+  color: #18181b;
+  border: 1.5px solid #18181b;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 2px 2px 0px #18181b;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-paper-outline:hover {
+  background-color: #f4f4f5;
+  color: #18181b;
+}
+
+.badge-lime {
+  background-color: #d9f99d;
+  color: #1a2e05;
+  border: 1px solid #84cc16;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hero-heading {
+  font-size: 3.25rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #09090b;
+}
+
+@media (max-width: 768px) {
+  .hero-heading {
+    font-size: 2.25rem;
+  }
+}

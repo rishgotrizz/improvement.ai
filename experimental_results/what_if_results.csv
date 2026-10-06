@@ -1,0 +1,6 @@
+scenario,baseline_score,scenario_score,prediction_change,formatted_change,baseline_risk,scenario_risk,risk_transition
+Scenario A (Attendance Increase),53.2,57.5,4.3,+4.3 percentage points,HIGH,HIGH,HIGH (Unchanged)
+Scenario B (Study Hours Increase),53.2,58.3,5.1,+5.1 percentage points,HIGH,HIGH,HIGH (Unchanged)
+Scenario C (Assignment Improvement),53.2,56.1,2.9,+2.9 percentage points,HIGH,HIGH,HIGH (Unchanged)
+Scenario D (Backlog Clearance),53.2,58.6,5.4,+5.4 percentage points,HIGH,HIGH,HIGH (Unchanged)
+Scenario E (Combined Improvement),53.2,74.9,21.7,+21.7 percentage points,HIGH,MEDIUM,HIGH → MEDIUM

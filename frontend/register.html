@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account - EduPredict Academic Portal</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="paper-theme">
+
+  <!-- Top Navigation Header -->
+  <header class="navbar" style="background: #ffffff; border-bottom: 1.5px solid #18181b; position: sticky; top: 0; z-index: 100;">
+    <div class="container navbar-container" style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem;">
+      
+      <!-- Brand Logo (Top Left) -->
+      <a href="/" class="brand" style="text-decoration: none; color: #18181b; font-weight: 800; font-size: 1.3rem; display: flex; align-items: center; gap: 0.4rem;">
+        <span style="font-size: 1.5rem;">🎓</span>
+        <span>EduPredict</span>
+      </a>
+
+      <!-- Center Nav Links -->
+      <nav class="nav-menu" style="display: flex; gap: 1.5rem; align-items: center;">
+        <a href="/" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">Home</a>
+        <a href="/#how-it-works" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">How It Works</a>
+        <a href="/about" class="nav-link" style="color: #52525b; font-weight: 500; text-decoration: none;">About</a>
+      </nav>
+
+      <!-- Right Single LOGIN & REGISTER Buttons -->
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <a href="/login" class="btn-paper-outline" style="padding: 0.55rem 1.25rem; font-size: 0.9rem; text-decoration: none; font-weight: 700;">LOGIN</a>
+        <a href="/register" class="btn-lime" style="padding: 0.55rem 1.25rem; font-size: 0.9rem; text-decoration: none; font-weight: 700;">REGISTER</a>
+      </div>
+
+      <button class="mobile-toggle" aria-label="Toggle Navigation">☰</button>
+    </div>
+  </header>
+
+  <!-- Role Selection Container -->
+  <main class="container" style="max-width: 840px; padding: 4rem 1rem;">
+    <div style="text-align: center; margin-bottom: 3rem;">
+      <span class="badge-lime" style="margin-bottom: 0.5rem; display: inline-block;">Account Registration</span>
+      <h1 style="font-size: 2.2rem; font-weight: 800; color: #18181b; margin-bottom: 0.5rem;">Create Your EduPredict Account</h1>
+      <p style="color: #52525b; font-size: 1rem;">Choose your role below to access tailored academic intelligence features.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem;">
+      
+      <!-- Student Role Card -->
+      <div class="paper-card" style="padding: 2.5rem 2rem; display: flex; flex-direction: column; justify-content: space-between; text-align: center;">
+        <div>
+          <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍🎓</div>
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: #18181b; margin-bottom: 0.75rem;">Student</h2>
+          <p style="color: #52525b; font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.75rem;">
+            Create a student account to track your academic progress, get XAI risk analysis, take practice quizzes, and simulate academic scenarios.
+          </p>
+        </div>
+        <a href="/register/student" class="btn-lime" style="width: 100%; justify-content: center; font-size: 1rem; padding: 0.75rem;">
+          Register as Student →
+        </a>
+      </div>
+
+      <!-- Faculty Role Card -->
+      <div class="paper-card" style="padding: 2.5rem 2rem; display: flex; flex-direction: column; justify-content: space-between; text-align: center;">
+        <div>
+          <div style="font-size: 3rem; margin-bottom: 1rem;">👩‍🏫</div>
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: #18181b; margin-bottom: 0.75rem;">Faculty</h2>
+          <p style="color: #52525b; font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.75rem;">
+            Create a faculty account to monitor student risk profiles, generate class join codes, audit predictions, and schedule interventions.
+          </p>
+        </div>
+        <a href="/register/faculty" class="btn-paper-outline" style="width: 100%; justify-content: center; font-size: 1rem; padding: 0.75rem; background: #18181b; color: #ffffff;">
+          Register as Faculty →
+        </a>
+      </div>
+
+    </div>
+
+    <div style="text-align: center; margin-top: 3rem; font-size: 0.95rem; color: #52525b;">
+      Already have an account? <a href="/login" style="color: #18181b; font-weight: 800; text-decoration: underline;">Log In here</a>
+    </div>
+  </main>
+
+  <footer class="footer" style="background: #18181b; color: #ffffff; padding: 2.5rem 0; margin-top: 4rem;">
+    <div class="container" style="text-align: center;">
+      <p style="font-size: 0.85rem; color: #a1a1aa;">EduPredict Learning Analytics & Early Warning System</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

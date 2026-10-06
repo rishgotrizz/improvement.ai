@@ -1,0 +1,51 @@
+EDUPREDICT - RECOMMENDATION ENGINE RULE VALIDATION REPORT
+=========================================================
+
+Test Case : Attendance Critical Rule (<60%)
+  - Target Factor     : attendance
+  - Expected Priority : URGENT
+  - Actual Result     : Expected rule was NOT triggered.
+  - Status            : FAIL
+
+Test Case : Study Hours Critical Rule (<6h)
+  - Target Factor     : study_hours
+  - Expected Priority : URGENT
+  - Actual Result     : Expected rule was NOT triggered.
+  - Status            : FAIL
+
+Test Case : Backlog Critical Rule (>2 backlogs)
+  - Target Factor     : backlog_count
+  - Expected Priority : URGENT
+  - Actual Result     : Expected rule was NOT triggered.
+  - Status            : FAIL
+
+Test Case : Assignment Average Critical Rule (<50%)
+  - Target Factor     : assignment_average
+  - Expected Priority : URGENT
+  - Actual Result     : Expected rule was NOT triggered.
+  - Status            : FAIL
+
+Test Case : Internal Assessment Warning Rule (<60%)
+  - Target Factor     : internal_assessment
+  - Expected Priority : HIGH
+  - Actual Result     : Expected rule was NOT triggered.
+  - Status            : FAIL
+
+Test Case : Quiz Average Warning Rule (<60%)
+  - Target Factor     : quiz_average
+  - Expected Priority : HIGH
+  - Actual Result     : Expected rule was NOT triggered.
+  - Status            : FAIL
+
+Test Case : Normal / No-Trigger Condition (Strong Profile)
+  - Target Factor     : None
+  - Expected Priority : None
+  - Actual Result     : Generated 1 total recs, 0 urgent/high.
+  - Status            : PASS
+
+Test Case : Multiple Simultaneous Conditions Profile
+  - Target Factor     : attendance
+  - Expected Priority : URGENT
+  - Actual Result     : Expected rule was NOT triggered.
+  - Status            : FAIL
+

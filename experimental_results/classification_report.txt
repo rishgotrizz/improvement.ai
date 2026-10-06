@@ -1,0 +1,29 @@
+EDUPREDICT - HELD-OUT CLASSIFICATION REPORT (N=100)
+Evaluated Model: Logistic Regression (StandardScaler Pipeline)
+Train/Test Split: 80/20 held-out (Random State 42, Stratified)
+
+Correct Predictions: 93 / 100 (93.00%)
+Incorrect Predictions: 7 / 100
+
+Classification Metrics Report:
+              precision    recall  f1-score   support
+
+        HIGH     1.0000    1.0000    1.0000        16
+      MEDIUM     0.8810    0.9487    0.9136        39
+         LOW     0.9524    0.8889    0.9195        45
+
+    accuracy                         0.9300       100
+   macro avg     0.9444    0.9459    0.9444       100
+weighted avg     0.9321    0.9300    0.9301       100
+
+
+Prediction Category Distribution:
+  - HIGH: 16.0%
+  - MEDIUM: 42.0%
+  - LOW: 42.0%
+
+Confusion Matrix (Rows=Actual, Cols=Predicted):
+Labels: ['HIGH', 'MEDIUM', 'LOW']
+[[16  0  0]
+ [ 0 37  2]
+ [ 0  5 40]]

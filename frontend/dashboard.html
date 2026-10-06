@@ -5,19 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Dashboard - EduPredict</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .dash-quiz-card {
+      background: var(--white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .topic-badge-weak {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+    }
+    .topic-badge-strong {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+    }
+  </style>
 </head>
 <body>
 
+  <!-- Navigation Header -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="brand">
+        <span class="brand-icon">🎓</span>
+        <span class="brand-text">EduPredict</span>
+      </a>
 
+      <nav class="nav-menu">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/dashboard" class="nav-link active">Dashboard</a>
+        <a href="/assessment" class="nav-link">Assessment</a>
+        <a href="/prediction" class="nav-link">Prediction</a>
+        <a href="/what-if" class="nav-link">What-If</a>
+        <a href="/analytics" class="nav-link">Analytics</a>
+        <a href="/model" class="nav-link">Model Specs</a>
+        <a href="#" id="btn-student-logout" class="nav-link" style="color: #dc2626; font-weight: 600;">Logout 🚪</a>
+      </nav>
+
+      <button class="mobile-toggle" aria-label="Toggle Navigation">☰</button>
+    </div>
+  </header>
 
   <!-- Main Content Container -->
   <main class="container">
+    <!-- Page Header & Classroom Join Button -->
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
       <div>
         <h1 class="page-title">Student Dashboard</h1>
         <p class="page-subtitle">Centralized academic performance overview connected to SQLite backend database</p>
       </div>
-      <a href="/assessment" class="btn btn-primary">+ Run New Assessment</a>
+      <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+        <button type="button" id="btn-open-join-modal" class="btn btn-secondary">+ Join Classroom</button>
+        <a href="/assessment" class="btn btn-primary">+ Run New Assessment</a>
+      </div>
+    </div>
+
+    <!-- Classroom Status Banner -->
+    <div id="classroom-status-banner" class="alert alert-info" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <div>
+        <span style="font-weight: 700;" id="banner-class-title">🏫 Classroom Membership: Independent Student Account</span>
+        <span style="font-size: 0.85rem; color: var(--text-muted); display: block;" id="banner-class-sub">Join a faculty classroom using a Join Code to connect official course attendance & assessments.</span>
+      </div>
+      <button type="button" id="btn-banner-join" class="btn btn-sm btn-primary">Join Classroom</button>
     </div>
 
     <!-- System Status & UI Feedback Banner -->
@@ -48,7 +110,7 @@
       <div class="card stat-card">
         <span class="stat-label">
           Weekly Study Hours
-          <span class="badge-demo" id="badge-hours-type">SQLite DB</span>
+          <span class="badge-demo" id="badge-hours-type">Student Input</span>
         </span>
         <span class="stat-value" id="dash-hours">18 hrs</span>
         <span class="stat-subtext">Self-Study & Revision Time</span>
@@ -68,6 +130,56 @@
       </div>
     </div>
 
+    <!-- Topic Weakness Analysis & Quiz System Panel -->
+    <div class="grid grid-2" style="gap: 1.5rem; margin-bottom: 2rem;">
+      <!-- Topic Weakness Insights Card -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">🎯 Topic Weakness Analysis</h3>
+          <span class="badge-demo">MCQ Quiz Analytics</span>
+        </div>
+        <div id="topic-analysis-box" style="font-size: 0.9rem; color: var(--text-muted);">
+          Loading topic weakness insights...
+        </div>
+      </div>
+
+      <!-- Classroom Quizzes List Card -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">📝 Classroom MCQ Evaluation Quizzes</h3>
+          <span class="badge badge-info">Interactive</span>
+        </div>
+        <div id="classroom-quizzes-box" style="font-size: 0.9rem;">
+          Loading available quizzes...
+        </div>
+      </div>
+    </div>
+
+    <!-- Real Student Progress & Risk Analytics Section -->
+    <div class="grid grid-2" style="gap: 1.5rem; margin-bottom: 2rem;">
+      <!-- Performance Over Time Card -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">📈 Performance Over Time</h3>
+          <span class="badge-demo">Historical Assessment Timeline</span>
+        </div>
+        <div id="chart-perf-time-container" style="min-height: 220px; display: flex; align-items: center; justify-content: center; background: var(--bg-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem;">
+          <span style="color: var(--text-muted); font-size: 0.88rem;">Loading performance timeline...</span>
+        </div>
+      </div>
+
+      <!-- Risk Prediction Trend Card -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark);">📉 Risk Prediction Trend</h3>
+          <span class="badge-demo">Threshold Model Snapshots</span>
+        </div>
+        <div id="chart-risk-trend-container" style="min-height: 220px; display: flex; align-items: center; justify-content: center; background: var(--bg-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1rem;">
+          <span style="color: var(--text-muted); font-size: 0.88rem;">Loading risk prediction trend...</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Main Dashboard Grid -->
     <div class="grid grid-3" style="margin-bottom: 2rem;">
       
@@ -84,6 +196,7 @@
               <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
                 <th style="padding: 0.6rem;">Course Code</th>
                 <th style="padding: 0.6rem;">Academic Course Name</th>
+                <th style="padding: 0.6rem;">Assigned Subject Faculty</th>
                 <th style="padding: 0.6rem;">Score</th>
                 <th style="padding: 0.6rem;">Attendance</th>
                 <th style="padding: 0.6rem;">Study Priority</th>
@@ -91,7 +204,7 @@
             </thead>
             <tbody id="subject-table-body">
               <tr>
-                <td colspan="5" style="padding: 1rem; text-align: center; color: var(--text-muted);">
+                <td colspan="6" style="padding: 1rem; text-align: center; color: var(--text-muted);">
                   Loading course marks from SQLite...
                 </td>
               </tr>
@@ -100,81 +213,178 @@
         </div>
       </div>
 
-      <!-- Quick AI Insights Panel -->
-      <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--dark);">Learning Support Insights</h3>
-          
-          <div style="margin-bottom: 1rem;">
-            <div style="font-size: 0.85rem; font-weight: 600; color: var(--dark); margin-bottom: 0.2rem;">Areas Needing Attention</div>
-            <p style="font-size: 0.82rem; color: var(--text-muted);" id="insight-attention">
-              <strong>CS102 (Data Structures)</strong> presents the largest relative performance gap. Increasing revision time by 30 mins/day will lower estimated risk.
-            </p>
-          </div>
-
-          <div style="margin-bottom: 1rem;">
-            <div style="font-size: 0.85rem; font-weight: 600; color: var(--dark); margin-bottom: 0.2rem;">Attendance Status</div>
-            <p style="font-size: 0.82rem; color: var(--text-muted);" id="insight-attendance">
-              Current attendance rate is 87%, well above the 75% institutional threshold.
-            </p>
-          </div>
+      <!-- Quick Actions Sidebar -->
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        
+        <!-- Intervention Area Alert -->
+        <div class="card" style="border-left: 4px solid var(--primary);">
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--dark); margin-bottom: 0.4rem;">Top Recommended Focus Area</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;" id="insight-attention">
+            Loading recommendation rule analysis...
+          </p>
+          <a href="/prediction" class="btn btn-secondary btn-sm" style="width: 100%; text-align: center; justify-content: center;">View Detailed Signals & Recs →</a>
         </div>
 
-        <div style="margin-top: 1rem;">
-          <a href="/planner" class="btn btn-secondary" style="width: 100%; text-align: center;">View Detailed Study Plan →</a>
+        <!-- Quick What-If Link Card -->
+        <div class="card" style="background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%); border-color: #bfdbfe;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 0.4rem;">⚡ Academic What-If Simulator</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Simulate how changes in attendance, study hours, or clearing backlogs impact your score.
+          </p>
+          <a href="/what-if" class="btn btn-primary btn-sm" style="width: 100%; text-align: center; justify-content: center;">Open Scenario Simulator →</a>
         </div>
+
       </div>
-
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-container">
-      <div>EDUPREDICT — First-Year Academic Project</div>
-      <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/prediction">Prediction</a>
-        <a href="/planner">Planner</a>
+  <!-- MODAL: Join Classroom -->
+  <div id="join-classroom-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 480px;">
+      <button class="modal-close" onclick="closeJoinModal()">&times;</button>
+      <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem;">🏫 Join a Faculty Classroom</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">Enter the 6-character Join Code provided by your faculty member.</p>
+
+      <form id="form-dash-join">
+        <div style="margin-bottom: 1.25rem;">
+          <label class="form-label" style="font-size: 0.85rem; font-weight: 600;">Class Join Code</label>
+          <input type="text" id="dash-join-code" class="form-control" placeholder="e.g. EDU-A7K92P" required style="width: 100%; text-transform: uppercase;">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Connect to Classroom →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: MCQ Quiz Taking -->
+  <div id="quiz-taking-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 650px;">
+      <button class="modal-close" onclick="closeQuizModal()">&times;</button>
+      <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.25rem;">
+        <span class="badge badge-info" id="quiz-modal-subject">MAT101</span>
+        <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--dark); margin-top: 0.2rem;" id="quiz-modal-title">Quiz Title</h2>
       </div>
+
+      <form id="quiz-taking-form">
+        <input type="hidden" id="active-quiz-id">
+        <div id="quiz-questions-container" style="margin-bottom: 1.5rem;">
+          Loading quiz questions...
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Submit MCQ Quiz Answers →</button>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container" style="text-align: center;">
+      <p>EduPredict Learning Analytics & Early Warning System | Student Portal</p>
     </div>
   </footer>
 
   <script src="js/main.js"></script>
   <script>
-    // Load student data from SQLite API on DOMReady
+    function closeJoinModal() {
+      document.getElementById("join-classroom-modal").classList.remove("active");
+    }
+    function closeQuizModal() {
+      document.getElementById("quiz-taking-modal").classList.remove("active");
+    }
+
     document.addEventListener("DOMContentLoaded", async () => {
       const feedbackEl = document.getElementById("dash-feedback");
       feedbackEl.style.display = "block";
-      feedbackEl.className = "alert alert-info";
-      feedbackEl.innerText = "⌛ Loading academic profile from SQLite database...";
 
+      let studentId = "STU-2026-001";
+      const userRaw = localStorage.getItem("edupredict_user");
+      if (userRaw) {
+        try {
+          const u = JSON.parse(userRaw);
+          if (u.studentId) studentId = u.studentId;
+        } catch(e) {}
+      }
+
+      // Logout handler
+      document.getElementById("btn-student-logout").addEventListener("click", async (e) => {
+        e.preventDefault();
+        try { await fetch("/api/auth/logout", { method: "POST" }); } catch(err) {}
+        localStorage.removeItem("edupredict_user");
+        window.location.href = "/login";
+      });
+
+      // Join Modal Listeners
+      const joinModal = document.getElementById("join-classroom-modal");
+      document.getElementById("btn-open-join-modal").addEventListener("click", () => joinModal.classList.add("active"));
+      document.getElementById("btn-banner-join").addEventListener("click", () => joinModal.classList.add("active"));
+
+      document.getElementById("form-dash-join").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const code = document.getElementById("dash-join-code").value.trim();
+        try {
+          const res = await fetch("/api/student/join-class", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ studentId, classCode: code })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            alert(`✅ ${data.message}`);
+            closeJoinModal();
+            location.reload();
+          } else {
+            alert(data.error || "Failed to join classroom.");
+          }
+        } catch(err) { alert("Error connecting to server."); }
+      });
+
+      // Fetch Student Profile
       try {
-        const student = await EduPredictAPI.getStudent("STU-2026-001");
+        const student = await EduPredictAPI.getStudent(studentId);
         
-        if (!student) {
-          feedbackEl.className = "alert alert-warning";
-          feedbackEl.innerText = "⚠️ Unable to load academic data from database. Displaying cached profile.";
-          return;
-        }
-
-        // Populate Top KPI Cards
         document.getElementById("dash-score").innerText = student.academicScore.toFixed(1) + "%";
         document.getElementById("dash-attendance").innerText = student.attendance.toFixed(1) + "%";
         document.getElementById("dash-hours").innerText = student.studyHours.toFixed(1) + " hrs";
 
-        // Attendance Insight
-        const attInsight = document.getElementById("insight-attendance");
-        if (student.attendance >= 75.0) {
-          attInsight.innerText = `Current attendance rate is ${student.attendance.toFixed(1)}%, well above the 75% institutional threshold.`;
-        } else {
-          attInsight.innerHTML = `<span style="color: var(--risk-high-text);">Warning: Current attendance (${student.attendance.toFixed(1)}%) is below the 75% required threshold.</span>`;
+        const riskBadge = document.getElementById("dash-risk-badge");
+        const riskProbEl = document.getElementById("dash-risk-prob");
+
+        if (student.riskCategory && student.riskCategory !== "PENDING") {
+          const riskCat = student.riskCategory;
+          riskBadge.innerText = "● " + riskCat + " RISK";
+          if (riskCat === "HIGH") riskBadge.className = "badge badge-risk-high";
+          else if (riskCat === "MEDIUM") riskBadge.className = "badge badge-risk-med";
+          else riskBadge.className = "badge badge-risk-low";
+          riskProbEl.innerText = `Logistic Reg Classifier (Prob: ${(student.riskProbability * 100).toFixed(1)}%)`;
         }
 
-        // Fetch Phase 5 Prediction & Recommendation Insights
+        // Fetch Joined Classes
+        try {
+          const cRes = await fetch(`/api/student/${studentId}/classes`);
+          const cData = await cRes.json();
+          if (cRes.ok && cData.success && cData.classes && cData.classes.length > 0) {
+            const cls = cData.classes[0];
+            document.getElementById("banner-class-title").textContent = `🏫 ENROLLED CLASSROOM: ${cls.class_name}`;
+            document.getElementById("banner-class-sub").textContent = `Status: ✓ Enrolled | Join Code: ${cls.class_code} | Official academic records managed by subject faculty.`;
+
+            const topJoinBtn = document.getElementById("btn-open-join-modal");
+            if (topJoinBtn) topJoinBtn.style.display = "none";
+            const bannerJoinBtn = document.getElementById("btn-banner-join");
+            if (bannerJoinBtn) bannerJoinBtn.style.display = "none";
+          } else {
+            const topJoinBtn = document.getElementById("btn-open-join-modal");
+            if (topJoinBtn) topJoinBtn.style.display = "inline-flex";
+            const bannerJoinBtn = document.getElementById("btn-banner-join");
+            if (bannerJoinBtn) bannerJoinBtn.style.display = "inline-flex";
+          }
+        } catch(err) {}
+
+        // Load Topic Analysis, Quizzes & Progress Charts
+        await loadTopicAnalysis(studentId);
+        await loadClassroomQuizzes(studentId);
+        await loadPerformanceCharts(studentId);
+
+        // Fetch Recommendations for Attention Card
         const payload = {
-          attendance: student.attendance,
-          study_hours: student.studyHours,
+          attendance: student.attendance || 85.0,
+          study_hours: student.studyHours || 15.0,
           previous_semester_percentage: student.previousPercentage || 75.0,
           assignment_average: student.assignmentAvg || 75.0,
           internal_assessment: student.internalAssessment || 75.0,
@@ -191,7 +401,7 @@
           const attEl = document.getElementById("insight-attention");
           if (recs.length > 0) {
             const topRec = recs[0];
-            attEl.innerHTML = `<strong>Priority ${topRec.priority} (${topRec.factor}):</strong> ${topRec.recommendation} (${recs.length} total areas identified).`;
+            attEl.innerHTML = `<strong>Priority ${topRec.priority_tier || topRec.priority} (${topRec.factor}):</strong> ${topRec.title || topRec.recommendation} (${recs.length} total areas identified).`;
           } else {
             attEl.innerHTML = `<strong>All Attributes Healthy!</strong> No critical areas needing immediate intervention.`;
           }
@@ -202,7 +412,7 @@
         const subjects = student.studentSubjects || [];
         
         if (subjects.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" style="padding: 1rem; text-align: center;">No subject performance records found.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" style="padding: 1rem; text-align: center;">No subject performance records found.</td></tr>`;
         } else {
           tbody.innerHTML = subjects.map(s => {
             let badgeClass = "badge-risk-low";
@@ -213,6 +423,7 @@
               <tr style="border-bottom: 1px solid var(--border-color);">
                 <td style="padding: 0.75rem 0.6rem;"><strong>${s.code}</strong></td>
                 <td style="padding: 0.75rem 0.6rem;">${s.name}</td>
+                <td style="padding: 0.75rem 0.6rem; font-size: 0.82rem; color: var(--primary);">👨‍🏫 ${s.faculty || 'Classroom Faculty'}</td>
                 <td style="padding: 0.75rem 0.6rem;">${s.score.toFixed(1)}%</td>
                 <td style="padding: 0.75rem 0.6rem;">${s.attendance.toFixed(1)}%</td>
                 <td style="padding: 0.75rem 0.6rem;"><span class="badge ${badgeClass}">${s.priority}</span></td>
@@ -229,6 +440,258 @@
         feedbackEl.innerText = "⚠️ Unable to load academic data. Please try again.";
       }
     });
+
+    async function loadTopicAnalysis(studentId) {
+      const box = document.getElementById("topic-analysis-box");
+      try {
+        const res = await fetch(`/api/student/${studentId}/topic-analysis`);
+        const data = await res.json();
+        if (res.ok && data.success && data.analysis) {
+          const a = data.analysis;
+          if (!a.hasData) {
+            box.innerHTML = `<p style="color:var(--text-muted); font-size:0.88rem;">${a.insight}</p>`;
+            return;
+          }
+
+          let html = `<p style="font-size:0.88rem; font-weight:600; color:var(--dark); margin-bottom:0.75rem;">${a.insight}</p>`;
+          html += `<div style="display:flex; gap:0.5rem; flex-wrap:wrap;">`;
+          for (const [topic, item] of Object.entries(a.topicSummary)) {
+            const badgeClass = item.status === 'WEAK' ? 'topic-badge-weak' : 'topic-badge-strong';
+            html += `<span class="${badgeClass}">${topic}: ${item.percentage}%</span>`;
+          }
+          html += `</div>`;
+          box.innerHTML = html;
+        }
+      } catch (err) {
+        box.textContent = "Topic weakness analysis unavailable.";
+      }
+    }
+
+    async function loadClassroomQuizzes(studentId) {
+      const box = document.getElementById("classroom-quizzes-box");
+      try {
+        const res = await fetch(`/api/student/${studentId}/quizzes`);
+        const data = await res.json();
+        if (res.ok && data.success && data.quizzes && data.quizzes.length > 0) {
+          box.innerHTML = data.quizzes.map(q => `
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding:0.6rem 0;">
+              <div>
+                <strong style="display:block; font-size:0.9rem; color:var(--dark);">${q.title}</strong>
+                <span style="font-size:0.78rem; color:var(--text-muted);">${q.subject_code} | ${q.question_count} Questions</span>
+              </div>
+              <button type="button" class="btn btn-sm btn-primary" onclick="openQuizModal(${q.quiz_id})">Start Quiz →</button>
+            </div>
+          `).join("");
+        } else {
+          box.innerHTML = `<p style="color:var(--text-muted); font-size:0.88rem;">No active classroom quizzes available. Join a classroom to take topic-tagged evaluations.</p>`;
+        }
+      } catch (err) {
+        box.textContent = "Quizzes list unavailable.";
+      }
+    }
+
+    async function openQuizModal(quizId) {
+      const modal = document.getElementById("quiz-taking-modal");
+      document.getElementById("active-quiz-id").value = quizId;
+      const container = document.getElementById("quiz-questions-container");
+      container.innerHTML = "Loading quiz questions...";
+
+      try {
+        const res = await fetch(`/api/student/quizzes/${quizId}`);
+        const data = await res.json();
+        if (res.ok && data.success && data.quiz) {
+          const qz = data.quiz;
+          document.getElementById("quiz-modal-subject").textContent = qz.subjectCode;
+          document.getElementById("quiz-modal-title").textContent = qz.title;
+
+          let html = "";
+          qz.questions.forEach((q, idx) => {
+            html += `
+              <div style="margin-bottom: 1.25rem; background: var(--bg-alt); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:0.4rem;">
+                  <span>Q${idx+1}: ${q.questionText}</span>
+                  <span class="badge badge-info" style="font-size:0.75rem;">Topic: ${q.topic}</span>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; font-size:0.85rem; margin-top:0.6rem;">
+                  <label><input type="radio" name="q_${q.questionId}" value="A" required> A) ${q.optionA}</label>
+                  <label><input type="radio" name="q_${q.questionId}" value="B"> B) ${q.optionB}</label>
+                  <label><input type="radio" name="q_${q.questionId}" value="C"> C) ${q.optionC}</label>
+                  <label><input type="radio" name="q_${q.questionId}" value="D"> D) ${q.optionD}</label>
+                </div>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+          modal.classList.add("active");
+        }
+      } catch (err) {
+        alert("Error loading quiz questions.");
+      }
+    }
+
+    document.getElementById("quiz-taking-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const quizId = document.getElementById("active-quiz-id").value;
+      const form = document.getElementById("quiz-taking-form");
+      const formData = new FormData(form);
+
+      const answers = {};
+      for (const [key, val] of formData.entries()) {
+        if (key.startsWith("q_")) {
+          const qid = key.replace("q_", "");
+          answers[qid] = val;
+        }
+      }
+
+      let studentId = "STU-2026-001";
+      const userRaw = localStorage.getItem("edupredict_user");
+      if (userRaw) {
+        try { const u = JSON.parse(userRaw); if (u.studentId) studentId = u.studentId; } catch(e) {}
+      }
+
+      try {
+        const res = await fetch(`/api/student/quizzes/${quizId}/attempt`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ studentId, answers })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          alert(`🎉 ${data.message}`);
+          closeQuizModal();
+          await loadTopicAnalysis(studentId);
+          await loadPerformanceCharts(studentId);
+        } else {
+          alert(data.error || "Failed to submit quiz.");
+        }
+      } catch(err) {
+        alert("Error submitting quiz attempt.");
+      }
+    });
+
+    async function loadPerformanceCharts(studentId) {
+      const perfContainer = document.getElementById("chart-perf-time-container");
+      const riskContainer = document.getElementById("chart-risk-trend-container");
+
+      try {
+        const res = await fetch(`/api/student/${studentId}/history`);
+        const data = await res.json();
+        const history = (data && data.history) ? data.history : [];
+
+        // Render Performance Over Time Chart
+        if (!history || history.length < 2) {
+          perfContainer.innerHTML = `
+            <div class="alert alert-info" style="margin: 0; width: 100%; text-align: center; font-size: 0.88rem;">
+              ℹ️ Insufficient historical data to render performance timeline.<br>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Complete at least 2 dated assessments or quizzes to build trend history.</span>
+            </div>
+          `;
+        } else {
+          const sorted = [...history].sort((a,b) => new Date(a.submitted_at || 0) - new Date(b.submitted_at || 0));
+          perfContainer.innerHTML = renderSVGLineChart(sorted, [
+            { key: 'final_score', label: 'Semester Score (%)', color: '#2563eb' },
+            { key: 'attendance', label: 'Attendance (%)', color: '#16a34a' }
+          ]);
+        }
+
+        // Render Risk Prediction Trend Chart
+        if (!history || history.length < 2) {
+          riskContainer.innerHTML = `
+            <div class="alert alert-info" style="margin: 0; width: 100%; text-align: center; font-size: 0.88rem;">
+              ℹ️ Insufficient historical prediction records to render risk trend.<br>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Run additional prediction snapshots over time to build model risk timeline.</span>
+            </div>
+          `;
+        } else {
+          const sorted = [...history].sort((a,b) => new Date(a.submitted_at || 0) - new Date(b.submitted_at || 0));
+          riskContainer.innerHTML = renderSVGRiskTrendChart(sorted);
+        }
+      } catch(err) {
+        perfContainer.innerHTML = `<span style="color:var(--text-muted);">Timeline chart unavailable.</span>`;
+        riskContainer.innerHTML = `<span style="color:var(--text-muted);">Risk trend unavailable.</span>`;
+      }
+    }
+
+    function renderSVGLineChart(historyItems, metrics) {
+      const w = 500, h = 180, padL = 40, padR = 20, padT = 20, padB = 30;
+      const chartW = w - padL - padR;
+      const chartH = h - padT - padB;
+      const n = historyItems.length;
+
+      let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:100%; height:auto;">`;
+      
+      [0, 50, 100].forEach(val => {
+        const y = padT + chartH - (val / 100) * chartH;
+        svg += `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="#e2e8f0" stroke-dasharray="3 3"/>`;
+        svg += `<text x="${padL - 6}" y="${y + 4}" font-size="10" fill="#94a3b8" text-anchor="end">${val}%</text>`;
+      });
+
+      metrics.forEach(m => {
+        const pts = historyItems.map((item, idx) => {
+          const val = Math.min(100, Math.max(0, parseFloat(item[m.key] || 0)));
+          const x = padL + (idx / Math.max(1, n - 1)) * chartW;
+          const y = padT + chartH - (val / 100) * chartH;
+          return { x, y, val, date: item.submitted_at ? item.submitted_at.substring(0, 10) : `Run #${idx+1}` };
+        });
+
+        const polyStr = pts.map(p => `${p.x},${p.y}`).join(" ");
+        svg += `<polyline points="${polyStr}" fill="none" stroke="${m.color}" stroke-width="2.5" stroke-linecap="round"/>`;
+
+        pts.forEach(p => {
+          svg += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="${m.color}"><title>${m.label}: ${p.val.toFixed(1)}% (${p.date})</title></circle>`;
+        });
+      });
+
+      svg += `</svg>`;
+      return svg;
+    }
+
+    function renderSVGRiskTrendChart(historyItems) {
+      const w = 500, h = 180, padL = 40, padR = 20, padT = 20, padB = 30;
+      const chartW = w - padL - padR;
+      const chartH = h - padT - padB;
+      const n = historyItems.length;
+
+      let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:100%; height:auto;">`;
+      
+      const y60 = padT + chartH - (60 / 100) * chartH;
+      const y75 = padT + chartH - (75 / 100) * chartH;
+
+      svg += `<rect x="${padL}" y="${padT}" width="${chartW}" height="${y75 - padT}" fill="#f0fdf4" opacity="0.6"/>`;
+      svg += `<rect x="${padL}" y="${y75}" width="${chartW}" height="${y60 - y75}" fill="#fffbeb" opacity="0.6"/>`;
+      svg += `<rect x="${padL}" y="${y60}" width="${chartW}" height="${padT + chartH - y60}" fill="#fef2f2" opacity="0.6"/>`;
+
+      svg += `<line x1="${padL}" y1="${y75}" x2="${w - padR}" y2="${y75}" stroke="#16a34a" stroke-dasharray="4 2" stroke-width="1.5"/>`;
+      svg += `<text x="${w - padR - 4}" y="${y75 - 4}" font-size="9" fill="#16a34a" font-weight="bold" text-anchor="end">LOW THRESHOLD (75%)</text>`;
+
+      svg += `<line x1="${padL}" y1="${y60}" x2="${w - padR}" y2="${y60}" stroke="#dc2626" stroke-dasharray="4 2" stroke-width="1.5"/>`;
+      svg += `<text x="${w - padR - 4}" y="${y60 - 4}" font-size="9" fill="#dc2626" font-weight="bold" text-anchor="end">HIGH THRESHOLD (60%)</text>`;
+
+      [0, 60, 75, 100].forEach(val => {
+        const y = padT + chartH - (val / 100) * chartH;
+        svg += `<text x="${padL - 6}" y="${y + 4}" font-size="10" fill="#64748b" text-anchor="end">${val}%</text>`;
+      });
+
+      const pts = historyItems.map((item, idx) => {
+        const val = Math.min(100, Math.max(0, parseFloat(item.final_score || 0)));
+        const x = padL + (idx / Math.max(1, n - 1)) * chartW;
+        const y = padT + chartH - (val / 100) * chartH;
+        return { x, y, val, date: item.submitted_at ? item.submitted_at.substring(0, 10) : `Run #${idx+1}` };
+      });
+
+      const polyStr = pts.map(p => `${p.x},${p.y}`).join(" ");
+      svg += `<polyline points="${polyStr}" fill="none" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>`;
+
+      pts.forEach(p => {
+        let dotColor = "#16a34a";
+        if (p.val < 60) dotColor = "#dc2626";
+        else if (p.val < 75) dotColor = "#d97706";
+        svg += `<circle cx="${p.x}" cy="${p.y}" r="5" fill="${dotColor}" stroke="#ffffff" stroke-width="2"><title>Score: ${p.val.toFixed(1)}% (${p.date})</title></circle>`;
+      });
+
+      svg += `</svg>`;
+      return svg;
+    }
   </script>
 </body>
 </html>

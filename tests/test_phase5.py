@@ -82,9 +82,10 @@ class TestPhase5(unittest.TestCase):
     def test_multiclass_coefficient_selection(self):
         exp = explain_individual_prediction(self.profile_b_at_risk)
         self.assertEqual(exp["predicted_class"], "HIGH")
-        # Attendance 45% should contribute positively toward HIGH risk class
+        # Attendance 45% reduces semester score (contribution < 0) while contributing positively to HIGH risk log-odds
         att_contrib = next(c for c in exp["feature_contributions"] if c["feature"] == "attendance")
-        self.assertGreater(att_contrib["contribution"], 0)
+        self.assertLess(att_contrib["contribution"], 0)
+        self.assertGreater(att_contrib["classifier_weight"] * att_contrib["classifier_z"], 0)
 
     # 5. Regression contribution calculation is numerically consistent
     def test_regression_contribution_reconstruction(self):

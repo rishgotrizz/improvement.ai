@@ -1,0 +1,9 @@
+rule_condition,target_factor,expected_priority,actual_result,status
+Attendance Critical Rule (<60%),attendance,URGENT,Expected rule was NOT triggered.,FAIL
+Study Hours Critical Rule (<6h),study_hours,URGENT,Expected rule was NOT triggered.,FAIL
+Backlog Critical Rule (>2 backlogs),backlog_count,URGENT,Expected rule was NOT triggered.,FAIL
+Assignment Average Critical Rule (<50%),assignment_average,URGENT,Expected rule was NOT triggered.,FAIL
+Internal Assessment Warning Rule (<60%),internal_assessment,HIGH,Expected rule was NOT triggered.,FAIL
+Quiz Average Warning Rule (<60%),quiz_average,HIGH,Expected rule was NOT triggered.,FAIL
+Normal / No-Trigger Condition (Strong Profile),None (Normal),MAINTAIN / None,"Generated 1 total recs, 0 urgent/high.",PASS
+Multiple Simultaneous Conditions Profile,attendance,URGENT,Expected rule was NOT triggered.,FAIL

@@ -41,6 +41,14 @@ def get_student_profile(student_id):
     # Fetch course performance for latest assessment
     subjects = []
     if latest_assessment:
+        faculty_map = {}
+        try:
+            cursor.execute("SELECT subject_code, faculty_name, faculty_username FROM subjects;")
+            for f_row in cursor.fetchall():
+                faculty_map[f_row['subject_code']] = f_row['faculty_name'] or f_row['faculty_username'] or "Classroom Faculty"
+        except Exception:
+            pass
+
         cursor.execute("""
             SELECT * FROM subject_performance 
             WHERE assessment_id = ?;
@@ -54,6 +62,7 @@ def get_student_profile(student_id):
             subjects.append({
                 "code": s['subject_code'],
                 "name": s['subject_name'],
+                "faculty": faculty_map.get(s['subject_code'], "Dr. Sarah Jenkins"),
                 "score": float(s['marks']),
                 "attendance": float(s['attendance']),
                 "assignments": float(s['assignment_score']),
@@ -104,3 +113,50 @@ def get_student_subjects(student_id):
     if profile:
         return profile.get("studentSubjects", [])
     return []
+
+def join_class_by_code(student_id, class_code):
+    """Allow a student to join a faculty's class using a 6-character join code."""
+    if not student_id or not class_code:
+        return False, "Student ID and class join code are required."
+
+    code = class_code.strip().upper()
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT class_id, class_name FROM classes WHERE class_code = ?;", (code,))
+    cls = cursor.fetchone()
+    if not cls:
+        conn.close()
+        return False, f"Invalid class join code '{code}'. Class not found."
+
+    class_id = cls["class_id"]
+    class_name = cls["class_name"]
+
+    try:
+        cursor.execute("""
+            INSERT OR IGNORE INTO class_memberships (class_id, student_id)
+            VALUES (?, ?);
+        """, (class_id, student_id))
+        conn.commit()
+        conn.close()
+        return True, f"Successfully joined '{class_name}' ({code})!"
+    except Exception as e:
+        conn.close()
+        return False, f"Failed to join class: {str(e)}"
+
+def get_student_classes(student_id):
+    """Retrieve list of classes joined by a student."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT c.class_id, c.class_name, c.class_code, c.faculty_username, cm.joined_at
+        FROM class_memberships cm
+        JOIN classes c ON cm.class_id = c.class_id
+        WHERE cm.student_id = ?;
+    """, (student_id,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [dict(r) for r in rows]
+
