@@ -188,62 +188,131 @@
 
   <!-- PUBLIC "TRY A PREDICTION" MODAL -->
   <div id="public-try-modal" class="public-modal-overlay">
-    <div class="public-modal-card">
+    <div class="public-modal-card" style="max-width: 860px;">
       <button class="public-modal-close" id="btn-close-try-modal">&times;</button>
 
-      <div style="margin-bottom: 1.5rem; border-bottom: 1.5px solid #18181b; padding-bottom: 1rem;">
-        <span class="badge-lime">Public Demo Mode</span>
-        <h2 style="font-size: 1.6rem; font-weight: 800; color: #18181b; margin-top: 0.4rem;">Try EduPredict ML Prediction</h2>
-        <p style="font-size: 0.9rem; color: #52525b;">No account or login required. Enter your academic indicators below to test the real backend Scikit-Learn models.</p>
+      <div style="margin-bottom: 1.5rem; border-bottom: 1.5px solid #18181b; padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="badge-lime">Public Demo Mode</span>
+          <h2 style="font-size: 1.6rem; font-weight: 800; color: #18181b; margin-top: 0.4rem;">Try EduPredict ML Prediction</h2>
+          <p style="font-size: 0.88rem; color: #52525b;">Enter raw academic records below to calculate live percentages and test the real backend Scikit-Learn prediction pipeline.</p>
+        </div>
+        <button type="button" id="btn-fill-sample" class="btn-paper-outline" style="font-size: 0.82rem; padding: 0.4rem 0.85rem; height: fit-content;">⚡ Load Sample Profile</button>
       </div>
 
       <form id="public-pred-form" style="margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <strong style="font-size: 0.95rem;">Input Academic Factors</strong>
-          <button type="button" id="btn-fill-sample" class="btn-paper-outline" style="font-size: 0.78rem; padding: 0.3rem 0.6rem;">⚡ Load Sample Profile</button>
+
+        <!-- 1. ATTENDANCE & SELF-STUDY ACTIVITY -->
+        <div style="margin-bottom: 1.75rem;">
+          <h3 style="font-size: 1rem; font-weight: 800; color: #18181b; margin-bottom: 0.75rem; border-bottom: 1.5px solid #e4e4e7; padding-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.03em;">
+            1. Attendance & Self-Study Activity
+          </h3>
+          <div class="grid grid-2" style="gap: 1rem;">
+            <!-- Attendance Block -->
+            <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 1rem; border-radius: 8px;">
+              <label class="form-label" style="font-size: 0.85rem; font-weight: 700; color: #18181b; display: block; margin-bottom: 0.4rem;">Attendance (Attended / Held)</label>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <input type="number" id="pub-att-attended" class="form-control" min="0" value="45" style="width: 50%; font-weight: 600;" required>
+                <span style="font-weight: 700; color: #71717a;">/</span>
+                <input type="number" id="pub-att-total" class="form-control" min="1" value="50" style="width: 50%; font-weight: 600;" required>
+              </div>
+              <div id="pub-att-calc" style="margin-top: 0.6rem; font-size: 0.8rem; font-weight: 700; color: #16a34a; background: #dcfce7; border: 1px solid #86efac; padding: 0.3rem 0.6rem; border-radius: 4px; display: inline-block;">
+                Calculated Attendance: 90.0% (45/50)
+              </div>
+            </div>
+
+            <!-- Self-Study Block -->
+            <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 1rem; border-radius: 8px;">
+              <label class="form-label" style="font-size: 0.85rem; font-weight: 700; color: #18181b; display: block; margin-bottom: 0.4rem;">Daily Self-Study Hours</label>
+              <input type="number" id="pub-study-hrs" class="form-control" min="0" max="6" step="0.5" value="3.5" style="width: 100%; font-weight: 600;" required>
+              <span style="font-size: 0.78rem; color: #71717a; display: block; margin-top: 0.4rem;">Average time spent studying per day (0–6 hrs/day)</span>
+            </div>
+
+            <!-- Previous Semester Block -->
+            <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 1rem; border-radius: 8px;">
+              <label class="form-label" style="font-size: 0.85rem; font-weight: 700; color: #18181b; display: block; margin-bottom: 0.4rem;">Previous Semester Marks (Obtained / Max)</label>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <input type="number" id="pub-prev-obtained" class="form-control" min="0" value="395" style="width: 50%; font-weight: 600;" required>
+                <span style="font-weight: 700; color: #71717a;">/</span>
+                <input type="number" id="pub-prev-max" class="form-control" min="1" value="500" style="width: 50%; font-weight: 600;" required>
+              </div>
+              <div id="pub-prev-calc" style="margin-top: 0.6rem; font-size: 0.8rem; font-weight: 700; color: #16a34a; background: #dcfce7; border: 1px solid #86efac; padding: 0.3rem 0.6rem; border-radius: 4px; display: inline-block;">
+                Calculated Previous Term: 79.0% (395/500)
+              </div>
+            </div>
+
+            <!-- Active Backlogs Block -->
+            <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 1rem; border-radius: 8px;">
+              <label class="form-label" style="font-size: 0.85rem; font-weight: 700; color: #18181b; display: block; margin-bottom: 0.4rem;">Active Backlogs / Failed Subjects</label>
+              <input type="number" id="pub-backlogs" class="form-control" min="0" value="0" style="width: 100%; font-weight: 600;" required>
+              <span style="font-size: 0.78rem; color: #71717a; display: block; margin-top: 0.4rem;">Number of uncleared subjects from prior terms</span>
+            </div>
+          </div>
         </div>
 
-        <div class="grid grid-3" style="gap: 0.85rem; margin-bottom: 1.25rem;">
-          <div>
-            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Attendance Rate (%)</label>
-            <input type="number" id="pub-att" class="form-control" min="0" max="100" value="85" required style="width: 100%;">
+        <!-- 2. ASSESSMENTS & MID-TERMS -->
+        <div style="margin-bottom: 1.75rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1.5px solid #e4e4e7; padding-bottom: 0.4rem;">
+            <h3 style="font-size: 1rem; font-weight: 800; color: #18181b; margin: 0; text-transform: uppercase; letter-spacing: 0.03em;">
+              2. Assessments & Mid-Terms
+            </h3>
+            <button type="button" id="btn-add-assessment" class="btn-paper-outline" style="font-size: 0.78rem; padding: 0.25rem 0.65rem;">+ Add Assessment</button>
           </div>
-          <div>
-            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Weekly Study Hours</label>
-            <input type="number" id="pub-hrs" class="form-control" min="0" max="40" value="14" required style="width: 100%;">
+
+          <div style="overflow-x: auto; margin-bottom: 0.5rem;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; border: 1.5px solid #18181b;">
+              <thead>
+                <tr style="background: #18181b; color: #ffffff; text-align: left;">
+                  <th style="padding: 0.5rem 0.75rem; font-weight: 700;">Assessment Name</th>
+                  <th style="padding: 0.5rem 0.75rem; font-weight: 700; width: 110px;">Obtained</th>
+                  <th style="padding: 0.5rem 0.75rem; font-weight: 700; width: 110px;">Max Marks</th>
+                  <th style="padding: 0.5rem 0.75rem; font-weight: 700; width: 110px;">Percentage</th>
+                  <th style="padding: 0.5rem 0.75rem; font-weight: 700; width: 70px; text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="asgn-table-body" style="background: #ffffff;">
+                <!-- Rows injected dynamically -->
+              </tbody>
+            </table>
           </div>
-          <div>
-            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Prev Semester (%)</label>
-            <input type="number" id="pub-prev" class="form-control" min="0" max="100" value="78" required style="width: 100%;">
-          </div>
-          <div>
-            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Assignment Avg (%)</label>
-            <input type="number" id="pub-asgn" class="form-control" min="0" max="100" value="82" required style="width: 100%;">
-          </div>
-          <div>
-            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Internal Assessment (%)</label>
-            <input type="number" id="pub-ia" class="form-control" min="0" max="100" value="80" required style="width: 100%;">
-          </div>
-          <div>
-            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Quiz Average (%)</label>
-            <input type="number" id="pub-quiz" class="form-control" min="0" max="100" value="76" required style="width: 100%;">
-          </div>
-          <div>
-            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Completed Assignments</label>
-            <input type="number" id="pub-comp" class="form-control" min="0" max="50" value="9" required style="width: 100%;">
-          </div>
-          <div>
-            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Total Assignments</label>
-            <input type="number" id="pub-tot" class="form-control" min="1" max="50" value="10" required style="width: 100%;">
-          </div>
-          <div>
-            <label class="form-label" style="font-size: 0.82rem; font-weight: 600;">Active Backlog Count</label>
-            <input type="number" id="pub-back" class="form-control" min="0" max="10" value="0" required style="width: 100%;">
+          <div id="pub-asgn-aggregate" style="font-size: 0.82rem; font-weight: 700; color: #18181b; background: #f4f4f5; border: 1.5px solid #18181b; padding: 0.5rem 0.75rem; border-radius: 6px;">
+            Calculated Assessment Aggregate: --
           </div>
         </div>
 
-        <button type="submit" id="btn-pub-submit" class="btn-lime" style="width: 100%; justify-content: center; font-size: 1rem; padding: 0.75rem;">
-          Run Scikit-Learn Prediction →
+        <!-- 3. DYNAMIC QUIZZES & TOPIC PERFORMANCE -->
+        <div style="margin-bottom: 1.75rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1.5px solid #e4e4e7; padding-bottom: 0.4rem;">
+            <h3 style="font-size: 1rem; font-weight: 800; color: #18181b; margin: 0; text-transform: uppercase; letter-spacing: 0.03em;">
+              3. Dynamic Quizzes & Topic Performance
+            </h3>
+            <button type="button" id="btn-add-quiz" class="btn-paper-outline" style="font-size: 0.78rem; padding: 0.25rem 0.65rem;">+ Add Quiz</button>
+          </div>
+
+          <div style="overflow-x: auto; margin-bottom: 0.5rem;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; border: 1.5px solid #18181b;">
+              <thead>
+                <tr style="background: #18181b; color: #ffffff; text-align: left;">
+                  <th style="padding: 0.5rem 0.75rem; font-weight: 700;">Quiz Name</th>
+                  <th style="padding: 0.5rem 0.75rem; font-weight: 700;">Topic / Subject Area</th>
+                  <th style="padding: 0.5rem 0.75rem; font-weight: 700; width: 90px;">Obtained</th>
+                  <th style="padding: 0.5rem 0.75rem; font-weight: 700; width: 90px;">Max</th>
+                  <th style="padding: 0.5rem 0.75rem; font-weight: 700; width: 100px;">Accuracy</th>
+                  <th style="padding: 0.5rem 0.75rem; font-weight: 700; width: 70px; text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="quiz-table-body" style="background: #ffffff;">
+                <!-- Rows injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+          <div id="pub-quiz-aggregate" style="font-size: 0.82rem; font-weight: 700; color: #18181b; background: #f4f4f5; border: 1.5px solid #18181b; padding: 0.5rem 0.75rem; border-radius: 6px;">
+            Calculated Quiz Aggregate: --
+          </div>
+        </div>
+
+        <button type="submit" id="btn-pub-submit" class="btn-lime" style="width: 100%; justify-content: center; font-size: 1.05rem; padding: 0.85rem; font-weight: 800;">
+          Calculate Aggregates & Run AI Prediction →
         </button>
       </form>
 
@@ -301,6 +370,209 @@
       const predForm = document.getElementById("public-pred-form");
       const resultsDiv = document.getElementById("public-pred-results");
 
+      const btnAddAssessment = document.getElementById("btn-add-assessment");
+      const btnAddQuiz = document.getElementById("btn-add-quiz");
+      const asgnTableBody = document.getElementById("asgn-table-body");
+      const quizTableBody = document.getElementById("quiz-table-body");
+
+      // Initial state arrays
+      let assessments = [
+        { name: "Mid-Term 1", obtained: 38, max: 50 },
+        { name: "Unit Test 1", obtained: 22, max: 25 },
+        { name: "Assignment 1", obtained: 18, max: 20 }
+      ];
+
+      let quizzes = [
+        { name: "Quiz 1 - Arrays & Lists", topic: "Data Structures", obtained: 8, max: 10 },
+        { name: "Quiz 2 - Sorting Algorithms", topic: "Algorithms", obtained: 7, max: 10 },
+        { name: "Quiz 3 - Tree Traversals", topic: "Data Structures", obtained: 6, max: 10 }
+      ];
+
+      function updateAttendanceCalc() {
+        const attVal = parseFloat(document.getElementById("pub-att-attended").value) || 0;
+        const totVal = parseFloat(document.getElementById("pub-att-total").value) || 1;
+        const pct = Math.min(100, Math.max(0, (attVal / totVal) * 100)).toFixed(1);
+        document.getElementById("pub-att-calc").textContent = `Calculated Attendance: ${pct}% (${attVal}/${totVal})`;
+      }
+
+      function updatePrevSemCalc() {
+        const obtVal = parseFloat(document.getElementById("pub-prev-obtained").value) || 0;
+        const maxVal = parseFloat(document.getElementById("pub-prev-max").value) || 1;
+        const pct = Math.min(100, Math.max(0, (obtVal / maxVal) * 100)).toFixed(1);
+        document.getElementById("pub-prev-calc").textContent = `Calculated Previous Term: ${pct}% (${obtVal}/${maxVal})`;
+      }
+
+      function renderAssessments() {
+        if (!asgnTableBody) return;
+        if (assessments.length === 0) {
+          asgnTableBody.innerHTML = `<tr><td colspan="5" style="padding: 1rem; text-align: center; color: #71717a; font-style: italic;">No assessment records available yet. Click "+ Add Assessment" above.</td></tr>`;
+          document.getElementById("pub-asgn-aggregate").textContent = "Calculated Assessment Aggregate: N/A (0 assessments)";
+          return;
+        }
+
+        asgnTableBody.innerHTML = "";
+        let totalObt = 0;
+        let totalMax = 0;
+
+        assessments.forEach((item, idx) => {
+          totalObt += (parseFloat(item.obtained) || 0);
+          totalMax += (parseFloat(item.max) || 1);
+          const pct = Math.min(100, Math.max(0, ((parseFloat(item.obtained) || 0) / (parseFloat(item.max) || 1)) * 100)).toFixed(1);
+
+          const tr = document.createElement("tr");
+          tr.style.borderBottom = "1px solid #e4e4e7";
+          tr.innerHTML = `
+            <td style="padding: 0.4rem 0.75rem;">
+              <input type="text" class="form-control asgn-name" data-idx="${idx}" value="${item.name}" style="padding: 0.25rem 0.5rem; font-size: 0.82rem; width: 100%; font-weight: 600;" placeholder="Assessment Name">
+            </td>
+            <td style="padding: 0.4rem 0.75rem;">
+              <input type="number" class="form-control asgn-obt" data-idx="${idx}" min="0" value="${item.obtained}" style="padding: 0.25rem 0.5rem; font-size: 0.82rem; width: 100%; font-weight: 600;">
+            </td>
+            <td style="padding: 0.4rem 0.75rem;">
+              <input type="number" class="form-control asgn-max" data-idx="${idx}" min="1" value="${item.max}" style="padding: 0.25rem 0.5rem; font-size: 0.82rem; width: 100%; font-weight: 600;">
+            </td>
+            <td style="padding: 0.4rem 0.75rem; font-weight: 700; color: #16a34a;">
+              ${pct}%
+            </td>
+            <td style="padding: 0.4rem 0.75rem; text-align: center;">
+              <button type="button" class="btn-del-asgn" data-idx="${idx}" style="background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; border-radius: 4px; padding: 0.2rem 0.45rem; cursor: pointer; font-size: 0.75rem; font-weight: 700;">✕</button>
+            </td>
+          `;
+          asgnTableBody.appendChild(tr);
+        });
+
+        const overallPct = totalMax > 0 ? ((totalObt / totalMax) * 100).toFixed(1) : "0.0";
+        document.getElementById("pub-asgn-aggregate").textContent = `Calculated Assessment Aggregate: ${overallPct}% (${totalObt} / ${totalMax} total marks across ${assessments.length} assessment${assessments.length === 1 ? '' : 's'})`;
+
+        // Event listeners for rows
+        asgnTableBody.querySelectorAll(".asgn-name").forEach(inp => {
+          inp.addEventListener("input", (e) => { assessments[e.target.dataset.idx].name = e.target.value; });
+        });
+        asgnTableBody.querySelectorAll(".asgn-obt").forEach(inp => {
+          inp.addEventListener("input", (e) => {
+            assessments[e.target.dataset.idx].obtained = parseFloat(e.target.value) || 0;
+            renderAssessments();
+          });
+        });
+        asgnTableBody.querySelectorAll(".asgn-max").forEach(inp => {
+          inp.addEventListener("input", (e) => {
+            assessments[e.target.dataset.idx].max = parseFloat(e.target.value) || 1;
+            renderAssessments();
+          });
+        });
+        asgnTableBody.querySelectorAll(".btn-del-asgn").forEach(btn => {
+          btn.addEventListener("click", (e) => {
+            const idx = parseInt(e.target.dataset.idx, 10);
+            assessments.splice(idx, 1);
+            renderAssessments();
+          });
+        });
+      }
+
+      function renderQuizzes() {
+        if (!quizTableBody) return;
+        if (quizzes.length === 0) {
+          quizTableBody.innerHTML = `<tr><td colspan="6" style="padding: 1rem; text-align: center; color: #71717a; font-style: italic;">No quiz records available yet. Click "+ Add Quiz" above.</td></tr>`;
+          document.getElementById("pub-quiz-aggregate").textContent = "Calculated Quiz Aggregate: N/A (0 quizzes)";
+          return;
+        }
+
+        quizTableBody.innerHTML = "";
+        let totalObt = 0;
+        let totalMax = 0;
+
+        quizzes.forEach((item, idx) => {
+          totalObt += (parseFloat(item.obtained) || 0);
+          totalMax += (parseFloat(item.max) || 1);
+          const pct = Math.min(100, Math.max(0, ((parseFloat(item.obtained) || 0) / (parseFloat(item.max) || 1)) * 100)).toFixed(1);
+
+          const tr = document.createElement("tr");
+          tr.style.borderBottom = "1px solid #e4e4e7";
+          tr.innerHTML = `
+            <td style="padding: 0.4rem 0.75rem;">
+              <input type="text" class="form-control quiz-name" data-idx="${idx}" value="${item.name}" style="padding: 0.25rem 0.5rem; font-size: 0.82rem; width: 100%; font-weight: 600;" placeholder="Quiz Name">
+            </td>
+            <td style="padding: 0.4rem 0.75rem;">
+              <input type="text" class="form-control quiz-topic" data-idx="${idx}" value="${item.topic}" style="padding: 0.25rem 0.5rem; font-size: 0.82rem; width: 100%;" placeholder="Topic Area">
+            </td>
+            <td style="padding: 0.4rem 0.75rem;">
+              <input type="number" class="form-control quiz-obt" data-idx="${idx}" min="0" value="${item.obtained}" style="padding: 0.25rem 0.5rem; font-size: 0.82rem; width: 100%; font-weight: 600;">
+            </td>
+            <td style="padding: 0.4rem 0.75rem;">
+              <input type="number" class="form-control quiz-max" data-idx="${idx}" min="1" value="${item.max}" style="padding: 0.25rem 0.5rem; font-size: 0.82rem; width: 100%; font-weight: 600;">
+            </td>
+            <td style="padding: 0.4rem 0.75rem; font-weight: 700; color: #16a34a;">
+              ${pct}%
+            </td>
+            <td style="padding: 0.4rem 0.75rem; text-align: center;">
+              <button type="button" class="btn-del-quiz" data-idx="${idx}" style="background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; border-radius: 4px; padding: 0.2rem 0.45rem; cursor: pointer; font-size: 0.75rem; font-weight: 700;">✕</button>
+            </td>
+          `;
+          quizTableBody.appendChild(tr);
+        });
+
+        const overallPct = totalMax > 0 ? ((totalObt / totalMax) * 100).toFixed(1) : "0.0";
+        document.getElementById("pub-quiz-aggregate").textContent = `Calculated Quiz Aggregate: ${overallPct}% (${totalObt} / ${totalMax} total marks across ${quizzes.length} quiz${quizzes.length === 1 ? '' : 'zes'})`;
+
+        // Event listeners for rows
+        quizTableBody.querySelectorAll(".quiz-name").forEach(inp => {
+          inp.addEventListener("input", (e) => { quizzes[e.target.dataset.idx].name = e.target.value; });
+        });
+        quizTableBody.querySelectorAll(".quiz-topic").forEach(inp => {
+          inp.addEventListener("input", (e) => { quizzes[e.target.dataset.idx].topic = e.target.value; });
+        });
+        quizTableBody.querySelectorAll(".quiz-obt").forEach(inp => {
+          inp.addEventListener("input", (e) => {
+            quizzes[e.target.dataset.idx].obtained = parseFloat(e.target.value) || 0;
+            renderQuizzes();
+          });
+        });
+        quizTableBody.querySelectorAll(".quiz-max").forEach(inp => {
+          inp.addEventListener("input", (e) => {
+            quizzes[e.target.dataset.idx].max = parseFloat(e.target.value) || 1;
+            renderQuizzes();
+          });
+        });
+        quizTableBody.querySelectorAll(".btn-del-quiz").forEach(btn => {
+          btn.addEventListener("click", (e) => {
+            const idx = parseInt(e.target.dataset.idx, 10);
+            quizzes.splice(idx, 1);
+            renderQuizzes();
+          });
+        });
+      }
+
+      // Input change listeners
+      const attAttendedInp = document.getElementById("pub-att-attended");
+      const attTotalInp = document.getElementById("pub-att-total");
+      const prevObtInp = document.getElementById("pub-prev-obtained");
+      const prevMaxInp = document.getElementById("pub-prev-max");
+
+      if (attAttendedInp) attAttendedInp.addEventListener("input", updateAttendanceCalc);
+      if (attTotalInp) attTotalInp.addEventListener("input", updateAttendanceCalc);
+      if (prevObtInp) prevObtInp.addEventListener("input", updatePrevSemCalc);
+      if (prevMaxInp) prevMaxInp.addEventListener("input", updatePrevSemCalc);
+
+      if (btnAddAssessment) {
+        btnAddAssessment.addEventListener("click", () => {
+          assessments.push({ name: `Assessment ${assessments.length + 1}`, obtained: 20, max: 25 });
+          renderAssessments();
+        });
+      }
+
+      if (btnAddQuiz) {
+        btnAddQuiz.addEventListener("click", () => {
+          quizzes.push({ name: `Quiz ${quizzes.length + 1}`, topic: "General Core", obtained: 8, max: 10 });
+          renderQuizzes();
+        });
+      }
+
+      // Initial calculations & renders
+      updateAttendanceCalc();
+      updatePrevSemCalc();
+      renderAssessments();
+      renderQuizzes();
+
       if (btnHeroTry) {
         btnHeroTry.addEventListener("click", () => {
           tryModal.classList.add("active");
@@ -315,15 +587,29 @@
 
       if (btnFillSample) {
         btnFillSample.addEventListener("click", () => {
-          document.getElementById("pub-att").value = "62";
-          document.getElementById("pub-hrs").value = "6";
-          document.getElementById("pub-prev").value = "58";
-          document.getElementById("pub-asgn").value = "65";
-          document.getElementById("pub-ia").value = "55";
-          document.getElementById("pub-quiz").value = "50";
-          document.getElementById("pub-comp").value = "5";
-          document.getElementById("pub-tot").value = "10";
-          document.getElementById("pub-back").value = "2";
+          document.getElementById("pub-att-attended").value = "42";
+          document.getElementById("pub-att-total").value = "50";
+          document.getElementById("pub-study-hrs").value = "3.5";
+          document.getElementById("pub-prev-obtained").value = "380";
+          document.getElementById("pub-prev-max").value = "500";
+          document.getElementById("pub-backlogs").value = "0";
+
+          assessments = [
+            { name: "Mid-Term 1", obtained: 38, max: 50 },
+            { name: "Unit Test 1", obtained: 22, max: 25 },
+            { name: "Assignment 1", obtained: 18, max: 20 }
+          ];
+
+          quizzes = [
+            { name: "Quiz 1 - Arrays & Lists", topic: "Data Structures", obtained: 8, max: 10 },
+            { name: "Quiz 2 - Sorting Algorithms", topic: "Algorithms", obtained: 7, max: 10 },
+            { name: "Quiz 3 - Tree Traversals", topic: "Data Structures", obtained: 6, max: 10 }
+          ];
+
+          updateAttendanceCalc();
+          updatePrevSemCalc();
+          renderAssessments();
+          renderQuizzes();
         });
       }
 
@@ -331,16 +617,57 @@
         predForm.addEventListener("submit", async (e) => {
           e.preventDefault();
           
+          // Derivations
+          const attAttended = parseFloat(document.getElementById("pub-att-attended").value) || 0;
+          const attTotal = parseFloat(document.getElementById("pub-att-total").value) || 1;
+          const calculatedAttendance = Math.min(100, Math.max(0, (attAttended / attTotal) * 100));
+
+          const dailyHours = parseFloat(document.getElementById("pub-study-hrs").value) || 0;
+          const cappedStudyHours = Math.min(6, Math.max(0, dailyHours));
+
+          const prevObtained = parseFloat(document.getElementById("pub-prev-obtained").value) || 0;
+          const prevMax = parseFloat(document.getElementById("pub-prev-max").value) || 1;
+          const calculatedPrevSem = Math.min(100, Math.max(0, (prevObtained / prevMax) * 100));
+
+          const backlogs = parseInt(document.getElementById("pub-backlogs").value, 10) || 0;
+
+          // Assessment aggregations
+          let totalAsgnObt = 0;
+          let totalAsgnMax = 0;
+          let completedAsgns = 0;
+          assessments.forEach(item => {
+            const obt = parseFloat(item.obtained) || 0;
+            const mx = parseFloat(item.max) || 1;
+            totalAsgnObt += obt;
+            totalAsgnMax += mx;
+            if (obt / mx >= 0.4) {
+              completedAsgns++;
+            }
+          });
+          const asgnAverage = totalAsgnMax > 0 ? (totalAsgnObt / totalAsgnMax) * 100 : 75.0;
+          const internalAssessment = asgnAverage;
+
+          // Quiz aggregations
+          let totalQuizObt = 0;
+          let totalQuizMax = 0;
+          quizzes.forEach(item => {
+            totalQuizObt += (parseFloat(item.obtained) || 0);
+            totalQuizMax += (parseFloat(item.max) || 1);
+          });
+          const quizAverage = totalQuizMax > 0 ? (totalQuizObt / totalQuizMax) * 100 : 70.0;
+
+          const totalAsgns = Math.max(1, assessments.length);
+
           const payload = {
-            attendance: parseFloat(document.getElementById("pub-att").value),
-            study_hours: parseFloat(document.getElementById("pub-hrs").value),
-            previous_semester_percentage: parseFloat(document.getElementById("pub-prev").value),
-            assignment_average: parseFloat(document.getElementById("pub-asgn").value),
-            internal_assessment: parseFloat(document.getElementById("pub-ia").value),
-            quiz_average: parseFloat(document.getElementById("pub-quiz").value),
-            completed_assignments: parseFloat(document.getElementById("pub-comp").value),
-            total_assignments: parseFloat(document.getElementById("pub-tot").value),
-            backlog_count: parseFloat(document.getElementById("pub-back").value)
+            attendance: parseFloat(calculatedAttendance.toFixed(2)),
+            study_hours: parseFloat(cappedStudyHours.toFixed(2)),
+            previous_semester_percentage: parseFloat(calculatedPrevSem.toFixed(2)),
+            assignment_average: parseFloat(asgnAverage.toFixed(2)),
+            internal_assessment: parseFloat(internalAssessment.toFixed(2)),
+            quiz_average: parseFloat(quizAverage.toFixed(2)),
+            completed_assignments: completedAsgns,
+            total_assignments: totalAsgns,
+            backlog_count: backlogs
           };
 
           try {
