@@ -199,6 +199,10 @@ def serve_css(path):
 def serve_js(path):
     return send_from_directory(os.path.join(FRONTEND_DIR, "js"), path)
 
+@app.route("/images/<path:path>")
+def serve_images(path):
+    return send_from_directory(os.path.join(FRONTEND_DIR, "images"), path)
+
 # Safe database initialization on module load (Vercel Serverless / local)
 try:
     init_db()

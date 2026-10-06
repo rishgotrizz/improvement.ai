@@ -80,14 +80,20 @@ a:hover {
   color: var(--primary-hover);
 }
 
-/* Header & Navigation (Removed Header Display) */
-.navbar, .nav-container, .nav-menu, .nav-link, .brand-logo, .brand-badge, .mobile-toggle {
-  display: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  height: 0 !important;
-  border: none !important;
-  box-shadow: none !important;
+/* Header & Navigation */
+.navbar {
+  display: block;
+  width: 100%;
+}
+
+.nav-top-right-logo {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  margin-left: 0.75rem;
+  vertical-align: middle;
+  border-left: 1.5px solid #e4e4e7;
+  padding-left: 0.75rem;
 }
 
 /* Layout Containers */
