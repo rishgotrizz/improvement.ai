@@ -204,6 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
   highlightActiveNavLink();
   setupMobileNavigation();
   updateUserSessionUI();
+  setupProtectedLinkInterception();
 });
 
 // Update navbar and role badges based on session state
@@ -221,6 +222,8 @@ async function updateUserSessionUI() {
       if (data.authenticated && data.user) {
         user = data.user;
         localStorage.setItem("edupredict_user", JSON.stringify(user));
+      } else {
+        localStorage.removeItem("edupredict_user");
       }
     }
   } catch(e) {}
@@ -263,4 +266,41 @@ function setupMobileNavigation() {
       navMenu.classList.toggle("open");
     });
   }
+}
+
+// Global protected link click interception for unauthenticated users
+function setupProtectedLinkInterception() {
+  document.addEventListener("click", (e) => {
+    const targetLink = e.target.closest("a[href='/prediction'], a[href='/xai'], a[href='/what-if']");
+    if (!targetLink) return;
+
+    // Call e.preventDefault() SYNCHRONOUSLY to stop instant browser navigation
+    e.preventDefault();
+
+    const href = targetLink.getAttribute("href");
+    const targetUrl = href.includes("what-if") ? "/what-if" : "/prediction";
+
+    (async () => {
+      let isAuthed = false;
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          isAuthed = Boolean(data && data.authenticated && data.user);
+        }
+      } catch(err) {}
+
+      if (isAuthed) {
+        window.location.href = targetUrl;
+      } else {
+        const loginModal = document.getElementById("login-required-modal");
+        if (loginModal) {
+          localStorage.setItem("edupredict_target_url", targetUrl);
+          loginModal.classList.add("active");
+        } else {
+          window.location.href = "/login?next=" + encodeURIComponent(targetUrl);
+        }
+      }
+    })();
+  });
 }
