@@ -53,6 +53,12 @@
 }
 
 /* Base Resets */
+html {
+  margin: 0;
+  padding: 0;
+  background-color: #fbfbf6;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -60,6 +66,8 @@
 }
 
 body {
+  margin: 0;
+  padding: 0;
   font-family: var(--font-family);
   background-color: var(--light-bg);
   color: var(--text-main);
@@ -85,11 +93,13 @@ a:hover {
   display: block;
   width: 100%;
   background: #ffffff;
-  border-bottom: 1.5px solid #18181b;
+  border-bottom: 2px solid #18181b;
   position: sticky;
   top: 0;
+  margin: 0;
+  padding: 0;
   z-index: 100;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
 }
 
 .navbar-container {
@@ -102,36 +112,38 @@ a:hover {
   width: 100%;
 }
 
+/* Typography-First EduPredict Wordmark */
+.brand-wordmark {
+  font-size: 1.45rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif !important;
+}
+
+.brand-wordmark .wordmark-edu {
+  color: #18181b !important;
+}
+
+.brand-wordmark .wordmark-predict {
+  color: #84cc16 !important; /* Lime/Chartreuse Green */
+}
+
 .brand {
   display: flex !important;
   align-items: center !important;
   gap: 0.4rem !important;
   text-decoration: none !important;
-  color: #18181b !important;
-  font-weight: 800 !important;
-  font-size: 1.3rem !important;
   white-space: nowrap;
-}
-
-.brand-logo-img {
-  height: 36px;
-  width: auto;
-  object-fit: contain;
-  display: block;
-}
-
-.brand-icon {
-  font-size: 1.5rem;
-}
-
-.brand-text {
-  letter-spacing: -0.01em;
 }
 
 .nav-menu {
   display: flex !important;
   align-items: center !important;
-  gap: 1.25rem !important;
+  gap: 1.5rem !important;
   margin: 0 !important;
   padding: 0 !important;
   list-style: none !important;
@@ -142,7 +154,7 @@ a:hover {
   font-weight: 500 !important;
   font-size: 0.92rem !important;
   text-decoration: none !important;
-  padding: 0.35rem 0.6rem !important;
+  padding: 0.35rem 0.65rem !important;
   border-radius: 6px !important;
   transition: all 0.15s ease !important;
   white-space: nowrap;
@@ -163,7 +175,7 @@ a:hover {
   font-weight: 600 !important;
   font-size: 0.92rem !important;
   text-decoration: none !important;
-  padding: 0.35rem 0.6rem !important;
+  padding: 0.35rem 0.65rem !important;
   border-radius: 6px !important;
   transition: all 0.15s ease !important;
   white-space: nowrap;
@@ -178,16 +190,6 @@ a:hover {
   align-items: center !important;
   gap: 0.75rem !important;
   white-space: nowrap;
-}
-
-.nav-top-right-logo {
-  height: 38px;
-  width: auto;
-  object-fit: contain;
-  margin-left: 0.75rem;
-  vertical-align: middle;
-  border-left: 1.5px solid #e4e4e7;
-  padding-left: 0.75rem;
 }
 
 .mobile-toggle {
