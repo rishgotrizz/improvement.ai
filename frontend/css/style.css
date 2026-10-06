@@ -84,6 +84,93 @@ a:hover {
 .navbar {
   display: block;
   width: 100%;
+  background: #ffffff;
+  border-bottom: 1.5px solid #18181b;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.navbar-container {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0.85rem 1.5rem !important;
+  width: 100%;
+}
+
+.brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  text-decoration: none !important;
+  color: #18181b !important;
+  font-weight: 800 !important;
+  font-size: 1.3rem !important;
+  white-space: nowrap;
+}
+
+.brand-icon {
+  font-size: 1.5rem;
+}
+
+.brand-text {
+  letter-spacing: -0.01em;
+}
+
+.nav-menu {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1.25rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+.nav-link {
+  color: #52525b !important;
+  font-weight: 500 !important;
+  font-size: 0.92rem !important;
+  text-decoration: none !important;
+  padding: 0.35rem 0.6rem !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease !important;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: #18181b !important;
+  background-color: #f4f4f5 !important;
+}
+
+.nav-link.active {
+  color: #18181b !important;
+  font-weight: 700 !important;
+}
+
+.nav-link-logout {
+  color: #dc2626 !important;
+  font-weight: 600 !important;
+  font-size: 0.92rem !important;
+  text-decoration: none !important;
+  padding: 0.35rem 0.6rem !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease !important;
+  white-space: nowrap;
+}
+
+.nav-link-logout:hover {
+  background-color: #fef2f2 !important;
+}
+
+.nav-right-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  white-space: nowrap;
 }
 
 .nav-top-right-logo {
@@ -94,6 +181,16 @@ a:hover {
   vertical-align: middle;
   border-left: 1.5px solid #e4e4e7;
   padding-left: 0.75rem;
+}
+
+.mobile-toggle {
+  display: none;
+  background: none;
+  border: 1px solid #e4e4e7;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  font-size: 1.2rem;
+  cursor: pointer;
 }
 
 /* Layout Containers */
