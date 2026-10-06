@@ -95,6 +95,11 @@ class TestPermissionsAndSubjectOwnership(unittest.TestCase):
         profile_before = get_student_profile("STU-2026-001")
         official_score_before = profile_before["academicScore"]
 
+        # Log in test session for What-If simulation
+        with self.client.session_transaction() as sess:
+            sess["username"] = "STU-2026-001"
+            sess["role"] = "student"
+
         # Run What-If simulation with boosted study hours
         baseline = {"attendance": 87.0, "study_hours": 18.0, "previous_semester_percentage": 79.0, "assignment_average": 82.5, "internal_assessment": 76.0, "quiz_average": 80.0, "completed_assignments": 14, "total_assignments": 15, "backlog_count": 0}
         scenario = {"attendance": 95.0, "study_hours": 25.0, "previous_semester_percentage": 79.0, "assignment_average": 90.0, "internal_assessment": 85.0, "quiz_average": 88.0, "completed_assignments": 15, "total_assignments": 15, "backlog_count": 0}
