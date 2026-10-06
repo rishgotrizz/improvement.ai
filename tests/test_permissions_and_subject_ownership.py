@@ -85,10 +85,18 @@ class TestPermissionsAndSubjectOwnership(unittest.TestCase):
         headers_cs = {"X-User-Role": "faculty", "X-User-Username": "prof_cs"}
         res_ok = self.client.post("/api/faculty/classes/1/quizzes", json={
             "subjectCode": "CS101",
-            "title": "Official Programming Evaluation Quiz",
+            "title": "Temporary Test Quiz",
             "questions": valid_questions
         }, headers=headers_cs)
         self.assertEqual(res_ok.status_code, 201)
+        created_qz = res_ok.get_json().get("quiz", {})
+        if created_qz and created_qz.get("quizId"):
+            from backend.services.database import get_db_connection
+            conn = get_db_connection()
+            conn.execute("DELETE FROM quiz_questions WHERE quiz_id = ?", (created_qz["quizId"],))
+            conn.execute("DELETE FROM quizzes WHERE quiz_id = ?", (created_qz["quizId"],))
+            conn.commit()
+            conn.close()
 
     def test_04_what_if_does_not_mutate_official_academic_records(self):
         """Verify What-If scenario simulation returns hypothetical output without altering SQLite DB."""

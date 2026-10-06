@@ -398,7 +398,7 @@ def _seed_demo_data(cursor):
     for code, name, f_user, f_name in faculty_subjects:
         cursor.execute("INSERT OR IGNORE INTO subjects (class_id, subject_code, subject_name, faculty_username, faculty_name) VALUES (?, ?, ?, ?, ?);", (class_a_id, code, name, f_user, f_name))
 
-    # Seed Demo MCQ Quiz with Topic Tagging
+    # Seed Demo MCQ Quiz 1 for MAT101 with Topic Tagging
     cursor.execute("""
         INSERT INTO quizzes (class_id, subject_code, title)
         VALUES (?, 'MAT101', 'Matrices & Calculus Evaluation Quiz 1');
@@ -419,6 +419,18 @@ def _seed_demo_data(cursor):
             INSERT INTO quiz_questions (quiz_id, question_text, option_a, option_b, option_c, option_d, correct_option, topic)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?);
         """, (quiz_id, q_text, opt_a, opt_b, opt_c, opt_d, corr, topic))
+
+    # Seed Demo MCQ Quiz 2 for CS101
+    cursor.execute("""
+        INSERT INTO quizzes (class_id, subject_code, title)
+        VALUES (?, 'CS101', 'Official Programming Evaluation Quiz');
+    """, (class_a_id,))
+    quiz_2_id = cursor.lastrowid
+
+    cursor.execute("""
+        INSERT INTO quiz_questions (quiz_id, question_text, option_a, option_b, option_c, option_d, correct_option, topic)
+        VALUES (?, 'What is the time complexity of searching in a balanced Binary Search Tree (BST)?', 'O(1)', 'O(log n)', 'O(n)', 'O(n log n)', 'B', 'Variables');
+    """, (quiz_2_id,))
 
     # Seed Demo Attempt for STU-2026-001 (Aarav Sharma) showing Integration weakness
     topic_breakdown_demo = json.dumps({
