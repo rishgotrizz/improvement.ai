@@ -113,6 +113,13 @@ a:hover {
   white-space: nowrap;
 }
 
+.brand-logo-img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
 .brand-icon {
   font-size: 1.5rem;
 }
