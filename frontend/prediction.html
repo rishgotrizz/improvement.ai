@@ -183,24 +183,59 @@
   <script src="js/main.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
-      let predData = null;
+      // Check active session authentication
+      try {
+        const authRes = await fetch("/api/auth/me");
+        const authData = await authRes.json();
+        if (!authData.authenticated) {
+          localStorage.setItem("edupredict_target_url", "/prediction");
+          window.location.href = "/login?next=/prediction";
+          return;
+        }
+      } catch(e) {}
 
-      const cachedStr = localStorage.getItem("edupredict_last_prediction");
-      if (cachedStr) {
+      let predData = null;
+      const lastInput = localStorage.getItem("edupredict_last_input");
+
+      if (lastInput) {
         try {
-          const parsed = JSON.parse(cachedStr);
-          if (parsed) {
-            predData = parsed.output || parsed.data || parsed;
+          const payload = JSON.parse(lastInput);
+          const xaiRes = await fetch("/api/xai", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          const xaiData = await xaiRes.json();
+          if (xaiData.success && xaiData.explanation) {
+            const predRes = await fetch("/api/predict", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            });
+            const predJson = await predRes.json();
+            predData = { ...predJson, explanation: xaiData.explanation };
           }
-        } catch (e) {
-          console.warn("Failed to parse cached prediction:", e);
+        } catch(e) {}
+      }
+
+      if (!predData || !predData.predicted_score) {
+        const cachedStr = localStorage.getItem("edupredict_last_prediction");
+        if (cachedStr) {
+          try {
+            const parsed = JSON.parse(cachedStr);
+            if (parsed) {
+              predData = parsed.output || parsed.data || parsed;
+            }
+          } catch (e) {
+            console.warn("Failed to parse cached prediction:", e);
+          }
         }
       }
 
       if (!predData || !predData.predicted_score) {
         const defaultPayload = {
           attendance: 87.0,
-          study_hours: 18.0,
+          study_hours: 3.5,
           previous_semester_percentage: 79.0,
           assignment_average: 82.5,
           internal_assessment: 76.0,

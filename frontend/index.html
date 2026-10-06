@@ -318,7 +318,7 @@
 
       <!-- Public Prediction Results Area -->
       <div id="public-pred-results" style="display: none; border-top: 1.5px solid #18181b; padding-top: 1.5rem; margin-top: 1.5rem;">
-        <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1rem; color: #18181b;">Real Model Predictions & Explanations</h3>
+        <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1rem; color: #18181b;">Prediction Results & Academic Analysis</h3>
 
         <div class="grid grid-2" style="gap: 1rem; margin-bottom: 1.5rem;">
           <div style="background: #f4f4f5; border: 1.5px solid #18181b; padding: 1.25rem; border-radius: 8px; text-align: center;">
@@ -331,26 +331,55 @@
           </div>
         </div>
 
-        <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem;">
-          <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; color: #18181b;">Key Influencing Factors (XAI Analysis)</h4>
-          <ul id="pub-res-xai" style="margin: 0; padding-left: 1.25rem; font-size: 0.88rem; color: #3f3f46; line-height: 1.6;"></ul>
-        </div>
-
         <div style="background: #f4f4f5; border: 1.5px solid #18181b; padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem;">
           <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; color: #18181b;">Deterministic Academic Recommendations</h4>
           <div id="pub-res-recs" style="font-size: 0.88rem; color: #3f3f46; line-height: 1.6;"></div>
         </div>
 
+        <!-- Advanced Features Action Card -->
         <div style="text-align: center; background: #e0f2fe; border: 1.5px solid #0284c7; padding: 1.25rem; border-radius: 8px;">
-          <p style="font-size: 0.9rem; font-weight: 700; color: #0369a1; margin-bottom: 0.5rem;">
-            Want to view detailed feature contribution weights and What-If scenario simulations?
+          <p style="font-size: 0.9rem; font-weight: 700; color: #0369a1; margin-bottom: 0.75rem;">
+            Want to see what's driving this prediction or run hypothetical scenarios?
           </p>
-          <div style="display: flex; gap: 0.75rem; justify-content: center;">
-            <a href="/prediction" class="btn-lime" style="font-size: 0.88rem; padding: 0.45rem 1rem;">View Full XAI Breakdown →</a>
-            <a href="/what-if" class="btn-paper-outline" style="font-size: 0.88rem; padding: 0.45rem 1rem;">Open What-If Simulator →</a>
+          <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <button type="button" id="btn-pub-xai" class="btn-lime" style="font-size: 0.88rem; padding: 0.55rem 1.1rem; font-weight: 700;">
+              VIEW XAI EXPLANATION →
+            </button>
+            <button type="button" id="btn-pub-whatif" class="btn-paper-outline" style="font-size: 0.88rem; padding: 0.55rem 1.1rem; font-weight: 700; background: #ffffff;">
+              TRY WHAT-IF ANALYSIS →
+            </button>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ADVANCED ANALYSIS LOGIN-REQUIRED MODAL -->
+  <div id="login-required-modal" class="public-modal-overlay">
+    <div class="public-modal-card" style="max-width: 480px; text-align: center; padding: 2.25rem;">
+      <button class="public-modal-close" id="btn-close-login-modal">&times;</button>
+
+      <div style="font-size: 2.5rem; margin-bottom: 0.4rem;">🔒</div>
+      <span class="badge-lime" style="margin-bottom: 0.5rem; display: inline-block;">ADVANCED ANALYSIS</span>
+      <h2 style="font-size: 1.4rem; font-weight: 800; color: #18181b; margin-top: 0.3rem; margin-bottom: 0.6rem;">
+        Want to see what's driving this prediction?
+      </h2>
+      <p style="font-size: 0.9rem; color: #52525b; line-height: 1.5; margin-bottom: 1.75rem;">
+        Log in to unlock detailed XAI explanations and What-If analysis. EduPredict's XAI and What-If tools are available after login so your analysis can be connected to your student profile.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem;">
+        <button type="button" id="btn-modal-login" class="btn-lime" style="width: 100%; justify-content: center; font-size: 1rem; padding: 0.75rem; font-weight: 800;">
+          LOGIN →
+        </button>
+        <button type="button" id="btn-modal-register" class="btn-paper-outline" style="width: 100%; justify-content: center; font-size: 1rem; padding: 0.75rem; font-weight: 700;">
+          CREATE ACCOUNT
+        </button>
+      </div>
+
+      <button type="button" id="btn-modal-maybe-later" style="background: none; border: none; font-size: 0.85rem; color: #71717a; cursor: pointer; text-decoration: underline;">
+        Maybe later
+      </button>
     </div>
   </div>
 
@@ -369,6 +398,77 @@
       const btnFillSample = document.getElementById("btn-fill-sample");
       const predForm = document.getElementById("public-pred-form");
       const resultsDiv = document.getElementById("public-pred-results");
+
+      const loginModal = document.getElementById("login-required-modal");
+      const btnCloseLoginModal = document.getElementById("btn-close-login-modal");
+      const btnModalLogin = document.getElementById("btn-modal-login");
+      const btnModalRegister = document.getElementById("btn-modal-register");
+      const btnModalMaybeLater = document.getElementById("btn-modal-maybe-later");
+
+      const btnPubXai = document.getElementById("btn-pub-xai");
+      const btnPubWhatIf = document.getElementById("btn-pub-whatif");
+
+      let pendingTargetUrl = "/prediction";
+
+      async function checkAuthStatus() {
+        try {
+          const res = await fetch("/api/auth/me");
+          const data = await res.json();
+          return data.authenticated;
+        } catch(e) {
+          return false;
+        }
+      }
+
+      if (btnPubXai) {
+        btnPubXai.addEventListener("click", async () => {
+          pendingTargetUrl = "/prediction";
+          const isAuthed = await checkAuthStatus();
+          if (isAuthed) {
+            window.location.href = "/prediction";
+          } else {
+            loginModal.classList.add("active");
+          }
+        });
+      }
+
+      if (btnPubWhatIf) {
+        btnPubWhatIf.addEventListener("click", async () => {
+          pendingTargetUrl = "/what-if";
+          const isAuthed = await checkAuthStatus();
+          if (isAuthed) {
+            window.location.href = "/what-if";
+          } else {
+            loginModal.classList.add("active");
+          }
+        });
+      }
+
+      if (btnCloseLoginModal) {
+        btnCloseLoginModal.addEventListener("click", () => {
+          loginModal.classList.remove("active");
+        });
+      }
+
+      if (btnModalMaybeLater) {
+        btnModalMaybeLater.addEventListener("click", () => {
+          loginModal.classList.remove("active");
+        });
+      }
+
+      if (btnModalLogin) {
+        btnModalLogin.addEventListener("click", () => {
+          localStorage.setItem("edupredict_target_url", pendingTargetUrl);
+          window.location.href = "/login?next=" + encodeURIComponent(pendingTargetUrl);
+        });
+      }
+
+      if (btnModalRegister) {
+        btnModalRegister.addEventListener("click", () => {
+          localStorage.setItem("edupredict_target_url", pendingTargetUrl);
+          window.location.href = "/register/student?next=" + encodeURIComponent(pendingTargetUrl);
+        });
+      }
 
       const btnAddAssessment = document.getElementById("btn-add-assessment");
       const btnAddQuiz = document.getElementById("btn-add-quiz");
@@ -697,23 +797,6 @@
               }
 
               document.getElementById("pub-res-score").textContent = `${predictedScore}%`;
-
-              const xaiUl = document.getElementById("pub-res-xai");
-              xaiUl.innerHTML = "";
-              if (data.explanation && data.explanation.positive_signals) {
-                data.explanation.positive_signals.forEach(f => {
-                  const li = document.createElement("li");
-                  li.innerHTML = `<strong style="color: #16a34a;">+ Positive:</strong> ${f.name || f.feature} (Contribution: +${f.contribution.toFixed(2)})`;
-                  xaiUl.appendChild(li);
-                });
-              }
-              if (data.explanation && data.explanation.negative_signals) {
-                data.explanation.negative_signals.forEach(f => {
-                  const li = document.createElement("li");
-                  li.innerHTML = `<strong style="color: #dc2626;">- Concern:</strong> ${f.name || f.feature} (Contribution: ${f.contribution.toFixed(2)})`;
-                  xaiUl.appendChild(li);
-                });
-              }
 
               const recsDiv = document.getElementById("pub-res-recs");
               if (data.recommendations && data.recommendations.length > 0) {

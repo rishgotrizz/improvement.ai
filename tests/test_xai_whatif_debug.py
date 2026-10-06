@@ -54,7 +54,10 @@ class TestXAIAndWhatIfDebug(unittest.TestCase):
             self.assertIn("contribution", item)
 
     def test_02_predict_api_xai_integration(self):
-        """Verify /api/predict returns top-level explanation and recommendations."""
+        """Verify /api/predict returns top-level explanation and recommendations when authenticated."""
+        with self.client.session_transaction() as sess:
+            sess["username"] = "testuser"
+            sess["role"] = "student"
         res = self.client.post("/api/predict", json=self.sample_valid_input)
         self.assertEqual(res.status_code, 200)
         data = res.get_json()
@@ -91,7 +94,10 @@ class TestXAIAndWhatIfDebug(unittest.TestCase):
         self.assertEqual(len(res["changed_factors"]), 2)
 
     def test_04_what_if_api_endpoint(self):
-        """Verify /api/what-if endpoint returns HTTP 200 and scenario comparisons."""
+        """Verify /api/what-if endpoint returns HTTP 200 and scenario comparisons when authenticated."""
+        with self.client.session_transaction() as sess:
+            sess["username"] = "testuser"
+            sess["role"] = "student"
         baseline = self.sample_valid_input
         scenario = dict(baseline)
         scenario["backlog_count"] = 0
@@ -105,13 +111,51 @@ class TestXAIAndWhatIfDebug(unittest.TestCase):
         self.assertIn("difference", data)
 
     def test_05_what_if_invalid_inputs(self):
-        """Verify invalid inputs return HTTP 400 error."""
+        """Verify invalid inputs return HTTP 400 error for authenticated session."""
+        with self.client.session_transaction() as sess:
+            sess["username"] = "testuser"
+            sess["role"] = "student"
         invalid_payload = {"baseline": {"attendance": 150.0}, "scenario": self.sample_valid_input}
         res = self.client.post("/api/what-if", json=invalid_payload)
         self.assertEqual(res.status_code, 400)
         data = res.get_json()
         self.assertFalse(data["success"])
         self.assertIn("error", data)
+
+    def test_06_unauthenticated_api_and_route_protection(self):
+        """Verify unauthenticated requests to XAI and What-If endpoints return 401/redirect."""
+        # Unauthenticated /api/xai returns 401
+        xai_res = self.client.post("/api/xai", json=self.sample_valid_input)
+        self.assertEqual(xai_res.status_code, 401)
+        xai_data = xai_res.get_json()
+        self.assertFalse(xai_data["success"])
+        self.assertIn("Authentication required", xai_data["error"])
+
+        # Unauthenticated /api/what-if returns 401
+        whatif_res = self.client.post("/api/what-if", json={"baseline": self.sample_valid_input, "scenario": self.sample_valid_input})
+        self.assertEqual(whatif_res.status_code, 401)
+        whatif_data = whatif_res.get_json()
+        self.assertFalse(whatif_data["success"])
+        self.assertIn("Authentication required", whatif_data["error"])
+
+        # Unauthenticated /api/predict succeeds with basic predictions but omits detailed XAI explanation
+        pred_res = self.client.post("/api/predict", json=self.sample_valid_input)
+        self.assertEqual(pred_res.status_code, 200)
+        pred_data = pred_res.get_json()
+        self.assertTrue(pred_data["success"])
+        self.assertIsNone(pred_data.get("explanation"))
+        self.assertIn("predicted_score", pred_data)
+        self.assertIn("risk_category", pred_data)
+        self.assertIn("recommendations", pred_data)
+
+        # Unauthenticated page routes redirect to /login
+        pred_page = self.client.get("/prediction")
+        self.assertEqual(pred_page.status_code, 302)
+        self.assertIn("/login", pred_page.headers.get("Location", ""))
+
+        whatif_page = self.client.get("/what-if")
+        self.assertEqual(whatif_page.status_code, 302)
+        self.assertIn("/login", whatif_page.headers.get("Location", ""))
 
 if __name__ == "__main__":
     unittest.main()

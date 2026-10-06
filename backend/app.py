@@ -14,7 +14,7 @@ if PROJECT_ROOT in sys.path:
     sys.path.remove(PROJECT_ROOT)
 sys.path.insert(0, PROJECT_ROOT)
 
-from flask import Flask, jsonify, send_from_directory, request
+from flask import Flask, jsonify, send_from_directory, request, session, redirect
 
 # Import Database, Blueprint services, and EDA modules
 from backend.services.database import init_db
@@ -23,6 +23,7 @@ from backend.routes.assessment_routes import assessment_bp
 from backend.routes.auth_routes import auth_bp
 from backend.routes.faculty_routes import faculty_bp
 from backend.services.prediction_service import fetch_trained_model_metrics, execute_ml_prediction
+from backend.services.explanation_service import explain_individual_prediction
 from backend.services.recommendation_service import fetch_recommendations_for_input
 from backend.services.what_if_service import run_what_if_analysis
 
@@ -84,10 +85,30 @@ def get_model_metrics():
 
 @app.route("/api/predict", methods=["POST"])
 def predict():
-    """AI ML prediction endpoint executing classification, score regression, explainability, and recommendations."""
+    """AI ML prediction endpoint executing classification, score regression, and recommendations. Unauthenticated calls omit XAI signals."""
     data = request.get_json(silent=True) or {}
     success, result, status_code = execute_ml_prediction(data)
+    if success and not session.get("username"):
+        # Unauthenticated public prediction returns basic predictions & recommendations, withholding detailed XAI
+        result["explanation"] = None
     return jsonify(result), status_code
+
+@app.route("/api/xai", methods=["POST"])
+@app.route("/api/explain", methods=["POST"])
+def get_xai_explanation():
+    """Authenticated API endpoint retrieving feature-level XAI model contributions."""
+    if not session.get("username"):
+        return jsonify({
+            "success": False,
+            "error": "Authentication required. Please log in to view detailed XAI explanations."
+        }), 401
+
+    data = request.get_json(silent=True) or {}
+    explanation = explain_individual_prediction(data)
+    return jsonify({
+        "success": True,
+        "explanation": explanation
+    }), 200
 
 @app.route("/api/recommendations", methods=["POST"])
 def get_recommendations():
@@ -103,7 +124,13 @@ def get_recommendations():
 
 @app.route("/api/what-if", methods=["POST"])
 def run_what_if():
-    """What-If scenario simulation API comparing baseline vs hypothetical profile."""
+    """What-If scenario simulation API comparing baseline vs hypothetical profile (Requires Login)."""
+    if not session.get("username"):
+        return jsonify({
+            "success": False,
+            "error": "Authentication required. Please log in to access the What-If simulator."
+        }), 401
+
     data = request.get_json(silent=True) or {}
     baseline_raw = data.get("baseline")
     scenario_raw = data.get("scenario")
@@ -155,11 +182,16 @@ def serve_assessment():
     return send_from_directory(FRONTEND_DIR, "assessment.html")
 
 @app.route("/prediction")
+@app.route("/xai")
 def serve_prediction():
+    if not session.get("username"):
+        return redirect("/login?next=/prediction")
     return send_from_directory(FRONTEND_DIR, "prediction.html")
 
 @app.route("/what-if")
 def serve_what_if():
+    if not session.get("username"):
+        return redirect("/login?next=/what-if")
     return send_from_directory(FRONTEND_DIR, "what-if.html")
 
 @app.route("/planner")

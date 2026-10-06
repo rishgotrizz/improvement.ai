@@ -110,7 +110,9 @@
 
           if (res.ok && data.success) {
             localStorage.setItem("edupredict_user", JSON.stringify(data.user));
-            window.location.href = "/dashboard";
+            const targetUrl = localStorage.getItem("edupredict_target_url") || new URLSearchParams(window.location.search).get("next") || "/dashboard";
+            localStorage.removeItem("edupredict_target_url");
+            window.location.href = targetUrl;
           } else {
             alertBox.textContent = data.error || "Authentication failed. Invalid credentials.";
             alertBox.style.display = "block";

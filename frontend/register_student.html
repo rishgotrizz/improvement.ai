@@ -197,8 +197,14 @@
         codeBox.style.display = "block";
       });
 
+      function finishStudentAuthRedirect() {
+        const targetUrl = localStorage.getItem("edupredict_target_url") || new URLSearchParams(window.location.search).get("next") || "/dashboard";
+        localStorage.removeItem("edupredict_target_url");
+        window.location.href = targetUrl;
+      }
+
       document.getElementById("btn-skip-post-reg").addEventListener("click", () => {
-        window.location.href = "/dashboard";
+        finishStudentAuthRedirect();
       });
 
       document.getElementById("btn-submit-code").addEventListener("click", async () => {
@@ -222,7 +228,7 @@
 
           if (res.ok && data.success) {
             alert(`✅ ${data.message}`);
-            window.location.href = "/dashboard";
+            finishStudentAuthRedirect();
           } else {
             fb.textContent = data.error || "Invalid join code.";
             fb.style.display = "block";

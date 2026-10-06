@@ -422,7 +422,18 @@
 
   <script src="js/main.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Check active session authentication
+      try {
+        const authRes = await fetch("/api/auth/me");
+        const authData = await authRes.json();
+        if (!authData.authenticated) {
+          localStorage.setItem("edupredict_target_url", "/what-if");
+          window.location.href = "/login?next=/what-if";
+          return;
+        }
+      } catch(e) {}
+
       // Initialize inputs from last user prediction if stored
       const lastInput = localStorage.getItem("edupredict_last_input");
       if (lastInput) {
