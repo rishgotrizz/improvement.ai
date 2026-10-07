@@ -25,13 +25,15 @@ except ImportError:
     from services.student_service import get_student_profile, get_student_history
 
 def get_faculty_classes(faculty_username):
-    """Retrieve list of classes owned by a faculty member with student counts."""
+    """Retrieve list of classes owned by a faculty member with student counts and subject counts."""
     conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT c.class_id, c.class_name, c.class_code, c.created_at,
-               COUNT(m.student_id) as student_count
+        SELECT c.class_id, c.class_name, c.class_code, c.course, c.semester, c.section,
+               COALESCE(c.status, 'ACTIVE') as status, c.created_at,
+               COUNT(DISTINCT m.student_id) as student_count,
+               (SELECT COUNT(*) FROM subjects sub WHERE sub.class_id = c.class_id) as subject_count
         FROM classes c
         LEFT JOIN class_memberships m ON c.class_id = m.class_id
         WHERE c.faculty_username = ?
@@ -43,34 +45,84 @@ def get_faculty_classes(faculty_username):
 
     return [dict(r) for r in rows]
 
-def create_faculty_class(faculty_username, class_name, custom_code=None):
+def create_faculty_class(faculty_username, class_name, custom_code=None, course=None, semester=None, section=None):
     """Create a new academic class with unique join code."""
     if not class_name or not class_name.strip():
         return False, None, "Class name is required."
 
     class_code = custom_code.strip().upper() if custom_code else generate_class_code()
+    course_val = course.strip() if course and course.strip() else "B.Tech Computer Science"
+    try:
+        sem_val = int(semester) if semester else 2
+    except (ValueError, TypeError):
+        sem_val = 2
+    sec_val = section.strip() if section and section.strip() else "A"
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
         cursor.execute("""
-            INSERT INTO classes (class_name, class_code, faculty_username)
-            VALUES (?, ?, ?);
-        """, (class_name.strip(), class_code, faculty_username))
+            INSERT INTO classes (class_name, class_code, faculty_username, course, semester, section, status)
+            VALUES (?, ?, ?, ?, ?, ?, 'ACTIVE');
+        """, (class_name.strip(), class_code, faculty_username, course_val, sem_val, sec_val))
         class_id = cursor.lastrowid
         conn.commit()
         conn.close()
-        return True, {"classId": class_id, "className": class_name, "classCode": class_code}, "Class created successfully."
+        return True, {
+            "classId": class_id,
+            "className": class_name.strip(),
+            "classCode": class_code,
+            "course": course_val,
+            "semester": sem_val,
+            "section": sec_val,
+            "status": "ACTIVE"
+        }, "Class created successfully."
     except Exception as e:
         conn.close()
         return False, None, f"Failed to create class: {str(e)}"
 
-def get_faculty_overview(faculty_username=None):
+def update_faculty_class_status(class_id, faculty_username, status):
+    """Update classroom status to ACTIVE or ARCHIVED."""
+    if status not in ('ACTIVE', 'ARCHIVED'):
+        return False, "Invalid status. Status must be ACTIVE or ARCHIVED."
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT faculty_username FROM classes WHERE class_id = ?;", (class_id,))
+    cls = cursor.fetchone()
+    if not cls:
+        conn.close()
+        return False, "Classroom not found."
+
+    if faculty_username and faculty_username != "faculty" and cls["faculty_username"] != faculty_username:
+        conn.close()
+        return False, "Unauthorized to modify this classroom."
+
+    cursor.execute("UPDATE classes SET status = ? WHERE class_id = ?;", (status, class_id))
+    conn.commit()
+    conn.close()
+    return True, f"Classroom status updated to {status}."
+
+def get_class_subjects(class_id):
+    """Retrieve list of subjects assigned to a specific class."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT subject_id, class_id, subject_code, subject_name, faculty_username, faculty_name, semester
+        FROM subjects
+        WHERE class_id = ?;
+    """, (class_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def get_faculty_overview(faculty_username=None, class_id=None):
     """
     Compute aggregate faculty monitoring statistics across all assigned student records.
     """
-    students_list = get_faculty_student_list(faculty_username=faculty_username, search=None, risk_filter="ALL", sort_by="risk")
+    students_list = get_faculty_student_list(faculty_username=faculty_username, class_id=class_id, search=None, risk_filter="ALL", sort_by="risk")
 
     total_students = len(students_list)
     high_risk = sum(1 for s in students_list if s["riskLevel"] == "HIGH")
@@ -84,10 +136,19 @@ def get_faculty_overview(faculty_username=None):
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("""
-        SELECT student_id, COUNT(assessment_id) as cnt 
-        FROM assessments GROUP BY student_id HAVING cnt >= 2;
-    """)
+    if class_id:
+        cursor.execute("""
+            SELECT a.student_id, COUNT(a.assessment_id) as cnt 
+            FROM assessments a
+            JOIN class_memberships cm ON a.student_id = cm.student_id
+            WHERE cm.class_id = ?
+            GROUP BY a.student_id HAVING cnt >= 2;
+        """, (class_id,))
+    else:
+        cursor.execute("""
+            SELECT student_id, COUNT(assessment_id) as cnt 
+            FROM assessments GROUP BY student_id HAVING cnt >= 2;
+        """)
     multi_assessments = cursor.fetchall()
 
     if multi_assessments:

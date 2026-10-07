@@ -123,11 +123,15 @@ def join_class_by_code(student_id, class_code):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT class_id, class_name FROM classes WHERE class_code = ?;", (code,))
+    cursor.execute("SELECT class_id, class_name, COALESCE(status, 'ACTIVE') as status FROM classes WHERE class_code = ?;", (code,))
     cls = cursor.fetchone()
     if not cls:
         conn.close()
         return False, f"Invalid class join code '{code}'. Class not found."
+
+    if cls["status"] == "ARCHIVED":
+        conn.close()
+        return False, "Cannot join an archived classroom."
 
     class_id = cls["class_id"]
     class_name = cls["class_name"]

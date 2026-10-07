@@ -112,6 +112,12 @@
         <p class="page-subtitle">Manage classes, student join codes, risk classification, XAI audit, and intervention tracking</p>
       </div>
       <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 0.4rem; background: var(--bg-alt); border: 1px solid var(--border-color); padding: 0.35rem 0.65rem; border-radius: 6px;">
+          <label for="header-classroom-switcher" style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Classroom:</label>
+          <select id="header-classroom-switcher" class="form-control" style="font-weight: 600; font-size: 0.85rem; padding: 0.3rem 0.6rem; background: var(--white); min-width: 220px; border: 1px solid var(--border-color);">
+            <option value="">All Classrooms</option>
+          </select>
+        </div>
         <button type="button" id="btn-create-class-modal" class="btn btn-secondary btn-sm">+ Create New Class</button>
         <button type="button" id="btn-add-student-modal" class="btn btn-primary btn-sm">+ Manually Add Student</button>
         <span class="badge badge-success" id="faculty-user-badge">👩‍🏫 Logged in as Faculty</span>
@@ -273,8 +279,22 @@
 
       <form id="form-create-class">
         <div style="margin-bottom: 1rem;">
-          <label class="form-label" style="font-size: 0.85rem; font-weight: 600;">Class / Section Name</label>
+          <label class="form-label" style="font-size: 0.85rem; font-weight: 600;">Classroom Name</label>
           <input type="text" id="new-class-name" class="form-control" placeholder="e.g. FY Computer Engineering Section C" required style="width: 100%;">
+        </div>
+        <div class="grid grid-3" style="gap: 0.75rem; margin-bottom: 1rem;">
+          <div>
+            <label class="form-label" style="font-size: 0.8rem; font-weight: 600;">Course / Department</label>
+            <input type="text" id="new-class-course" class="form-control" placeholder="B.Tech CS" value="B.Tech Computer Science" style="width: 100%; font-size: 0.85rem;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem; font-weight: 600;">Semester</label>
+            <input type="number" id="new-class-semester" class="form-control" value="2" min="1" max="8" style="width: 100%; font-size: 0.85rem;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem; font-weight: 600;">Section</label>
+            <input type="text" id="new-class-section" class="form-control" value="A" placeholder="A, B, C" style="width: 100%; font-size: 0.85rem;">
+          </div>
         </div>
         <div style="margin-bottom: 1.5rem;">
           <label class="form-label" style="font-size: 0.85rem; font-weight: 600;">Custom Join Code (Optional)</label>
@@ -504,9 +524,54 @@
       });
     }
 
+    let currentClassId = "";
+
+    function selectClassroom(classId) {
+      currentClassId = classId ? String(classId) : "";
+      const hSwitcher = document.getElementById("header-classroom-switcher");
+      const fSwitcher = document.getElementById("class-filter-select");
+      if (hSwitcher) hSwitcher.value = currentClassId;
+      if (fSwitcher) fSwitcher.value = currentClassId;
+
+      loadFacultyClasses();
+      loadFacultyOverview(currentClassId);
+      loadFacultyRoster();
+    }
+
+    async function copyJoinCode(code) {
+      try {
+        await navigator.clipboard.writeText(code);
+        alert(`📋 Class Join Code '${code}' copied to clipboard!\nShare this code with students to auto-enroll them in your classroom.`);
+      } catch (err) {
+        alert(`Class Join Code: ${code}`);
+      }
+    }
+
+    async function toggleClassStatus(classId, newStatus) {
+      try {
+        const res = await fetch(`/api/faculty/classes/${classId}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          alert(`✅ Classroom status updated to ${newStatus}.`);
+          await loadFacultyClasses();
+          await loadFacultyOverview(currentClassId);
+          await loadFacultyRoster();
+        } else {
+          alert(data.error || "Failed to update classroom status.");
+        }
+      } catch (err) {
+        alert("Network error updating classroom status.");
+      }
+    }
+
     async function loadFacultyClasses() {
       const container = document.getElementById("faculty-classes-container");
-      const select = document.getElementById("class-filter-select");
+      const filterSelect = document.getElementById("class-filter-select");
+      const headerSelect = document.getElementById("header-classroom-switcher");
       const manSelect = document.getElementById("man-class-id");
 
       try {
@@ -515,44 +580,85 @@
         if (res.ok && data.success && data.classes) {
           const classes = data.classes;
           if (classes.length === 0) {
-            container.innerHTML = `<div class="card" style="padding: 1rem; grid-column: span 3; color: var(--text-muted);">No active classes created yet. Click "+ Create New Class" to generate your first Class Join Code.</div>`;
+            container.innerHTML = `
+              <div class="card" style="padding: 2rem; grid-column: span 3; text-align: center; background: var(--bg-alt); border: 2px dashed var(--border-color);">
+                <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.4rem;">No Classrooms Created Yet</h4>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">Click "+ Create New Class" to create your first classroom and generate a student Join Code.</p>
+                <button type="button" onclick="document.getElementById('btn-create-class-modal').click()" class="btn btn-primary btn-sm">+ Create Classroom</button>
+              </div>
+            `;
+            if (headerSelect) headerSelect.innerHTML = `<option value="">No Classrooms</option>`;
+            if (filterSelect) filterSelect.innerHTML = `<option value="">All Classes (0)</option>`;
+            if (manSelect) manSelect.innerHTML = `<option value="">No Classrooms</option>`;
             return;
           }
 
           let html = "";
-          let selectOptions = `<option value="">All Classes (${classes.length})</option>`;
+          let selectOptions = `<option value="">All Classrooms (${classes.length})</option>`;
           let manOptions = "";
 
           classes.forEach(c => {
-            selectOptions += `<option value="${c.class_id}">${c.class_name}</option>`;
+            const isSelected = String(c.class_id) === String(currentClassId);
+            const status = c.status || "ACTIVE";
+            const isArchived = status === "ARCHIVED";
+            const statusBadge = isArchived 
+              ? `<span class="badge" style="background:#f3f4f6; color:#6b7280; border:1px solid #d1d5db;">ARCHIVED</span>`
+              : `<span class="badge badge-success">ACTIVE</span>`;
+
+            selectOptions += `<option value="${c.class_id}" ${isSelected ? 'selected' : ''}>${c.class_name} (${c.class_code})</option>`;
             manOptions += `<option value="${c.class_id}">${c.class_name}</option>`;
 
+            const courseInfo = `${c.course || 'B.Tech CS'} • Sem ${c.semester || 2} • Sec ${c.section || 'A'}`;
+            const subCount = c.subject_count !== undefined ? c.subject_count : 0;
+
             html += `
-              <div class="card" style="padding: 1.25rem; border-top: 3px solid var(--primary);">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                  <h4 style="font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.3rem;">${c.class_name}</h4>
-                  <span class="badge badge-info">${c.student_count} Students</span>
+              <div class="card" style="padding: 1.25rem; border-top: 3px solid ${isSelected ? 'var(--primary)' : 'var(--border-color)'}; background: ${isArchived ? '#fafafa' : 'var(--white)'};">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem;">
+                  <div>
+                    <h4 style="font-size: 1rem; font-weight: 700; color: var(--dark); margin: 0 0 0.2rem 0;">${c.class_name}</h4>
+                    <span style="font-size: 0.78rem; color: var(--text-muted);">${courseInfo}</span>
+                  </div>
+                  <div>${statusBadge}</div>
                 </div>
-                <div style="margin-top: 0.75rem; font-size: 0.85rem;">
-                  <span style="color: var(--text-muted);">Join Code:</span>
-                  <span class="class-code-badge">${c.class_code}</span>
+
+                <div style="display: flex; gap: 0.5rem; margin: 0.75rem 0; font-size: 0.82rem;">
+                  <span class="badge badge-info">${c.student_count} Students</span>
+                  <span class="badge badge-warning">${subCount} Subjects</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                  <div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">CODE:</span>
+                    <span class="class-code-badge">${c.class_code}</span>
+                  </div>
+                  <div style="display: flex; gap: 0.35rem;">
+                    <button type="button" class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}" style="padding: 0.25rem 0.5rem; font-size: 0.78rem;" onclick="selectClassroom('${c.class_id}')">${isSelected ? 'Active ✓' : 'Open'}</button>
+                    <button type="button" class="btn btn-sm btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.78rem;" onclick="copyJoinCode('${c.class_code}')">Copy Code</button>
+                    <button type="button" class="btn btn-sm ${isArchived ? 'btn-success' : 'btn-outline'}" style="padding: 0.25rem 0.5rem; font-size: 0.78rem;" onclick="toggleClassStatus('${c.class_id}', '${isArchived ? 'ACTIVE' : 'ARCHIVED'}')">${isArchived ? 'Unarchive' : 'Archive'}</button>
+                  </div>
                 </div>
               </div>
             `;
           });
 
           container.innerHTML = html;
-          select.innerHTML = selectOptions;
-          manSelect.innerHTML = manOptions;
+          if (headerSelect) headerSelect.innerHTML = selectOptions;
+          if (filterSelect) filterSelect.innerHTML = selectOptions;
+          if (manSelect) manSelect.innerHTML = manOptions;
         }
       } catch (err) {
         container.innerHTML = `<div class="card" style="padding: 1rem; color: #dc2626;">Error loading classes.</div>`;
       }
     }
 
-    async function loadFacultyOverview() {
+    async function loadFacultyOverview(classId = null) {
       try {
-        const res = await fetch("/api/faculty/overview");
+        let url = "/api/faculty/overview";
+        const targetId = classId !== null ? classId : currentClassId;
+        if (targetId) {
+          url += `?class_id=${encodeURIComponent(targetId)}`;
+        }
+        const res = await fetch(url);
         const data = await res.json();
         if (res.ok && data.success && data.overview) {
           const ov = data.overview;
@@ -573,7 +679,7 @@
       const activeFilterBtn = document.querySelector(".filter-btn.active");
       const risk = activeFilterBtn ? activeFilterBtn.dataset.filter : "ALL";
       const sort = document.getElementById("student-sort").value;
-      const classId = document.getElementById("class-filter-select").value;
+      const classId = currentClassId || document.getElementById("class-filter-select").value;
 
       const tbody = document.getElementById("faculty-roster-body");
       tbody.innerHTML = `<tr><td colspan="10" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">⌛ Updating student roster...</td></tr>`;
@@ -637,7 +743,16 @@
     function setupRosterControls() {
       document.getElementById("student-search").addEventListener("input", debounce(loadFacultyRoster, 300));
       document.getElementById("student-sort").addEventListener("change", loadFacultyRoster);
-      document.getElementById("class-filter-select").addEventListener("change", loadFacultyRoster);
+      
+      const filterSelect = document.getElementById("class-filter-select");
+      if (filterSelect) {
+        filterSelect.addEventListener("change", (e) => selectClassroom(e.target.value));
+      }
+
+      const headerSelect = document.getElementById("header-classroom-switcher");
+      if (headerSelect) {
+        headerSelect.addEventListener("change", (e) => selectClassroom(e.target.value));
+      }
 
       document.querySelectorAll(".filter-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
@@ -659,13 +774,16 @@
       document.getElementById("form-create-class").addEventListener("submit", async (e) => {
         e.preventDefault();
         const className = document.getElementById("new-class-name").value;
+        const course = document.getElementById("new-class-course") ? document.getElementById("new-class-course").value : "";
+        const semester = document.getElementById("new-class-semester") ? document.getElementById("new-class-semester").value : "2";
+        const section = document.getElementById("new-class-section") ? document.getElementById("new-class-section").value : "A";
         const classCode = document.getElementById("new-class-code").value;
 
         try {
           const res = await fetch("/api/faculty/classes", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ className, classCode })
+            body: JSON.stringify({ className, course, semester, section, classCode })
           });
           const data = await res.json();
           if (res.ok && data.success) {
@@ -674,6 +792,9 @@
             document.getElementById("new-class-name").value = "";
             document.getElementById("new-class-code").value = "";
             await loadFacultyClasses();
+            if (data.class && data.class.classId) {
+              selectClassroom(data.class.classId);
+            }
           } else {
             alert(data.error || "Failed to create class.");
           }

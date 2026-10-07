@@ -16,6 +16,8 @@ try:
     from backend.services.faculty_service import (
         get_faculty_classes,
         create_faculty_class,
+        update_faculty_class_status,
+        get_class_subjects,
         get_faculty_overview,
         get_faculty_student_list,
         add_student_to_class_manually,
@@ -31,6 +33,8 @@ except ImportError:
     from services.faculty_service import (
         get_faculty_classes,
         create_faculty_class,
+        update_faculty_class_status,
+        get_class_subjects,
         get_faculty_overview,
         get_faculty_student_list,
         add_student_to_class_manually,
@@ -113,13 +117,43 @@ def post_class():
     data = request.get_json(silent=True) or {}
     class_name = data.get("className")
     custom_code = data.get("classCode")
+    course = data.get("course")
+    semester = data.get("semester")
+    section = data.get("section")
     faculty_username = request.headers.get("X-User-Username") or session.get("username", "faculty")
 
-    success, res_data, msg = create_faculty_class(faculty_username, class_name, custom_code)
+    success, res_data, msg = create_faculty_class(faculty_username, class_name, custom_code, course=course, semester=semester, section=section)
     if not success:
         return jsonify({"success": False, "error": msg}), 400
 
     return jsonify({"success": True, "class": res_data, "message": msg}), 201
+
+@faculty_bp.route("/api/faculty/classes/<int:class_id>/status", methods=["PATCH"])
+def patch_class_status(class_id):
+    """Update active/archived status of a classroom."""
+    ok, err = check_faculty_access()
+    if not ok:
+        return jsonify({"error": err}), 403
+
+    data = request.get_json(silent=True) or {}
+    status = data.get("status", "ACTIVE").upper()
+    faculty_username = request.headers.get("X-User-Username") or session.get("username", "faculty")
+
+    success, msg = update_faculty_class_status(class_id, faculty_username, status)
+    if not success:
+        return jsonify({"success": False, "error": msg}), 400
+
+    return jsonify({"success": True, "message": msg, "classId": class_id, "status": status}), 200
+
+@faculty_bp.route("/api/faculty/classes/<int:class_id>/subjects", methods=["GET"])
+def get_classroom_subjects(class_id):
+    """Retrieve list of subjects assigned to a specific class."""
+    ok, err = check_faculty_access()
+    if not ok:
+        return jsonify({"error": err}), 403
+
+    subjects = get_class_subjects(class_id)
+    return jsonify({"success": True, "classId": class_id, "subjects": subjects}), 200
 
 @faculty_bp.route("/api/faculty/overview", methods=["GET"])
 def get_overview():
@@ -128,8 +162,9 @@ def get_overview():
     if not ok:
         return jsonify({"error": err}), 403
 
+    class_id = request.args.get("class_id")
     faculty_username = request.headers.get("X-User-Username") or session.get("username", "faculty")
-    overview = get_faculty_overview(faculty_username)
+    overview = get_faculty_overview(faculty_username, class_id=class_id)
     return jsonify({"success": True, "overview": overview}), 200
 
 @faculty_bp.route("/api/faculty/students", methods=["GET"])

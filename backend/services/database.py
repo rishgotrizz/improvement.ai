@@ -124,10 +124,18 @@ def init_db():
             course TEXT DEFAULT 'B.Tech Engineering',
             semester INTEGER DEFAULT 2,
             section TEXT DEFAULT 'A',
+            status TEXT DEFAULT 'ACTIVE' CHECK(status IN ('ACTIVE', 'ARCHIVED')),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (faculty_username) REFERENCES users (username) ON DELETE CASCADE
         );
     """)
+
+    # Migration for classes.status column
+    try:
+        cursor.execute("ALTER TABLE classes ADD COLUMN status TEXT DEFAULT 'ACTIVE';")
+    except Exception:
+        pass
+
 
     # 6. Class Memberships Table
     cursor.execute("""
