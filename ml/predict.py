@@ -10,7 +10,18 @@ import pandas as pd
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
-MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
+MODELS_DIR = None
+for cand in [
+    os.path.join(PROJECT_ROOT, "models"),
+    os.path.join(BASE_DIR, "../models"),
+    "/var/task/models",
+    os.path.abspath("models")
+]:
+    if os.path.exists(cand):
+        MODELS_DIR = cand
+        break
+if not MODELS_DIR:
+    MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
 
 _CLASSIFIER_PIPELINE = None
 _REGRESSOR_PIPELINE = None

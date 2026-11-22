@@ -9,10 +9,42 @@ import sys
 
 # Ensure project root directory is at position 0 of sys.path for robust package imports
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
-if PROJECT_ROOT in sys.path:
-    sys.path.remove(PROJECT_ROOT)
-sys.path.insert(0, PROJECT_ROOT)
+
+candidate_roots = [
+    os.path.abspath(os.path.join(BASE_DIR, "..")),
+    BASE_DIR,
+    os.getcwd(),
+    "/var/task"
+]
+
+PROJECT_ROOT = None
+for cand in candidate_roots:
+    if os.path.exists(os.path.join(cand, "backend")) or os.path.exists(os.path.join(cand, "frontend")):
+        PROJECT_ROOT = cand
+        break
+
+if not PROJECT_ROOT:
+    PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+
+for p in [PROJECT_ROOT, BASE_DIR, os.path.join(PROJECT_ROOT, "backend"), "/var/task"]:
+    if os.path.exists(p) and p not in sys.path:
+        sys.path.insert(0, p)
+
+import types
+if "backend" not in sys.modules:
+    try:
+        import backend
+    except ImportError:
+        target_dir = None
+        for cand in [BASE_DIR, os.path.join(PROJECT_ROOT, "backend"), PROJECT_ROOT, "/var/task"]:
+            if os.path.exists(os.path.join(cand, "services")):
+                target_dir = cand
+                break
+        if target_dir:
+            backend_mod = types.ModuleType("backend")
+            backend_mod.__path__ = [target_dir]
+            backend_mod.__file__ = os.path.join(target_dir, "__init__.py")
+            sys.modules["backend"] = backend_mod
 
 from flask import Flask, jsonify, send_from_directory, request, session, redirect
 
@@ -30,9 +62,13 @@ from backend.services.what_if_service import run_what_if_analysis
 from eda.quality import generate_quality_report
 from eda.analysis import run_full_eda_analysis
 
-FRONTEND_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, "frontend"))
-if not os.path.exists(FRONTEND_DIR):
-    FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "../frontend"))
+FRONTEND_DIR = None
+for cand in [os.path.join(PROJECT_ROOT, "frontend"), os.path.join(BASE_DIR, "frontend"), os.path.join(BASE_DIR, "../frontend"), "/var/task/frontend"]:
+    if os.path.exists(cand):
+        FRONTEND_DIR = os.path.abspath(cand)
+        break
+if not FRONTEND_DIR:
+    FRONTEND_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, "frontend"))
 
 # Initialize Flask application
 app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path="/static")

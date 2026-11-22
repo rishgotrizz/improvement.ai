@@ -11,7 +11,18 @@ import string
 import json
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.abspath(os.path.join(BASE_DIR, "../../data/edupredict.db"))
+DB_PATH = None
+for cand in [
+    os.path.abspath(os.path.join(BASE_DIR, "../../data/edupredict.db")),
+    os.path.abspath(os.path.join(BASE_DIR, "../data/edupredict.db")),
+    "/var/task/data/edupredict.db",
+    os.path.abspath("data/edupredict.db")
+]:
+    if os.path.exists(cand):
+        DB_PATH = cand
+        break
+if not DB_PATH:
+    DB_PATH = os.path.abspath(os.path.join(BASE_DIR, "../../data/edupredict.db"))
 
 def hash_password(password: str) -> str:
     """Hash password using SHA-256 for secure authentication."""
