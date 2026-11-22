@@ -279,6 +279,34 @@ def serve_frontend_assets(path):
 @app.errorhandler(404)
 def handle_not_found(e):
     req_path = request.path.lstrip("/")
+
+    # 1. API routes should return JSON 404
+    if request.path.startswith("/api/"):
+        return jsonify({"success": False, "error": f"API endpoint {request.path} not found"}), 404
+
+    # 2. CSS / JS / asset requests that end up here (e.g. from subpath relative URLs like /prediction/css/style.css)
+    if "css/" in req_path and req_path.endswith(".css"):
+        css_filename = req_path.split("css/")[-1]
+        css_file = os.path.join(FRONTEND_DIR, "css", css_filename)
+        if os.path.isfile(css_file):
+            return send_from_directory(os.path.join(FRONTEND_DIR, "css"), css_filename, mimetype="text/css")
+        return "CSS file not found", 404, {"Content-Type": "text/plain"}
+
+    if "js/" in req_path and req_path.endswith(".js"):
+        js_filename = req_path.split("js/")[-1]
+        js_file = os.path.join(FRONTEND_DIR, "js", js_filename)
+        if os.path.isfile(js_file):
+            return send_from_directory(os.path.join(FRONTEND_DIR, "js"), js_filename, mimetype="text/javascript")
+        return "JS file not found", 404, {"Content-Type": "text/plain"}
+
+    if "images/" in req_path:
+        img_filename = req_path.split("images/")[-1]
+        img_file = os.path.join(FRONTEND_DIR, "images", img_filename)
+        if os.path.isfile(img_file):
+            return send_from_directory(os.path.join(FRONTEND_DIR, "images"), img_filename)
+        return "Image not found", 404, {"Content-Type": "text/plain"}
+
+    # 3. Direct or stripped frontend file matching
     if req_path.startswith("frontend/"):
         req_path = req_path[len("frontend/"):]
     target_file = os.path.join(FRONTEND_DIR, req_path)
@@ -288,8 +316,7 @@ def handle_not_found(e):
         html_file = os.path.join(FRONTEND_DIR, f"{req_path}.html")
         if os.path.isfile(html_file):
             return send_from_directory(FRONTEND_DIR, f"{req_path}.html")
-    if request.path.startswith("/api/"):
-        return jsonify({"success": False, "error": f"API endpoint {request.path} not found"}), 404
+
     return send_from_directory(FRONTEND_DIR, "index.html")
 
 # Safe database initialization on module load (Vercel Serverless / local)
