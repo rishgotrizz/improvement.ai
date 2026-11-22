@@ -14,6 +14,7 @@ const EduPredictData = {
     academicScore: 78.4,
     attendance: 87.0,           // Attendance percentage (0-100%)
     studyHours: 18.0,           // Weekly self-study hours
+    dailyStudyHours: 3.0,       // Daily self-study revision hours
     previousPercentage: 79.0,   // Previous semester percentage (0-100%)
     assignmentAvg: 82.5,        // Assignment average score (%)
     internalAssessment: 76.0,   // Internal assessment score (%)

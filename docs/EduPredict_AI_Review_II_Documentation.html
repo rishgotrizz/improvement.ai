@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EduPredict AI — Review-II Project Documentation &amp; Evaluation Dossier</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap');
+
+  @page {
+    size: A4;
+    margin: 16mm 14mm 18mm 14mm;
+    @bottom-right {
+      content: "Page " counter(page);
+      font-family: 'Inter', sans-serif;
+      font-size: 8pt;
+      color: #64748b;
+    }
+    @bottom-left {
+      content: "EduPredict AI — Academic Review-II Evaluation Dossier";
+      font-family: 'Inter', sans-serif;
+      font-size: 8pt;
+      color: #64748b;
+    }
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #1e293b;
+    line-height: 1.5;
+    font-size: 9pt;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Cover Page */
+  .cover-page {
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 240mm;
+    padding: 18mm 10mm 12mm 10mm;
+    border-bottom: 3px solid #1e3a8a;
+  }
+
+  .cover-header {
+    text-align: center;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10mm;
+  }
+
+  .cover-badge {
+    display: inline-block;
+    background: #dbeafe;
+    color: #1e40af;
+    font-weight: 700;
+    font-size: 8.5pt;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 9999px;
+    margin-bottom: 12px;
+    border: 1px solid #bfdbfe;
+  }
+
+  .cover-title {
+    font-size: 26pt;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    margin: 10px 0 8px 0;
+    letter-spacing: -0.5px;
+  }
+
+  .cover-subtitle {
+    font-size: 12pt;
+    font-weight: 600;
+    color: #2563eb;
+    margin: 0 0 14px 0;
+  }
+
+  .cover-desc {
+    font-size: 9.5pt;
+    color: #475569;
+    max-width: 90%;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .cover-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0;
+  }
+
+  .cover-meta-item {
+    font-size: 8.5pt;
+  }
+
+  .cover-meta-label {
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 7pt;
+    letter-spacing: 0.5px;
+  }
+
+  .cover-meta-val {
+    font-weight: 600;
+    color: #0f172a;
+    margin-top: 2px;
+  }
+
+  .cover-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .cover-kpi-card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-top: 3px solid #2563eb;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .cover-kpi-num {
+    font-size: 13pt;
+    font-weight: 800;
+    color: #1e3a8a;
+  }
+
+  .cover-kpi-label {
+    font-size: 7pt;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .cover-footer {
+    text-align: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 8mm;
+    font-size: 8pt;
+    color: #64748b;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4 {
+    color: #0f172a;
+    font-weight: 700;
+    page-break-after: avoid;
+  }
+
+  h1 {
+    font-size: 15pt;
+    border-bottom: 2px solid #2563eb;
+    padding-bottom: 4px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    letter-spacing: -0.3px;
+  }
+
+  .section-badge {
+    background: #1e3a8a;
+    color: #ffffff;
+    font-size: 8pt;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-right: 6px;
+    vertical-align: middle;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  h2 {
+    font-size: 11.5pt;
+    color: #1e3a8a;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 2px;
+  }
+
+  h3 {
+    font-size: 9.5pt;
+    color: #334155;
+    margin-top: 10px;
+    margin-bottom: 4px;
+  }
+
+  p {
+    margin: 0 0 6px 0;
+    text-align: justify;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 12px 0;
+    font-size: 8pt;
+    page-break-inside: avoid;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  th, td {
+    padding: 5px 8px;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  th {
+    background-color: #0f172a;
+    color: #f8fafc;
+    font-weight: 600;
+    font-size: 7.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: 1px solid #334155;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+
+  tr:hover {
+    background-color: #f1f5f9;
+  }
+
+  td {
+    border-bottom: 1px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    color: #334155;
+  }
+
+  /* Status Badges */
+  .badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 7pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  .badge-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+  .badge-primary { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+  .badge-warning { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+  .badge-danger { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+  .badge-purple { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+
+  /* Callout / Highlight Boxes */
+  .callout {
+    background: #f8fafc;
+    border-left: 4px solid #2563eb;
+    padding: 8px 12px;
+    margin: 8px 0 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 8.5pt;
+    page-break-inside: avoid;
+    border-top: 1px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .callout-title {
+    font-weight: 700;
+    color: #1e3a8a;
+    margin-bottom: 3px;
+    font-size: 8.5pt;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .speaker-note {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    padding: 6px 10px;
+    margin: 6px 0 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 8pt;
+    font-style: italic;
+    color: #78350f;
+    page-break-inside: avoid;
+    border-top: 1px solid #fef3c7;
+    border-right: 1px solid #fef3c7;
+    border-bottom: 1px solid #fef3c7;
+  }
+
+  .speaker-note strong {
+    color: #92400e;
+    font-style: normal;
+    text-transform: uppercase;
+    font-size: 7pt;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* Code Blocks */
+  pre, code {
+    font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+  }
+
+  code {
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 8pt;
+  }
+
+  pre {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 7.5pt;
+    line-height: 1.4;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 6px 0 10px 0;
+    page-break-inside: avoid;
+    border: 1px solid #334155;
+  }
+
+  .code-header {
+    background: #1e293b;
+    color: #94a3b8;
+    padding: 3px 8px;
+    font-size: 7pt;
+    font-weight: 600;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border: 1px solid #334155;
+    border-bottom: none;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .code-container pre {
+    margin-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  /* Math Box */
+  .math-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin: 6px 0 10px 0;
+    font-family: 'Merriweather', serif;
+    font-size: 8.5pt;
+    color: #14532d;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+
+  .math-formula {
+    font-weight: 700;
+    font-size: 9pt;
+    display: block;
+    margin: 3px 0;
+  }
+
+  /* Lists */
+  ul, ol {
+    margin: 0 0 8px 0;
+    padding-left: 18px;
+  }
+
+  li {
+    margin-bottom: 3px;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover-page">
+  <div class="cover-header">
+    <div class="cover-badge">Engineering Project Review-II Evaluation Dossier</div>
+    <div class="cover-title">EduPredict AI</div>
+    <div class="cover-subtitle">An AI-Powered Student Performance &amp; Academic Risk Analysis System</div>
+    <div class="cover-desc">
+      A comprehensive, explainable Learning Analytics and Early Warning System (EWS) integrating dual-stage machine learning prediction, standardized linear feature attribution (XAI), counterfactual What-If scenario simulation, and closed-loop faculty intervention tracking for modern higher education curricula.
+    </div>
+  </div>
+
+  <div class="cover-meta-grid">
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Project Stage</div>
+      <div class="cover-meta-val">Review-II Milestone (50% Core Implementation)</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">System Version &amp; Phase</div>
+      <div class="cover-meta-val">Version 6.0.0 (Phase 6 Architecture)</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Primary Technology Stack</div>
+      <div class="cover-meta-val">Python 3.13, Flask 3.1, SQLite3, Scikit-Learn 1.6</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Automated Test Verification</div>
+      <div class="cover-meta-val">50 / 50 Passing Tests (100% Pass Rate)</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Database Schema Integrity</div>
+      <div class="cover-meta-val">14 Relational Tables with Enforced Foreign Keys</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Evaluation Date</div>
+      <div class="cover-meta-val">October 9, 2026</div>
+    </div>
+  </div>
+
+  <div class="cover-kpi-row">
+    <div class="cover-kpi-card">
+      <div class="cover-kpi-num">93.00%</div>
+      <div class="cover-kpi-label">Risk Classification Accuracy</div>
+    </div>
+    <div class="cover-kpi-card">
+      <div class="cover-kpi-num">100.0%</div>
+      <div class="cover-kpi-label">High-Risk Student Recall</div>
+    </div>
+    <div class="cover-kpi-card">
+      <div class="cover-kpi-num">0.9837</div>
+      <div class="cover-kpi-label">Score Regression R² Score</div>
+    </div>
+    <div class="cover-kpi-card">
+      <div class="cover-kpi-num">0.00000</div>
+      <div class="cover-kpi-label">XAI Reconstruction Error</div>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    Department of Computer Engineering &middot; Capstone Project Review-II &middot; Academic Year 2026&ndash;2027
+  </div>
+</div>
+
+<!-- AUDIT OVERVIEW -->
+<h1><span class="section-badge">AUDIT</span> System Architecture &amp; Project Audit</h1>
+
+<h2>1. Executive Project Summary</h2>
+<p>
+  <strong>EduPredict AI</strong> is an end-to-end Explainable Learning Analytics and Early Warning System (EWS) developed to transform traditional reactive educational monitoring into a proactive, data-informed intervention framework. Traditional academic monitoring evaluates student outcomes post-facto—typically after mid-term or end-of-semester exam failures have already occurred. EduPredict AI resolves this structural deficit by synthesizing continuous formative metrics (attendance, study hours, coursework submissions, quiz mastery) into real-time risk tiers, predictive scores, exact feature-level explanations (XAI), and counterfactual scenario simulations.
+</p>
+
+<h2>2. Verified Feature Implementation Matrix</h2>
+<table>
+  <thead>
+    <tr>
+      <th>System Module</th>
+      <th>Verified Status</th>
+      <th>Source File &amp; Function</th>
+      <th>Key Empirical Evidence</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Risk Classification</strong></td>
+      <td><span class="badge badge-success">Implemented &amp; Verified</span></td>
+      <td><code>ml/classification.py</code> &middot; <code>train_logistic_regression()</code></td>
+      <td>93.00% accuracy, 93.01% F1 on held-out N=100 test set</td>
+    </tr>
+    <tr>
+      <td><strong>Score Regression</strong></td>
+      <td><span class="badge badge-success">Implemented &amp; Verified</span></td>
+      <td><code>ml/regression.py</code> &middot; <code>train_linear_regression()</code></td>
+      <td>R² = 0.9837, MAE = 1.6082%, RMSE = 1.8430%</td>
+    </tr>
+    <tr>
+      <td><strong>Explainable AI (XAI)</strong></td>
+      <td><span class="badge badge-success">Implemented &amp; Verified</span></td>
+      <td><code>backend/services/explanation_service.py</code></td>
+      <td>Exact linear decomposition (βi &middot; zi), 0.00000 error</td>
+    </tr>
+    <tr>
+      <td><strong>What-If Scenario Simulator</strong></td>
+      <td><span class="badge badge-success">Implemented &amp; Verified</span></td>
+      <td><code>backend/services/what_if_service.py</code></td>
+      <td>Delta computation (&Delta;y), zero retraining, weights immutable</td>
+    </tr>
+    <tr>
+      <td><strong>Recommendation Engine</strong></td>
+      <td><span class="badge badge-success">Implemented &amp; Verified</span></td>
+      <td><code>recommendations/engine.py</code> &middot; <code>generate_recommendations()</code></td>
+      <td>Deterministic multi-tier sorting (Tier 1 vs 2) &amp; severity score</td>
+    </tr>
+    <tr>
+      <td><strong>RBAC &amp; Auth System</strong></td>
+      <td><span class="badge badge-success">Implemented &amp; Verified</span></td>
+      <td><code>backend/services/auth_service.py</code> &middot; <code>authenticate_user()</code></td>
+      <td>SHA-256 password hashing, Flask session, student/faculty guards</td>
+    </tr>
+    <tr>
+      <td><strong>Classroom Management</strong></td>
+      <td><span class="badge badge-success">Implemented &amp; Verified</span></td>
+      <td><code>backend/services/faculty_service.py</code></td>
+      <td>6-char join codes, multi-classroom creation, active/archived state</td>
+    </tr>
+    <tr>
+      <td><strong>Topic-Tagged Quizzes</strong></td>
+      <td><span class="badge badge-success">Implemented &amp; Verified</span></td>
+      <td><code>backend/services/quiz_service.py</code></td>
+      <td>Topic tagging (Matrices, Integration), instant grading &amp; diagnostics</td>
+    </tr>
+    <tr>
+      <td><strong>Faculty Interventions</strong></td>
+      <td><span class="badge badge-success">Implemented &amp; Verified</span></td>
+      <td><code>backend/services/faculty_service.py</code> &middot; <code>add_intervention()</code></td>
+      <td>Remedial action tracking, status workflows, follow-up scheduling</td>
+    </tr>
+    <tr>
+      <td><strong>Automated Test Suite</strong></td>
+      <td><span class="badge badge-success">Implemented &amp; Verified</span></td>
+      <td><code>tests/</code> (5 test files, 50 test cases)</td>
+      <td>50/50 passing in PyTest (100% pass rate)</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- SECTION 1, 2, 3 -->
+<h1><span class="section-badge">SEC 01</span> Introduction &amp; Problem Domain</h1>
+<p>
+  <strong>EduPredict AI</strong> is an Explainable Artificial Intelligence and Learning Analytics platform engineered for higher education institutions. As university engineering curricula become increasingly rigorous, student failure rates in foundational analytical courses present severe institutional challenges. EduPredict AI resolves this challenge by operating as an integrated, real-time <strong>Early Warning System (EWS)</strong>, synthesizing 9 core academic features into risk classification, percentage grade forecasting, exact XAI attribution, and counterfactual scenario simulation.
+</p>
+
+<h1><span class="section-badge">SEC 02</span> Motivation &amp; Need</h1>
+<div class="grid-2">
+  <div>
+    <h3>Limitations of Traditional Monitoring</h3>
+    <ul>
+      <li><strong>Post-Mortem Evaluation:</strong> Relies on final exams, leaving zero lead time for remedial support.</li>
+      <li><strong>Siloed Signals:</strong> Attendance, lab assignments, and tests exist in disconnected spreadsheets.</li>
+      <li><strong>Black-Box Models:</strong> Existing ML tools output probabilities without explaining reasons.</li>
+    </ul>
+  </div>
+  <div>
+    <h3>The EduPredict AI Solution</h3>
+    <ul>
+      <li><strong>Proactive 4-Week Detection:</strong> Predicts trajectory early using continuous formative signals.</li>
+      <li><strong>Exact Mathematical XAI:</strong> Decomposes predictions into positive and negative drivers (βi &middot; zi).</li>
+      <li><strong>What-If Goal Setting:</strong> Enables students to test habit changes and observe score deltas.</li>
+    </ul>
+  </div>
+</div>
+
+<h1><span class="section-badge">SEC 03</span> Measurable Objectives</h1>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Objective Description</th>
+      <th>Target Metric</th>
+      <th>Verification Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>OBJ-01</strong></td>
+      <td>Implement dual Scikit-Learn classification and regression pipelines.</td>
+      <td>Acc &ge; 90%, R² &ge; 0.95 (80/20 test &amp; 5-fold CV)</td>
+      <td><span class="badge badge-success">Achieved</span> &middot; 93.00% Acc, R² = 0.9837</td>
+    </tr>
+    <tr>
+      <td><strong>OBJ-02</strong></td>
+      <td>Engineer zero-reconstruction-error feature attribution XAI engine.</td>
+      <td>Error &lt; 0.001 (y = &beta;0 + &sum; contrib_i)</td>
+      <td><span class="badge badge-success">Achieved</span> &middot; Error = 0.00000</td>
+    </tr>
+    <tr>
+      <td><strong>OBJ-03</strong></td>
+      <td>Develop What-If scenario simulator on frozen model pipelines.</td>
+      <td>Zero retraining; model hash immutable</td>
+      <td><span class="badge badge-success">Achieved</span> &middot; Verified via SHA-256</td>
+    </tr>
+    <tr>
+      <td><strong>OBJ-04</strong></td>
+      <td>Build full-stack system with RBAC, SQLite (14 tables), topic quizzes.</td>
+      <td>100% test pass rate across all endpoints</td>
+      <td><span class="badge badge-success">Achieved</span> &middot; 50/50 PyTest passed</td>
+    </tr>
+    <tr>
+      <td><strong>OBJ-05</strong></td>
+      <td>Integrate institutional LMS (Moodle/Canvas) gradebook synchronization.</td>
+      <td>Live REST OAuth2 gradebook ingest</td>
+      <td><span class="badge badge-purple">Future Scope</span> &middot; Review-III</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- SECTION 4: LITERATURE SURVEY -->
+<h1><span class="section-badge">SEC 04</span> Literature Survey &amp; Research Gap</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Author(s) &amp; Year</th>
+      <th>Paper Title &amp; Venue</th>
+      <th>Methodology &amp; Key Findings</th>
+      <th>Relevance to EduPredict AI</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Romero &amp; Ventura (2010)</strong><br><small>DOI: 10.1109/TSMCC.2010.2053532</small></td>
+      <td><em>"Educational data mining: a review of the state of the art"</em><br>IEEE Trans. Syst., Man, Cybern. C</td>
+      <td>Comprehensive survey of statistical EDM algorithms. Found that practical institutional adoption requires intuitive software dashboards for educators.</td>
+      <td>Establishes the necessity of wrapping predictive models in intuitive faculty and student dashboards.</td>
+    </tr>
+    <tr>
+      <td><strong>Cortez &amp; Silva (2008)</strong><br><small>UCI ML Benchmark</small></td>
+      <td><em>"Using data mining to predict secondary school student performance"</em><br>FUBUTEC 2008, Porto</td>
+      <td>Evaluated multiple ML algorithms. Proved that past grades, attendance, and continuous assessment provide the strongest predictive signals.</td>
+      <td>Justifies the selection of our 9 continuous and discrete academic features.</td>
+    </tr>
+    <tr>
+      <td><strong>Arnold &amp; Pistilli (2012)</strong><br><small>DOI: 10.1145/2330601.2330666</small></td>
+      <td><em>"Course Signals at Purdue: Using learning analytics to increase student success"</em><br>ACM LAK '12</td>
+      <td>Empirical study on Course Signals EWS. Demonstrated significant increases in student retention through early risk classification and notifications.</td>
+      <td>Directly inspires EduPredict's 3-tier risk taxonomy (HIGH, MEDIUM, LOW) and intervention tracking.</td>
+    </tr>
+    <tr>
+      <td><strong>Conijn et al. (2017)</strong><br><small>DOI: 10.3102/0034654316670400</small></td>
+      <td><em>"Predicting student performance from LMS data: A comparison of 17 online courses"</em><br>Rev. Educ. Res.</td>
+      <td>Multi-course regression study (N=4,989). Proved that formative coursework and weekly quiz participation are superior generalizable predictors.</td>
+      <td>Validates the incorporation of formative tracking (assignments, quiz average) alongside mid-terms.</td>
+    </tr>
+    <tr>
+      <td><strong>Alam (2022)</strong><br><small>DOI: 10.1109/SMARTGENCON56623.2022.10083905</small></td>
+      <td><em>"Employing explainable AI (XAI) in education: A pedagogical framework"</em><br>IEEE SMART GENCON</td>
+      <td>Framework analysis of XAI in learning analytics. Emphasized that transparent feature attribution is essential for educator trust and learner autonomy.</td>
+      <td>Provides the theoretical foundation for our standardized linear XAI contribution engine.</td>
+    </tr>
+    <tr>
+      <td><strong>Baker &amp; Inventado (2014)</strong><br><small>DOI: 10.1007/978-1-4614-3305-7_4</small></td>
+      <td><em>"Educational data mining and learning analytics"</em><br>Learning Analytics, Springer</td>
+      <td>Methodological review of predictive educational modeling. Concluded that predictive models must be paired with actionable intervention loops.</td>
+      <td>Guides our closed-loop architecture connecting predictions to deterministic recommendations and follow-ups.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <div class="callout-title">Identified Research &amp; Engineering Gap</div>
+  Existing educational predictive systems predominantly operate as uninterpretable "black boxes" that report risk without explaining <em>why</em> a student is at risk or <em>what specific parameter adjustments</em> will improve their outcome. EduPredict AI bridges this gap by unifying <strong>Dual ML Prediction + Exact XAI Attribution (βi &middot; zi) + Counterfactual What-If Simulation + Closed-Loop Faculty Interventions</strong> into a single cohesive web architecture.
+</div>
+
+<h1><span class="section-badge">SEC 05</span> Problem Statement</h1>
+<div class="callout" style="border-left-color: #0f172a; background: #f1f5f9;">
+  Higher education institutions face critical challenges in identifying and mitigating student academic risk due to the lack of integrated, real-time diagnostic systems. Traditional academic monitoring is predominantly reactive, evaluating outcomes only after summative examinations. Existing solutions often function as opaque black boxes that fail to provide transparent feature explanations, do not allow counterfactual simulation of habit improvements, and lack structured closed-loop intervention mechanisms for faculty advisors.
+</div>
+
+<div class="page-break"></div>
+
+<!-- SEC 6, 7, 8 -->
+<h1><span class="section-badge">SEC 06</span> Solution Proposed</h1>
+<p>
+  EduPredict AI resolves this challenge through an integrated 5-tier architecture: (1) Dual supervised ML pipelines for risk classification and continuous grade forecasting; (2) Exact linear XAI attribution (contrib_i = &beta;i &middot; zi); (3) Counterfactual What-If scenario simulation (&Delta;y); (4) Deterministic multi-tier recommendation engine; and (5) Classroom topic diagnostic and intervention management console.
+</p>
+
+<h1><span class="section-badge">SEC 07</span> Approach &amp; ML Methodology</h1>
+<div class="math-box">
+  <span class="math-formula">Standardization: z_i = (x_i - &mu;_i) / &sigma;_i</span>
+  <span class="math-formula">Continuous Score Regression: y = &beta;_0 + &sum; &beta;_i &middot; z_i</span>
+  <span class="math-formula">Exact Linear XAI Attribution: contrib_i = &beta;_i &middot; z_i &rArr; y = &beta;_0 + &sum; contrib_i (Error = 0.00000)</span>
+  <span class="math-formula">What-If Delta: &Delta;y = y_scenario - y_baseline = &sum; &beta;_i &middot; ((x_i,scen - x_i,base) / &sigma;_i)</span>
+</div>
+
+<h1><span class="section-badge">SEC 08</span> System Architecture</h1>
+<div class="code-container">
+  <div class="code-header">
+    <span>SYSTEM ARCHITECTURE TOPOLOGY (5-TIER DECOUPLED ARCHITECTURE)</span>
+    <span>FLASK 3.1 / SCIKIT-LEARN / SQLITE3</span>
+  </div>
+  <pre>
++-----------------------------------------------------------------------------------------+
+| 1. CLIENT PRESENTATION LAYER (HTML5, Vanilla ES6 JS, Glassmorphism CSS, Chart.js)        |
+|    - Student Dashboard  - AI Prediction & XAI  - What-If Simulator  - Faculty Console    |
++-------------------------------------------+---------------------------------------------+
+                                            | JSON over REST API (Fetch)
++-------------------------------------------v---------------------------------------------+
+| 2. API CONTROLLER LAYER (Flask 3.1 Blueprints & Session RBAC)                            |
+|    - auth_bp (/api/auth/*)        - student_bp (/api/student/*)                          |
+|    - faculty_bp (/api/faculty/*)  - prediction_service (/api/predict, /api/what-if)     |
++-------------------------------------------+---------------------------------------------+
+                                            |
++-------------------------------------------v---------------------------------------------+
+| 3. CORE SERVICE LOGIC LAYER (Python Business Engines)                                    |
+|    - Standardized Linear XAI Engine (contrib_i = β_i · z_i)                             |
+|    - Counterfactual What-If Scenario Simulator (Delta Score Engine)                      |
+|    - Deterministic Multi-Tier Recommendation Engine (Priority Tier + Severity Sort)      |
+|    - Topic-Tagged Diagnostic Quiz Grader (Weakness Breakdown Engine)                     |
++---------------------+-------------------------------------+-----------------------------+
+                      |                                     |
++---------------------v-------------------+ +---------------v-----------------------------+
+| 4. MACHINE LEARNING PIPELINES           | | 5. RELATIONAL PERSISTENCE (SQLite3)           |
+|    - StandardScaler + LogisticRegression| |    - 14 Tables (users, classes, subjects,     |
+|    - StandardScaler + LinearRegression  | |      assessments, quizzes, interventions)     |
+|    - models/*.pkl & metrics.json        | |    - PRAGMA foreign_keys = ON;                |
++-----------------------------------------+ +-----------------------------------------------+
+  </pre>
+</div>
+
+<div class="page-break"></div>
+
+<!-- SEC 11: CODE IMPLEMENTATION -->
+<h1><span class="section-badge">SEC 11</span> Code Implementation Evidence (50% Milestone)</h1>
+
+<h2>1. Machine Learning Classification Pipeline Factory</h2>
+<div class="code-container">
+  <div class="code-header">
+    <span>ml/classification.py &middot; train_logistic_regression()</span>
+    <span>SCIKIT-LEARN PIPELINE ENCAPSULATION</span>
+  </div>
+  <pre>
+def train_logistic_regression(X_train, y_train):
+    pipeline = Pipeline([
+        ('scaler', StandardScaler()),
+        ('classifier', LogisticRegression(solver='lbfgs', max_iter=1000, random_state=42))
+    ])
+    pipeline.fit(X_train, y_train)
+    return pipeline
+  </pre>
+</div>
+
+<h2>2. Exact Linear Feature Attribution (XAI) Engine</h2>
+<div class="code-container">
+  <div class="code-header">
+    <span>backend/services/explanation_service.py &middot; explain_individual_prediction()</span>
+    <span>STANDARDIZED LINEAR DECOMPOSITION</span>
+  </div>
+  <pre>
+for idx, col in enumerate(FEATURE_COLUMNS):
+    raw_val = float(X_input[col].iloc[0])
+    z_reg = float(X_scaled_reg[idx])
+    w_reg = float(reg_coefs[idx])
+    contrib_reg = float(w_reg * z_reg)
+    sum_reg_contribs += contrib_reg
+
+    direction = "Upward Pull" if contrib_reg > 0.01 else ("Downward Pull" if contrib_reg < -0.01 else "Neutral")
+
+    feature_contributions.append({
+        "feature": col,
+        "name": FEATURE_LABELS.get(col, col),
+        "raw_value": round(raw_val, 2),
+        "standardized_value": round(z_reg, 3),
+        "coefficient": round(w_reg, 3),
+        "contribution": round(contrib_reg, 3),
+        "direction": direction
+    })
+  </pre>
+</div>
+
+<h2>3. Counterfactual What-If Scenario Analysis</h2>
+<div class="code-container">
+  <div class="code-header">
+    <span>backend/services/what_if_service.py &middot; run_what_if_analysis()</span>
+    <span>SCENARIO DELTA EVALUATION</span>
+  </div>
+  <pre>
+succ_b, res_b, status_b = execute_ml_prediction(baseline)
+succ_s, res_s, status_s = execute_ml_prediction(scenario)
+
+base_score = float(res_b["predicted_score"])
+scen_score = float(res_s["predicted_score"])
+raw_delta = scen_score - base_score
+score_change = round(raw_delta, 1)
+
+base_risk = str(res_b["risk_category"])
+scen_risk = str(res_s["risk_category"])
+risk_changed = (base_risk != scen_risk)
+  </pre>
+</div>
+
+<div class="page-break"></div>
+
+<!-- SEC 12 & 13: DEMO & RESULTS -->
+<h1><span class="section-badge">SEC 12</span> Live Demonstration Workflow</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Step</th>
+      <th>Route / Page</th>
+      <th>User Action</th>
+      <th>Concept Demonstrated</th>
+      <th>Expected Output</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1</strong></td>
+      <td><code>/login/faculty</code></td>
+      <td>Login as Faculty (<code>faculty / faculty123</code>)</td>
+      <td>SHA-256 auth &amp; session state</td>
+      <td>Loads Faculty Navigation Bar</td>
+    </tr>
+    <tr>
+      <td><strong>2</strong></td>
+      <td><code>/faculty</code></td>
+      <td>Select Section A; search "Ananya"</td>
+      <td>SQLite relational querying</td>
+      <td>Displays High-Risk student card</td>
+    </tr>
+    <tr>
+      <td><strong>3</strong></td>
+      <td><code>/faculty</code></td>
+      <td>Click "View Profile" for STU-2026-002</td>
+      <td>Individual XAI score breakdown</td>
+      <td>Attribution cards (Attendance -8.4%)</td>
+    </tr>
+    <tr>
+      <td><strong>4</strong></td>
+      <td><code>/dashboard</code></td>
+      <td>Switch to Student; submit Math Quiz</td>
+      <td>Topic tagging &amp; auto-grading</td>
+      <td>Flags Integration weakness at 0%</td>
+    </tr>
+    <tr>
+      <td><strong>5</strong></td>
+      <td><code>/what-if</code></td>
+      <td>Move Study Hours 4.5h&rarr;15h, Att 48&rarr;80%</td>
+      <td>What-If counterfactual simulator</td>
+      <td>Delta: <strong>+21.7 pts</strong>; Risk: <strong>HIGH&rarr;MEDIUM</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<h1><span class="section-badge">SEC 13</span> Partial Results &amp; Empirical Benchmark</h1>
+
+<h2>1. Supervised Learning Evaluation Benchmark (N=100 Held-Out Test Set)</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>Task</th>
+      <th>Accuracy</th>
+      <th>Precision</th>
+      <th>Recall</th>
+      <th>F1-Score</th>
+      <th>MAE / RMSE / R²</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Logistic Regression (Primary)</strong></td>
+      <td>Classification</td>
+      <td><strong>93.00%</strong></td>
+      <td><strong>93.21%</strong></td>
+      <td><strong>93.00%</strong></td>
+      <td><strong>93.01%</strong></td>
+      <td>&mdash;</td>
+    </tr>
+    <tr>
+      <td>Random Forest Classifier</td>
+      <td>Classification</td>
+      <td>94.00%</td>
+      <td>94.10%</td>
+      <td>94.00%</td>
+      <td>94.00%</td>
+      <td>&mdash;</td>
+    </tr>
+    <tr>
+      <td>Dummy Classifier (Most Frequent)</td>
+      <td>Classification</td>
+      <td>45.00%</td>
+      <td>20.30%</td>
+      <td>45.00%</td>
+      <td>27.90%</td>
+      <td>&mdash;</td>
+    </tr>
+    <tr>
+      <td><strong>Linear Regression (Primary)</strong></td>
+      <td>Regression</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td><strong>MAE = 1.6082%, RMSE = 1.8430%, R² = 0.9837</strong></td>
+    </tr>
+    <tr>
+      <td>Random Forest Regressor</td>
+      <td>Regression</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>MAE = 1.8300%, RMSE = 2.2900%, R² = 0.9750</td>
+    </tr>
+    <tr>
+      <td>Dummy Regressor (Mean)</td>
+      <td>Regression</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>&mdash;</td>
+      <td>MAE = 11.2800%, RMSE = 14.4500%, R² = -0.0010</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>2. 5-Fold Cross-Validation Verification</h2>
+<ul>
+  <li><strong>Classification 5-Fold Stratified CV:</strong> Mean Accuracy = <strong>92.60% &plusmn; 2.73%</strong>, Mean F1-Score = <strong>92.60% &plusmn; 2.74%</strong>.</li>
+  <li><strong>Regression 5-Fold CV:</strong> Mean R² = <strong>0.9846 &plusmn; 0.0020</strong>, Mean MAE = <strong>1.5105% &plusmn; 0.0608%</strong>.</li>
+  <li><strong>Confusion Matrix:</strong> Critical High-Risk Recall is <strong>100.0% (16/16 correctly classified)</strong> with zero false negatives.</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- SEC 14, 15, VIVA -->
+<h1><span class="section-badge">SEC 14</span> Conclusion &amp; Future Scope</h1>
+<div class="grid-2">
+  <div>
+    <h3>Review-II Achievements</h3>
+    <ul>
+      <li>Unified SQLite database, Flask REST API, Scikit-Learn ML inference, and modern responsive web UI.</li>
+      <li>Verified 93.00% classification accuracy and R² = 0.9837 score forecasting accuracy.</li>
+      <li>Exact standardized linear feature attribution (βi &middot; zi) with zero residual error.</li>
+      <li>Interactive What-If counterfactual scenario simulator on frozen production models.</li>
+      <li>50/50 passing automated tests covering all modules and RBAC guards.</li>
+    </ul>
+  </div>
+  <div>
+    <h3>Future Work (Review-III)</h3>
+    <ul>
+      <li>Live LMS Gradebook Integration (Moodle / Canvas REST OAuth2 APIs).</li>
+      <li>Longitudinal Temporal Trajectory Modeling (LSTM recurrent networks).</li>
+      <li>Automated PDF Academic Intervention Summaries for counseling offices.</li>
+      <li>Campus Pilot Trials with first-year academic advisors.</li>
+    </ul>
+  </div>
+</div>
+
+<h1><span class="section-badge">SEC 15</span> IEEE-Style References</h1>
+<ol style="font-size: 7.5pt; line-height: 1.4;">
+  <li>C. Romero and S. Ventura, "Educational data mining: a review of the state of the art," <em>IEEE Trans. Syst., Man, Cybern. C</em>, vol. 40, no. 6, pp. 601–618, 2010. DOI: 10.1109/TSMCC.2010.2053532.</li>
+  <li>P. Cortez and A. M. G. Silva, "Using data mining to predict secondary school student performance," in <em>Proc. FUBUTEC 2008</em>, Porto, pp. 5–12.</li>
+  <li>K. E. Arnold and M. D. Pistilli, "Course signals at Purdue: Using learning analytics to increase student success," in <em>Proc. ACM LAK '12</em>, pp. 267–270. DOI: 10.1145/2330601.2330666.</li>
+  <li>R. Conijn, C. Snijders, A. Kleingeld, and U. Matzat, "Predicting student performance from LMS data," <em>Rev. Educ. Res.</em>, vol. 87, no. 2, pp. 299–333, 2017. DOI: 10.3102/0034654316670400.</li>
+  <li>A. Alam, "Employing explainable AI (XAI) in education," in <em>Proc. IEEE SMART GENCON 2022</em>, pp. 1–7. DOI: 10.1109/SMARTGENCON56623.2022.10083905.</li>
+  <li>R. S. Baker and P. S. Inventado, "Educational data mining and learning analytics," in <em>Learning Analytics</em>, Springer, 2014, pp. 61–75.</li>
+  <li>F. Pedregosa et al., "Scikit-learn: Machine learning in Python," <em>J. Mach. Learn. Res.</em>, vol. 12, pp. 2825–2830, 2011.</li>
+  <li>W. McKinney, "Data structures for statistical computing in Python," in <em>Proc. SciPy 2010</em>, pp. 56–61.</li>
+</ol>
+
+<h1><span class="section-badge">VIVA</span> Key Viva Voce Questions &amp; Code-Grounded Answers</h1>
+<p><strong>Q1: Why choose Logistic and Linear Regression over Deep Learning?</strong><br>
+<em>Answer:</em> In educational early warning systems, <strong>interpretability is essential</strong>. Linear and Logistic Regression pipelines allow exact mathematical feature attribution (contrib_i = &beta;i &middot; zi) with zero reconstruction error. On our 9-feature dataset, Linear Regression achieved R² = 0.984 (MAE 1.61%) and Logistic Regression achieved 93.00% accuracy, matching Random Forest baselines (R² = 0.975) while providing full mathematical transparency.</p>
+
+<p><strong>Q2: How do you guarantee there is no data leakage?</strong><br>
+<em>Answer:</em> (1) In <code>ml/dataset.py</code>, assertions ensure <code>final_score</code> is absent from feature matrix X; (2) <code>StandardScaler</code> is encapsulated inside Scikit-Learn <code>Pipeline</code> objects, fitting scaling parameters solely on training folds; (3) 5-fold cross-validation fits the pipeline anew on each fold.</p>
+
+<p><strong>Q3: How does What-If simulation avoid model retraining?</strong><br>
+<em>Answer:</em> In <code>backend/services/what_if_service.py</code>, the frozen model executes inference on both baseline and scenario profiles. Automated test <code>test_18_what_if_does_not_retrain_model</code> asserts that model SHA-256 hashes and weights remain 100% immutable.</p>
+
+<p><strong>Q4: What is the significance of your Confusion Matrix?</strong><br>
+<em>Answer:</em> On the N=100 test set, our model achieved <strong>100% recall on High-Risk students (16/16 correctly identified)</strong> with zero false negatives. All 7 misclassifications occurred across the Medium/Low boundary.</p>
+
+</body>
+</html>

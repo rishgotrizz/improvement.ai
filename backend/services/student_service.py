@@ -81,6 +81,7 @@ def get_student_profile(student_id):
         "academicScore": float(assessment_data.get("final_score") or 78.4),
         "attendance": float(assessment_data.get("attendance", 0)),
         "studyHours": float(assessment_data.get("study_hours", 0)),
+        "dailyStudyHours": round(float(assessment_data.get("study_hours", 0)) / 6.0, 1) if float(assessment_data.get("study_hours", 0)) > 6.0 else float(assessment_data.get("study_hours", 0)),
         "previousPercentage": float(assessment_data.get("previous_semester_percentage", 0)),
         "assignmentAvg": float(assessment_data.get("assignment_average", 0)),
         "internalAssessment": float(assessment_data.get("internal_assessment", 0)),

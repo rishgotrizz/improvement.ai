@@ -94,7 +94,7 @@
         <span style="font-size: 0.78rem; font-weight: 700; color: #71717a; text-transform: uppercase; display: block; margin-bottom: 0.4rem;">
           Daily Self-Study Hours
         </span>
-        <div style="font-size: 1.8rem; font-weight: 800; color: #18181b;" id="dash-hours">3.5 hrs/day</div>
+        <div style="font-size: 1.8rem; font-weight: 800; color: #18181b;" id="dash-hours">3.0 hrs/day</div>
         <span style="font-size: 0.78rem; color: #71717a; display: block; margin-top: 0.2rem;">Average Daily Revision Time</span>
       </div>
 
@@ -330,7 +330,10 @@
         if (student) {
           document.getElementById("dash-score").innerText = (student.academicScore || 78.4).toFixed(1) + "%";
           document.getElementById("dash-attendance").innerText = (student.attendance || 87.0).toFixed(1) + "%";
-          document.getElementById("dash-hours").innerText = (student.studyHours || 3.5).toFixed(1) + " hrs/day";
+          const dailyHours = student.dailyStudyHours !== undefined
+            ? student.dailyStudyHours
+            : (student.studyHours > 6.0 ? (student.studyHours / 6.0) : (student.studyHours || 3.0));
+          document.getElementById("dash-hours").innerText = dailyHours.toFixed(1) + " hrs/day";
 
           const riskBadge = document.getElementById("dash-risk-badge");
           const riskProbEl = document.getElementById("dash-risk-prob");

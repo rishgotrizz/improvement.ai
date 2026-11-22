@@ -13,9 +13,17 @@
     { "source": "/model", "destination": "/frontend/model.html" },
     { "source": "/mathematics", "destination": "/frontend/mathematics.html" },
     { "source": "/algorithms", "destination": "/frontend/algorithms.html" },
+    { "source": "/faculty", "destination": "/frontend/faculty.html" },
+    { "source": "/login", "destination": "/frontend/login.html" },
+    { "source": "/login/student", "destination": "/frontend/login_student.html" },
+    { "source": "/login/faculty", "destination": "/frontend/login_faculty.html" },
+    { "source": "/register", "destination": "/frontend/register.html" },
+    { "source": "/register/student", "destination": "/frontend/register_student.html" },
+    { "source": "/register/faculty", "destination": "/frontend/register_faculty.html" },
     { "source": "/responsible-ai", "destination": "/frontend/responsible-ai.html" },
     { "source": "/about", "destination": "/frontend/about.html" },
     { "source": "/css/(.*)", "destination": "/frontend/css/$1" },
-    { "source": "/js/(.*)", "destination": "/frontend/js/$1" }
+    { "source": "/js/(.*)", "destination": "/frontend/js/$1" },
+    { "source": "/images/(.*)", "destination": "/frontend/images/$1" }
   ]
 }
