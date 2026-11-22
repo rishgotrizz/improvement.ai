@@ -11,18 +11,41 @@ import string
 import json
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = None
-for cand in [
-    os.path.abspath(os.path.join(BASE_DIR, "../../data/edupredict.db")),
-    os.path.abspath(os.path.join(BASE_DIR, "../data/edupredict.db")),
-    "/var/task/data/edupredict.db",
-    os.path.abspath("data/edupredict.db")
-]:
-    if os.path.exists(cand):
-        DB_PATH = cand
-        break
-if not DB_PATH:
-    DB_PATH = os.path.abspath(os.path.join(BASE_DIR, "../../data/edupredict.db"))
+
+is_serverless = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME") or "/var/task" in BASE_DIR)
+
+if is_serverless:
+    tmp_db = "/tmp/edupredict.db"
+    source_db = None
+    for cand in [
+        "/var/task/data/edupredict.db",
+        os.path.abspath(os.path.join(BASE_DIR, "../../data/edupredict.db")),
+        os.path.abspath(os.path.join(BASE_DIR, "../data/edupredict.db")),
+        os.path.abspath("data/edupredict.db")
+    ]:
+        if os.path.exists(cand):
+            source_db = cand
+            break
+    if source_db and not os.path.exists(tmp_db):
+        try:
+            import shutil
+            shutil.copy2(source_db, tmp_db)
+        except Exception:
+            pass
+    DB_PATH = tmp_db
+else:
+    DB_PATH = None
+    for cand in [
+        os.path.abspath(os.path.join(BASE_DIR, "../../data/edupredict.db")),
+        os.path.abspath(os.path.join(BASE_DIR, "../data/edupredict.db")),
+        "/var/task/data/edupredict.db",
+        os.path.abspath("data/edupredict.db")
+    ]:
+        if os.path.exists(cand):
+            DB_PATH = cand
+            break
+    if not DB_PATH:
+        DB_PATH = os.path.abspath(os.path.join(BASE_DIR, "../../data/edupredict.db"))
 
 def hash_password(password: str) -> str:
     """Hash password using SHA-256 for secure authentication."""
@@ -42,7 +65,7 @@ def get_db_connection():
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys = ON;")
         return conn
-    except (sqlite3.OperationalError, OSError, PermissionError):
+    except Exception:
         tmp_db = "/tmp/edupredict.db"
         if os.path.exists(DB_PATH) and not os.path.exists(tmp_db):
             try:
@@ -109,13 +132,13 @@ def init_db():
         );
     """)
 
-    # 4. Users Table (Role-based Authentication)
+    # 4. Users Table (Student Authentication)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             user_id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
-            role TEXT NOT NULL CHECK(role IN ('student', 'faculty')),
+            role TEXT NOT NULL DEFAULT 'student',
             name TEXT NOT NULL,
             student_id TEXT,
             department TEXT,
@@ -369,34 +392,19 @@ def _seed_demo_data(cursor):
 
     cursor.execute("""
         INSERT OR IGNORE INTO users (username, password_hash, role, name, department)
-        VALUES ('faculty', ?, 'faculty', 'Dr. Sarah Jenkins (Academic Advisor)', 'Computer Engineering');
-    """, (hash_password('faculty123'),))
-
-    cursor.execute("""
-        INSERT OR IGNORE INTO users (username, password_hash, role, name, department)
-        VALUES ('prof_math', ?, 'faculty', 'Prof. Ananya Roy (Mathematics)', 'Mathematics');
-    """, (hash_password('faculty123'),))
-
-    cursor.execute("""
-        INSERT OR IGNORE INTO users (username, password_hash, role, name, department)
-        VALUES ('prof_cs', ?, 'faculty', 'Prof. Rajesh Verma (Computer Science)', 'Computer Science');
-    """, (hash_password('faculty123'),))
-
-    cursor.execute("""
-        INSERT OR IGNORE INTO users (username, password_hash, role, name, department)
-        VALUES ('prof_phy', ?, 'faculty', 'Prof. Sunita Sharma (Physics)', 'Physics');
-    """, (hash_password('faculty123'),))
+        VALUES ('system', ?, 'student', 'Academic Administration', 'Computer Engineering');
+    """, (hash_password('student123'),))
 
     # Seed Default Classes
     cursor.execute("""
         INSERT OR IGNORE INTO classes (class_name, class_code, faculty_username, course, semester, section)
-        VALUES ('FY Computer Engineering — Section A', 'EDU-A7K92P', 'faculty', 'B.Tech Computer Science', 2, 'A');
+        VALUES ('FY Computer Engineering — Section A', 'EDU-A7K92P', 'system', 'B.Tech Computer Science', 2, 'A');
     """)
     class_a_id = cursor.lastrowid or 1
 
     cursor.execute("""
         INSERT OR IGNORE INTO classes (class_name, class_code, faculty_username, course, semester, section)
-        VALUES ('FY Computer Engineering — Section B', 'EDU-B3M8X1', 'faculty', 'B.Tech Computer Science', 2, 'B');
+        VALUES ('FY Computer Engineering — Section B', 'EDU-B3M8X1', 'system', 'B.Tech Computer Science', 2, 'B');
     """)
     class_b_id = cursor.lastrowid or 2
 
@@ -407,14 +415,14 @@ def _seed_demo_data(cursor):
     for sid in ["STU-2026-006", "STU-2026-007", "STU-2026-008", "STU-2026-009", "STU-2026-010"]:
         cursor.execute("INSERT OR IGNORE INTO class_memberships (class_id, student_id) VALUES (?, ?);", (class_b_id, sid))
 
-    # Seed Dynamic Classroom Subjects with Assigned Subject Faculty for Class A
-    faculty_subjects = [
-        ("MAT101", "Engineering Mathematics", "prof_math", "Prof. Ananya Roy"),
-        ("CS101", "Programming Fundamentals", "prof_cs", "Prof. Rajesh Verma"),
-        ("PHY101", "Engineering Physics", "prof_phy", "Prof. Sunita Sharma"),
-        ("CS102", "Data Structures", "faculty", "Dr. Sarah Jenkins")
+    # Seed Dynamic Classroom Course Instructors for Class A
+    course_instructors = [
+        ("MAT101", "Engineering Mathematics", "system", "Prof. Ananya Roy"),
+        ("CS101", "Programming Fundamentals", "system", "Prof. Rajesh Verma"),
+        ("PHY101", "Engineering Physics", "system", "Prof. Sunita Sharma"),
+        ("CS102", "Data Structures", "system", "Dr. Sarah Jenkins")
     ]
-    for code, name, f_user, f_name in faculty_subjects:
+    for code, name, f_user, f_name in course_instructors:
         cursor.execute("INSERT OR IGNORE INTO subjects (class_id, subject_code, subject_name, faculty_username, faculty_name) VALUES (?, ?, ?, ?, ?);", (class_a_id, code, name, f_user, f_name))
 
     # Seed Demo MCQ Quiz 1 for MAT101 with Topic Tagging
@@ -461,11 +469,5 @@ def _seed_demo_data(cursor):
         INSERT INTO quiz_attempts (quiz_id, student_id, score, total_questions, topic_breakdown)
         VALUES (?, 'STU-2026-001', 4, 6, ?);
     """, (quiz_id, topic_breakdown_demo))
-
-    # Seed Sample Faculty Intervention
-    cursor.execute("""
-        INSERT INTO interventions (student_id, faculty_username, action_title, notes, status, follow_up_date)
-        VALUES ('STU-2026-002', 'faculty', 'Mandatory Attendance & Integration Remedial Session', 'Student attendance is 48% and Integration quiz score is 0%. Schedule urgent meeting.', 'In Progress', '2026-10-18');
-    """)
 
     print("🌱 [SQLite DB] Seeded demo cohort, classes (EDU-A7K92P), MCQ quizzes with topics, attempts, and topic analytics.")

@@ -53,7 +53,6 @@ from backend.services.database import init_db
 from backend.routes.student_routes import student_bp
 from backend.routes.assessment_routes import assessment_bp
 from backend.routes.auth_routes import auth_bp
-from backend.routes.faculty_routes import faculty_bp
 from backend.services.prediction_service import fetch_trained_model_metrics, execute_ml_prediction
 from backend.services.explanation_service import explain_individual_prediction
 from backend.services.recommendation_service import fetch_recommendations_for_input
@@ -78,7 +77,6 @@ app.secret_key = os.environ.get("SECRET_KEY", "edupredict-secret-key-2026-pbl")
 app.register_blueprint(student_bp)
 app.register_blueprint(assessment_bp)
 app.register_blueprint(auth_bp)
-app.register_blueprint(faculty_bp)
 
 # ==============================================================================
 # BASE REST API ENDPOINTS (/api/...)
@@ -182,36 +180,18 @@ def serve_index():
     return send_from_directory(FRONTEND_DIR, "index.html")
 
 @app.route("/register")
+@app.route("/register/student")
 def serve_register():
     return send_from_directory(FRONTEND_DIR, "register.html")
 
-@app.route("/register/student")
-def serve_register_student():
-    return send_from_directory(FRONTEND_DIR, "register_student.html")
-
-@app.route("/register/faculty")
-def serve_register_faculty():
-    return send_from_directory(FRONTEND_DIR, "register_faculty.html")
-
 @app.route("/login")
+@app.route("/login/student")
 def serve_login():
     return send_from_directory(FRONTEND_DIR, "login.html")
-
-@app.route("/login/student")
-def serve_login_student():
-    return send_from_directory(FRONTEND_DIR, "login_student.html")
-
-@app.route("/login/faculty")
-def serve_login_faculty():
-    return send_from_directory(FRONTEND_DIR, "login_faculty.html")
 
 @app.route("/dashboard")
 def serve_dashboard():
     return send_from_directory(FRONTEND_DIR, "dashboard.html")
-
-@app.route("/faculty")
-def serve_faculty():
-    return send_from_directory(FRONTEND_DIR, "faculty.html")
 
 @app.route("/assessment")
 def serve_assessment():
@@ -317,7 +297,7 @@ def handle_not_found(e):
         if os.path.isfile(html_file):
             return send_from_directory(FRONTEND_DIR, f"{req_path}.html")
 
-    return send_from_directory(FRONTEND_DIR, "index.html")
+    return send_from_directory(FRONTEND_DIR, "index.html"), 404
 
 # Safe database initialization on module load (Vercel Serverless / local)
 try:

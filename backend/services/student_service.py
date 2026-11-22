@@ -62,6 +62,7 @@ def get_student_profile(student_id):
             subjects.append({
                 "code": s['subject_code'],
                 "name": s['subject_name'],
+                "instructor": faculty_map.get(s['subject_code'], "Dr. Sarah Jenkins"),
                 "faculty": faculty_map.get(s['subject_code'], "Dr. Sarah Jenkins"),
                 "score": float(s['marks']),
                 "attendance": float(s['attendance']),
@@ -116,7 +117,7 @@ def get_student_subjects(student_id):
     return []
 
 def join_class_by_code(student_id, class_code):
-    """Allow a student to join a faculty's class using a 6-character join code."""
+    """Allow a student to join an academic class section using a 6-character join code."""
     if not student_id or not class_code:
         return False, "Student ID and class join code are required."
 

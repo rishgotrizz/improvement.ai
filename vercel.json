@@ -11,6 +11,16 @@
         "backend/**",
         "ml/**"
       ]
+    },
+    "app.py": {
+      "includeFiles": [
+        "data/**",
+        "models/**",
+        "eda/**",
+        "recommendations/**",
+        "backend/**",
+        "ml/**"
+      ]
     }
   },
   "rewrites": [

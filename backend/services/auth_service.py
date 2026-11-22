@@ -1,6 +1,6 @@
 """
 EDUPREDICT - Authentication & Registration Service Manager
-Handles user login, student/faculty registration, role verification, and credential validation.
+Handles user login, student registration, and credential validation.
 """
 
 import os
@@ -16,18 +16,15 @@ try:
 except ImportError:
     from services.database import get_db_connection, hash_password
 
-def register_user(username, password, role, name, student_id=None, department=None, roll_number=None):
+def register_user(username, password, role="student", name="", student_id=None, department=None, roll_number=None):
     """
-    Register a new user account (Student or Faculty).
+    Register a new student user account.
     Returns (success: bool, user_data: dict, error_message: str).
     """
-    if not username or not password or not role or not name:
-        return False, None, "Username, password, role, and name are required."
+    if not username or not password or not name:
+        return False, None, "Username, password, and name are required."
 
-    role = role.strip().lower()
-    if role not in ["student", "faculty"]:
-        return False, None, "Role must be 'student' or 'faculty'."
-
+    role = "student"
     username = username.strip().lower()
     conn = get_db_connection()
     cursor = conn.cursor()

@@ -231,12 +231,7 @@ async function updateUserSessionUI() {
 
   const navMenu = document.querySelector(".nav-menu");
   if (navMenu && user) {
-    let facultyLink = navMenu.querySelector('a[href="/faculty"]');
-    if (user.role === "faculty" && !facultyLink) {
-      const linkHtml = `<a href="/faculty" class="nav-link">Faculty Dashboard</a>`;
-      navMenu.insertAdjacentHTML("afterbegin", linkHtml);
-      highlightActiveNavLink();
-    }
+    highlightActiveNavLink();
   }
 }
 

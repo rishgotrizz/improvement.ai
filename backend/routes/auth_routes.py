@@ -1,6 +1,6 @@
 """
 EDUPREDICT - Authentication & Registration API Blueprint
-Routes for user registration (Student & Faculty), login, logout, and active session check.
+Routes for student user registration, login, logout, and active session check.
 """
 
 import os
@@ -21,7 +21,7 @@ auth_bp = Blueprint("auth_bp", __name__)
 
 @auth_bp.route("/api/auth/register", methods=["POST"])
 def register():
-    """Register a new student or faculty user account."""
+    """Register a new student user account."""
     data = request.get_json(silent=True) or {}
     username = data.get("username")
     password = data.get("password")
