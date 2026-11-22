@@ -271,6 +271,27 @@ def serve_js(path):
 def serve_images(path):
     return send_from_directory(os.path.join(FRONTEND_DIR, "images"), path)
 
+# Support direct /frontend/<path> access (e.g. from Vercel rewrites or relative paths)
+@app.route("/frontend/<path:path>")
+def serve_frontend_assets(path):
+    return send_from_directory(FRONTEND_DIR, path)
+
+@app.errorhandler(404)
+def handle_not_found(e):
+    req_path = request.path.lstrip("/")
+    if req_path.startswith("frontend/"):
+        req_path = req_path[len("frontend/"):]
+    target_file = os.path.join(FRONTEND_DIR, req_path)
+    if os.path.isfile(target_file):
+        return send_from_directory(FRONTEND_DIR, req_path)
+    if not req_path.endswith(".html") and req_path:
+        html_file = os.path.join(FRONTEND_DIR, f"{req_path}.html")
+        if os.path.isfile(html_file):
+            return send_from_directory(FRONTEND_DIR, f"{req_path}.html")
+    if request.path.startswith("/api/"):
+        return jsonify({"success": False, "error": f"API endpoint {request.path} not found"}), 404
+    return send_from_directory(FRONTEND_DIR, "index.html")
+
 # Safe database initialization on module load (Vercel Serverless / local)
 try:
     init_db()
