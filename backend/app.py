@@ -63,7 +63,7 @@ from eda.quality import generate_quality_report
 from eda.analysis import run_full_eda_analysis
 
 FRONTEND_DIR = None
-for cand in [os.path.join(PROJECT_ROOT, "frontend"), os.path.join(BASE_DIR, "frontend"), os.path.join(BASE_DIR, "../frontend"), "/var/task/frontend"]:
+for cand in [os.path.join(PROJECT_ROOT, "frontend"), os.path.join(PROJECT_ROOT, "public"), os.path.join(BASE_DIR, "frontend"), os.path.join(BASE_DIR, "../frontend"), "/var/task/frontend", "/var/task/public"]:
     if os.path.exists(cand):
         FRONTEND_DIR = os.path.abspath(cand)
         break

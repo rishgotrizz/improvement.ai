@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Risk & Performance Prediction - EduPredict</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="paper-theme">
+
+  <!-- Top Navigation Header -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="brand-wordmark">
+        <span class="wordmark-edu">Edu</span><span class="wordmark-predict">Predict</span>
+      </a>
+
+      <nav class="nav-menu">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+        <a href="/prediction" class="nav-link active">Prediction & XAI</a>
+        <a href="/what-if" class="nav-link">What-If Simulator</a>
+        <a href="/about" class="nav-link">About</a>
+      </nav>
+
+      <div class="nav-right-container">
+        <a href="/login" class="btn-paper-outline">LOGIN</a>
+        <a href="/register" class="btn-lime">REGISTER</a>
+      </div>
+
+      <button class="mobile-toggle" aria-label="Toggle Navigation">☰</button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+    <div class="page-header" style="margin-bottom: 2rem;">
+      <h1 class="page-title" style="font-size: 2rem; font-weight: 800; color: #18181b;">AI Performance Prediction & XAI Signals</h1>
+      <p class="page-subtitle" style="color: #52525b;">Model-derived feature contribution explanations ($z_i \cdot \beta_i$), risk estimation, and prioritized study recommendations</p>
+    </div>
+
+    <!-- 1. PREDICTION SUMMARY -->
+    <div class="grid grid-3" style="margin-bottom: 2rem; gap: 1.25rem;">
+      <div class="paper-card" id="pred-risk-card" style="border-left: 5px solid #16a34a; background-color: #f0fdf4; padding: 1.5rem;">
+        <span style="font-size: 0.82rem; font-weight: 700; color: #52525b; text-transform: uppercase; display: block; margin-bottom: 0.4rem;">
+          Estimated Academic Risk
+        </span>
+        <div style="margin-top: 0.3rem;">
+          <span class="badge badge-risk-low" id="pred-risk-badge" style="font-size: 1rem; padding: 0.4rem 1rem;">
+            🟢 LOW ACADEMIC RISK
+          </span>
+        </div>
+        <div style="font-size: 0.85rem; margin-top: 0.75rem; color: #3f3f46;">
+          Estimated Risk Probability: <strong id="pred-risk-prob">0.0%</strong>
+        </div>
+      </div>
+
+      <div class="paper-card" style="padding: 1.5rem;">
+        <span style="font-size: 0.82rem; font-weight: 700; color: #52525b; text-transform: uppercase; display: block; margin-bottom: 0.4rem;">
+          Estimated Semester Score
+        </span>
+        <div class="stat-value" id="pred-score" style="color: #18181b; font-size: 2.2rem; font-weight: 800; margin-top: 0.2rem;">78.4%</div>
+        <div style="font-size: 0.82rem; color: #71717a; margin-top: 0.4rem;">Linear Regression Output ($R^2 = 0.984$)</div>
+      </div>
+
+      <div class="paper-card" style="padding: 1.5rem;">
+        <span style="font-size: 0.82rem; font-weight: 700; color: #52525b; text-transform: uppercase; display: block; margin-bottom: 0.4rem;">
+          Model Risk Category
+        </span>
+        <div class="stat-value" id="pred-risk-title" style="color: #18181b; font-size: 2rem; font-weight: 800; margin-top: 0.2rem;">Low Risk</div>
+        <div style="font-size: 0.82rem; color: #71717a; margin-top: 0.4rem;">Derived from Scikit-Learn Classifier Thresholds</div>
+      </div>
+    </div>
+
+    <!-- 2. WHY THIS PREDICTION? (KEY MODEL SIGNALS) -->
+    <div class="paper-card" style="margin-bottom: 2rem; padding: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: #18181b; margin: 0;">
+          Why did the model produce this estimate?
+        </h3>
+        <span class="badge-lime">XAI Signal Summary</span>
+      </div>
+      <p style="font-size: 0.9rem; color: #52525b; margin-bottom: 1.5rem;">
+        Feature-level influence on decision scores for predicted class <strong id="signal-pred-class" style="color: #18181b;">LOW</strong>:
+      </p>
+
+      <div class="grid grid-2" style="gap: 1.5rem;">
+        <!-- Positive Signals -->
+        <div style="background-color: #f0fdf4; border: 1.5px solid #16a34a; padding: 1.5rem; border-radius: 10px;">
+          <h4 style="font-size: 1rem; font-weight: 800; color: #166534; margin-bottom: 0.75rem;">
+            🟢 Strong Positive / Upward Pull Signals
+          </h4>
+          <ul id="positive-signals-list" style="font-size: 0.9rem; color: #14532d; margin-left: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            <li>Loading model positive signals...</li>
+          </ul>
+        </div>
+
+        <!-- Downward Signals -->
+        <div style="background-color: #fef2f2; border: 1.5px solid #dc2626; padding: 1.5rem; border-radius: 10px;">
+          <h4 style="font-size: 1rem; font-weight: 800; color: #991b1b; margin-bottom: 0.75rem;">
+            🔴 Downward Pull Signals / Risk Factors
+          </h4>
+          <ul id="negative-signals-list" style="font-size: 0.9rem; color: #7f1d1d; margin-left: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            <li>No major negative pull signals detected.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. PRIORITIZED ACADEMIC RECOMMENDATIONS -->
+    <div class="paper-card" style="margin-bottom: 2rem; padding: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: #18181b; margin: 0;">
+          🎯 Prioritized Academic Recommendations
+        </h3>
+        <span class="badge badge-info">Deterministic Rules Engine</span>
+      </div>
+      <p style="font-size: 0.9rem; color: #52525b; margin-bottom: 1.25rem;">
+        Actionable focus areas generated from evaluated academic thresholds:
+      </p>
+
+      <div id="recommendations-container" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="padding: 1rem; background-color: #fafaf9; border-radius: 8px; text-align: center; color: #71717a;">
+          Evaluating academic attributes against recommendation rules...
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. DETAILED MODEL CONTRIBUTIONS TABLE -->
+    <div class="paper-card" style="margin-bottom: 2rem; padding: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: #18181b; margin: 0;">
+          📊 Individual Model Feature Contributions ($z_i \cdot \beta_i$)
+        </h3>
+        <span class="badge-lime">Linear Decision Contributions</span>
+      </div>
+      <p style="font-size: 0.9rem; color: #52525b; margin-bottom: 1.25rem;">
+        Per-student contribution values calculated as $\text{contribution}_i = \text{weight}_i \times \text{standardized}(x_i)$:
+      </p>
+
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; border: 1.5px solid #18181b;">
+          <thead>
+            <tr style="background: #f4f4f5; border-bottom: 2px solid #18181b; color: #18181b;">
+              <th style="padding: 0.75rem;">Academic Attribute</th>
+              <th style="padding: 0.75rem;">Current Value</th>
+              <th style="padding: 0.75rem;">Standardized ($z$)</th>
+              <th style="padding: 0.75rem;">Coefficient ($\beta$)</th>
+              <th style="padding: 0.75rem;">Contribution</th>
+              <th style="padding: 0.75rem;">Model Impact</th>
+              <th style="padding: 0.75rem;">Interpretation & Guidance</th>
+            </tr>
+          </thead>
+          <tbody id="contributions-table-body">
+            <tr>
+              <td colspan="7" style="padding: 1rem; text-align: center; color: #71717a;">
+                Calculating feature contributions...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 5. MODEL LIMITATION STATEMENT -->
+    <div style="background-color: #e0f2fe; border: 1.5px solid #0284c7; border-radius: 10px; padding: 1.25rem; margin-bottom: 2rem;">
+      <h4 style="font-size: 0.95rem; font-weight: 800; color: #0369a1; margin: 0 0 0.3rem 0;">
+        ℹ️ Model Limitation & Interpretation Statement
+      </h4>
+      <p style="font-size: 0.88rem; color: #0c4a6e; margin: 0;">
+        These explanations describe how the trained model responds to the supplied inputs ($z_i \cdot \beta_i$). They do not establish causality. Predictions and recommendations are intended strictly as demonstration academic guidance.
+      </p>
+    </div>
+
+  </main>
+
+  <footer class="footer" style="background: #18181b; color: #ffffff; padding: 2.5rem 0; margin-top: 4rem;">
+    <div class="container" style="text-align: center;">
+      <p style="font-size: 0.85rem; color: #a1a1aa;">EduPredict Learning Analytics & Early Warning System</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Check active session authentication
+      try {
+        const authRes = await fetch("/api/auth/me");
+        const authData = await authRes.json();
+        if (!authData.authenticated) {
+          localStorage.setItem("edupredict_target_url", "/prediction");
+          window.location.href = "/login?next=/prediction";
+          return;
+        }
+      } catch(e) {}
+
+      let predData = null;
+      const lastInput = localStorage.getItem("edupredict_last_input");
+
+      if (lastInput) {
+        try {
+          const payload = JSON.parse(lastInput);
+          const xaiRes = await fetch("/api/xai", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          const xaiData = await xaiRes.json();
+          if (xaiData.success && xaiData.explanation) {
+            const predRes = await fetch("/api/predict", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            });
+            const predJson = await predRes.json();
+            predData = { ...predJson, explanation: xaiData.explanation };
+          }
+        } catch(e) {}
+      }
+
+      if (!predData || !predData.predicted_score) {
+        const cachedStr = localStorage.getItem("edupredict_last_prediction");
+        if (cachedStr) {
+          try {
+            const parsed = JSON.parse(cachedStr);
+            if (parsed) {
+              predData = parsed.output || parsed.data || parsed;
+            }
+          } catch (e) {
+            console.warn("Failed to parse cached prediction:", e);
+          }
+        }
+      }
+
+      if (!predData || !predData.predicted_score) {
+        const defaultPayload = {
+          attendance: 87.0,
+          study_hours: 3.5,
+          previous_semester_percentage: 79.0,
+          assignment_average: 82.5,
+          internal_assessment: 76.0,
+          quiz_average: 80.0,
+          completed_assignments: 14,
+          total_assignments: 15,
+          backlog_count: 0
+        };
+        const res = await EduPredictAPI.predictRisk(defaultPayload);
+        if (res && res.data && res.data.success) {
+          predData = res.data;
+        }
+      }
+
+      if (predData) {
+        renderPrediction(predData);
+      }
+    });
+
+    function renderPrediction(data) {
+      const score = typeof data.predicted_score === 'number' ? data.predicted_score : parseFloat(data.predicted_score) || 75.0;
+      const risk = data.risk_category || "LOW";
+      const prob = typeof data.risk_probability === 'number' ? (data.risk_probability * 100).toFixed(1) : "0.0";
+
+      document.getElementById("pred-score").innerText = score.toFixed(1) + "%";
+      document.getElementById("pred-risk-prob").innerText = prob + "%";
+      document.getElementById("pred-risk-title").innerText = risk === "HIGH" ? "High Risk" : (risk === "MEDIUM" ? "Medium Risk" : "Low Risk");
+
+      const badge = document.getElementById("pred-risk-badge");
+      const card = document.getElementById("pred-risk-card");
+
+      if (risk === "HIGH") {
+        badge.innerText = "🔴 HIGH ACADEMIC RISK";
+        badge.className = "badge badge-risk-high";
+        card.style.borderLeftColor = "#dc2626";
+        card.style.backgroundColor = "#fef2f2";
+      } else if (risk === "MEDIUM") {
+        badge.innerText = "🟡 MEDIUM ACADEMIC RISK";
+        badge.className = "badge badge-risk-med";
+        card.style.borderLeftColor = "#d97706";
+        card.style.backgroundColor = "#fffbeb";
+      } else {
+        badge.innerText = "🟢 LOW ACADEMIC RISK";
+        badge.className = "badge badge-risk-low";
+        card.style.borderLeftColor = "#16a34a";
+        card.style.backgroundColor = "#f0fdf4";
+      }
+
+      // Render Explanation
+      if (data.explanation) {
+        const exp = data.explanation;
+        document.getElementById("signal-pred-class").innerText = exp.predicted_class || risk;
+
+        // Positive Signals
+        const posEl = document.getElementById("positive-signals-list");
+        const posList = exp.positive_signals || [];
+        if (posList.length === 0) {
+          posEl.innerHTML = `<li>No strong positive signals detected for current input.</li>`;
+        } else {
+          posEl.innerHTML = posList.map(s => {
+            const contribVal = typeof s.contribution === 'number' ? s.contribution.toFixed(2) : s.contribution;
+            return `<li><strong>${s.name || s.feature}</strong> (${s.raw_value}): +${contribVal}% upward impact</li>`;
+          }).join("");
+        }
+
+        // Negative Signals
+        const negEl = document.getElementById("negative-signals-list");
+        const negList = exp.negative_signals || [];
+        if (negList.length === 0) {
+          negEl.innerHTML = `<li>No major negative pull signals detected.</li>`;
+        } else {
+          negEl.innerHTML = negList.map(s => {
+            const contribVal = typeof s.contribution === 'number' ? s.contribution.toFixed(2) : s.contribution;
+            return `<li><strong>${s.name || s.feature}</strong> (${s.raw_value}): ${contribVal}% downward pull</li>`;
+          }).join("");
+        }
+
+        // Feature Contributions Table
+        const tbody = document.getElementById("contributions-table-body");
+        const contribs = exp.feature_contributions || [];
+        if (contribs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="padding: 1rem; text-align: center;">No contribution data available.</td></tr>`;
+        } else {
+          tbody.innerHTML = contribs.map(c => {
+            const contribVal = typeof c.contribution === 'number' ? c.contribution : parseFloat(c.contribution) || 0;
+            const isPos = contribVal > 0.01;
+            const isNeg = contribVal < -0.01;
+            const signStr = isPos ? `+${contribVal.toFixed(2)}%` : `${contribVal.toFixed(2)}%`;
+            const colorStyle = isPos ? "color: #16a34a;" : (isNeg ? "color: #dc2626;" : "color: #52525b;");
+            const dirBadge = isPos ? `<span style="background: #dcfce7; color: #166534; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.78rem;">Upward Pull</span>` : (isNeg ? `<span style="background: #fee2e2; color: #991b1b; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.78rem;">Downward Pull</span>` : `<span style="background: #f4f4f5; color: #52525b; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.78rem;">Neutral</span>`);
+            
+            const stdVal = typeof c.standardized_value === 'number' ? c.standardized_value.toFixed(2) : (parseFloat(c.standardized_value) || 0).toFixed(2);
+            const coefVal = typeof c.coefficient === 'number' ? c.coefficient.toFixed(2) : (parseFloat(c.coefficient) || 0).toFixed(2);
+            const expText = c.explanation || (isNeg ? `Pulling score downward relative to model baseline.` : `Pulling score upward relative to model baseline.`);
+            const contextText = c.contextual_signal ? `<br><small style="color: #71717a;">Guidance: ${c.contextual_signal}</small>` : '';
+
+            return `
+              <tr style="border-bottom: 1px solid #e4e4e7;">
+                <td style="padding: 0.75rem;"><strong>${c.name || c.feature}</strong></td>
+                <td style="padding: 0.75rem;">${c.raw_value}</td>
+                <td style="padding: 0.75rem;">${stdVal}</td>
+                <td style="padding: 0.75rem;">${coefVal}</td>
+                <td style="padding: 0.75rem; font-weight: 700; ${colorStyle}">${signStr}</td>
+                <td style="padding: 0.75rem;">${dirBadge}</td>
+                <td style="padding: 0.75rem; font-size: 0.82rem; color: #3f3f46;">${expText}${contextText}</td>
+              </tr>
+            `;
+          }).join("");
+        }
+      }
+
+      // Render Recommendations
+      const recsContainer = document.getElementById("recommendations-container");
+      const recs = data.recommendations || [];
+      if (recs.length === 0) {
+        recsContainer.innerHTML = `
+          <div style="padding: 1.25rem; background-color: #f0fdf4; border: 1.5px solid #16a34a; border-radius: 8px; color: #166534;">
+            🎉 <strong>All Academic Attributes Healthy!</strong> No high-priority action items required. Continue maintaining current attendance and study routines.
+          </div>
+        `;
+      } else {
+        recsContainer.innerHTML = recs.map((r, i) => {
+          let recText = typeof r === 'string' ? r : (r.recommendation || r.reason || JSON.stringify(r));
+          let factorText = r.factor ? `Priority ${r.priority || i+1}: ${r.factor}` : `Recommendation ${i+1}`;
+          let statusText = r.status || "Recommendation";
+
+          return `
+            <div style="padding: 1.25rem; background-color: #fafaf9; border-left: 4px solid #18181b; border-radius: 8px; border: 1.5px solid #18181b;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <div style="font-weight: 700; color: #18181b; font-size: 0.95rem;">
+                  ${factorText}
+                </div>
+                <span class="badge-lime" style="padding: 0.2rem 0.6rem; font-size: 0.78rem;">${statusText}</span>
+              </div>
+              <p style="font-size: 0.88rem; color: #27272a; margin: 0; font-weight: 600;">
+                👉 ${recText}
+              </p>
+            </div>
+          `;
+        }).join("");
+      }
+    }
+  </script>
+</body>
+</html>

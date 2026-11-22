@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard - EduPredict</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .topic-badge-weak {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+    }
+    .topic-badge-strong {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+    }
+  </style>
+</head>
+<body class="paper-theme">
+
+  <!-- Navigation Header -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="brand-wordmark">
+        <span class="wordmark-edu">Edu</span><span class="wordmark-predict">Predict</span>
+      </a>
+
+      <nav class="nav-menu">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/dashboard" class="nav-link active">Dashboard</a>
+        <a href="/assessment" class="nav-link">Assessment</a>
+        <a href="/prediction" class="nav-link">Prediction</a>
+        <a href="/what-if" class="nav-link">What-If</a>
+        <a href="/analytics" class="nav-link">Analytics</a>
+        <a href="/model" class="nav-link">Model Specs</a>
+      </nav>
+
+      <div class="nav-right-container">
+        <a href="#" id="btn-student-logout" class="btn-paper-outline" style="padding: 0.45rem 0.9rem; font-size: 0.85rem;">Logout</a>
+      </div>
+
+      <button class="mobile-toggle" aria-label="Toggle Navigation">☰</button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+    <!-- Page Header & Actions -->
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+      <div>
+        <span class="badge-lime" style="margin-bottom: 0.4rem; display: inline-block;">Student Portal</span>
+        <h1 class="page-title" style="font-size: 2rem; font-weight: 800; color: #18181b;">Student Academic Dashboard</h1>
+        <p class="page-subtitle" style="color: #52525b;">Centralized performance metrics, risk intelligence, classroom enrollment, and topic evaluations</p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+        <a href="/assessment" class="btn-lime" style="padding: 0.6rem 1.1rem; font-size: 0.9rem;">+ Run New Assessment</a>
+      </div>
+    </div>
+
+    <!-- System Feedback Banner -->
+    <div id="dash-feedback" class="alert alert-info" style="display: none; margin-bottom: 1.5rem; border: 1.5px solid #18181b; background: #e0f2fe; color: #0369a1; padding: 0.75rem 1rem; border-radius: 8px; font-weight: 600;">
+      ⌛ Loading academic profile from database...
+    </div>
+
+    <!-- 1. STUDENT OVERVIEW: Top KPI Cards -->
+    <div class="grid grid-4" style="gap: 1.25rem; margin-bottom: 2rem;">
+      <div class="paper-card" style="padding: 1.5rem;">
+        <span style="font-size: 0.78rem; font-weight: 700; color: #71717a; text-transform: uppercase; display: block; margin-bottom: 0.4rem;">
+          Estimated Academic Score
+        </span>
+        <div style="font-size: 1.8rem; font-weight: 800; color: #18181b;" id="dash-score">78.4%</div>
+        <span style="font-size: 0.78rem; color: #71717a; display: block; margin-top: 0.2rem;">Expected Semester Score</span>
+      </div>
+
+      <div class="paper-card" style="padding: 1.5rem;">
+        <span style="font-size: 0.78rem; font-weight: 700; color: #71717a; text-transform: uppercase; display: block; margin-bottom: 0.4rem;">
+          Attendance Rate
+        </span>
+        <div style="font-size: 1.8rem; font-weight: 800; color: #16a34a;" id="dash-attendance">87.0%</div>
+        <span style="font-size: 0.78rem; color: #71717a; display: block; margin-top: 0.2rem;">Classes Attended / Held</span>
+      </div>
+
+      <div class="paper-card" style="padding: 1.5rem;">
+        <span style="font-size: 0.78rem; font-weight: 700; color: #71717a; text-transform: uppercase; display: block; margin-bottom: 0.4rem;">
+          Daily Self-Study Hours
+        </span>
+        <div style="font-size: 1.8rem; font-weight: 800; color: #18181b;" id="dash-hours">3.0 hrs/day</div>
+        <span style="font-size: 0.78rem; color: #71717a; display: block; margin-top: 0.2rem;">Average Daily Revision Time</span>
+      </div>
+
+      <div class="paper-card" style="padding: 1.5rem;">
+        <span style="font-size: 0.78rem; font-weight: 700; color: #71717a; text-transform: uppercase; display: block; margin-bottom: 0.4rem;">
+          Academic Risk Status
+        </span>
+        <div style="margin-top: 0.3rem;">
+          <span class="badge badge-risk-low" id="dash-risk-badge" style="font-size: 0.9rem; padding: 0.35rem 0.75rem; font-weight: 800;">
+            🟢 LOW RISK
+          </span>
+        </div>
+        <span style="font-size: 0.78rem; color: #71717a; display: block; margin-top: 0.4rem;" id="dash-risk-prob">ML Classification Active</span>
+      </div>
+    </div>
+
+    <!-- 2. MY CLASSROOM SECTION (Strict Enrolled vs Unenrolled State) -->
+    <div id="classroom-section" class="paper-card" style="padding: 1.75rem; margin-bottom: 2rem;">
+      <div id="classroom-loading-box" style="font-size: 0.9rem; color: #71717a; font-weight: 600;">
+        ⌛ Loading classroom membership status...
+      </div>
+      <div id="classroom-content-box" style="display: none;"></div>
+    </div>
+
+    <!-- 3. STUDENT PERFORMANCE BREAKDOWN TABLE (Read-Only) -->
+    <div class="paper-card" style="padding: 1.75rem; margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1.5px solid #e4e4e7; padding-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <h3 style="font-size: 1.2rem; font-weight: 800; color: #18181b; margin-bottom: 0.2rem;">Student Performance Breakdown</h3>
+          <p style="font-size: 0.82rem; color: #71717a; margin: 0;">Official academic records & course-level scores managed by subject faculty</p>
+        </div>
+        <span class="badge-lime" style="font-size: 0.75rem;">Official Academic Records</span>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; border: 1.5px solid #18181b;">
+          <thead>
+            <tr style="background: #18181b; color: #ffffff;">
+              <th style="padding: 0.65rem 0.85rem; font-weight: 700;">Course Code</th>
+              <th style="padding: 0.65rem 0.85rem; font-weight: 700;">Academic Course Name</th>
+              <th style="padding: 0.65rem 0.85rem; font-weight: 700;">Assigned Subject Faculty</th>
+              <th style="padding: 0.65rem 0.85rem; font-weight: 700;">Score (%)</th>
+              <th style="padding: 0.65rem 0.85rem; font-weight: 700;">Attendance (%)</th>
+              <th style="padding: 0.65rem 0.85rem; font-weight: 700;">Study Priority</th>
+            </tr>
+          </thead>
+          <tbody id="subject-table-body" style="background: #ffffff;">
+            <tr>
+              <td colspan="6" style="padding: 1.25rem; text-align: center; color: #71717a; font-style: italic;">
+                Loading course performance records...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. CLASSROOM MCQ EVALUATION QUIZZES & TOPIC ANALYTICS -->
+    <div class="grid grid-2" style="gap: 1.25rem; margin-bottom: 2rem;">
+      <!-- Quizzes Card -->
+      <div class="paper-card" style="padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1.5px solid #e4e4e7; padding-bottom: 0.5rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: #18181b;">📝 Classroom MCQ Evaluation Quizzes</h3>
+          <span class="badge-lime" style="font-size: 0.72rem;">Interactive</span>
+        </div>
+        <div id="classroom-quizzes-box" style="font-size: 0.88rem;">
+          Loading available quizzes...
+        </div>
+      </div>
+
+      <!-- Topic Weakness Card -->
+      <div class="paper-card" style="padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1.5px solid #e4e4e7; padding-bottom: 0.5rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: #18181b;">🎯 Topic Weakness Analysis</h3>
+          <span class="badge-lime" style="font-size: 0.72rem;">MCQ Analytics</span>
+        </div>
+        <div id="topic-analysis-box" style="font-size: 0.88rem; color: #52525b;">
+          Loading topic weakness insights...
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. HISTORICAL ANALYTICS & TREND CHARTS -->
+    <div class="grid grid-2" style="gap: 1.25rem; margin-bottom: 2rem;">
+      <!-- Performance Over Time -->
+      <div class="paper-card" style="padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1.5px solid #e4e4e7; padding-bottom: 0.5rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: #18181b;">📈 Performance Over Time</h3>
+          <span style="font-size: 0.75rem; font-weight: 700; color: #71717a;">Assessment History</span>
+        </div>
+        <div id="chart-perf-time-container" style="min-height: 200px; display: flex; align-items: center; justify-content: center; background: #fafaf9; border: 1.5px solid #18181b; border-radius: 8px; padding: 1rem;">
+          <span style="color: #71717a; font-size: 0.85rem;">Loading performance timeline...</span>
+        </div>
+      </div>
+
+      <!-- Risk Prediction Trend -->
+      <div class="paper-card" style="padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1.5px solid #e4e4e7; padding-bottom: 0.5rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: #18181b;">📉 Risk Prediction Trend</h3>
+          <span style="font-size: 0.75rem; font-weight: 700; color: #71717a;">Model Thresholds</span>
+        </div>
+        <div id="chart-risk-trend-container" style="min-height: 200px; display: flex; align-items: center; justify-content: center; background: #fafaf9; border: 1.5px solid #18181b; border-radius: 8px; padding: 1rem;">
+          <span style="color: #71717a; font-size: 0.85rem;">Loading risk prediction trend...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. ACADEMIC INSIGHTS & ACTIONS -->
+    <div class="grid grid-2" style="gap: 1.25rem;">
+      <div class="paper-card" style="padding: 1.5rem; border-left: 5px solid #18181b;">
+        <h4 style="font-size: 1rem; font-weight: 800; color: #18181b; margin-bottom: 0.4rem;">Top Recommended Focus Area</h4>
+        <p style="font-size: 0.88rem; color: #52525b; margin-bottom: 1rem;" id="insight-attention">
+          Loading recommendation analysis...
+        </p>
+        <a href="/prediction" class="btn-paper-outline" style="font-size: 0.85rem; padding: 0.5rem 1rem; width: 100%; justify-content: center;">View Detailed Signals & Recs →</a>
+      </div>
+
+      <div class="paper-card" style="padding: 1.5rem; background: #e0f2fe; border-color: #0284c7;">
+        <h4 style="font-size: 1rem; font-weight: 800; color: #0369a1; margin-bottom: 0.4rem;">⚡ Academic What-If Simulator</h4>
+        <p style="font-size: 0.88rem; color: #0369a1; margin-bottom: 1rem;">
+          Simulate how changes in attendance, study hours, or clearing backlogs impact your score.
+        </p>
+        <a href="/what-if" class="btn-lime" style="font-size: 0.85rem; padding: 0.5rem 1rem; width: 100%; justify-content: center; background: #ffffff;">Open Scenario Simulator →</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL: Join Classroom (Triggered only if needed) -->
+  <div id="join-classroom-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 480px;">
+      <button class="modal-close" onclick="closeJoinModal()">&times;</button>
+      <h3 style="font-size: 1.3rem; font-weight: 800; color: #18181b; margin-bottom: 0.5rem;">🏫 Join a Faculty Classroom</h3>
+      <p style="font-size: 0.88rem; color: #52525b; margin-bottom: 1.25rem;">Enter the 6-character Join Code provided by your faculty member.</p>
+
+      <form id="form-dash-join">
+        <div style="margin-bottom: 1.25rem;">
+          <label class="form-label" style="font-size: 0.85rem; font-weight: 700; color: #18181b; display: block; margin-bottom: 0.4rem;">Class Join Code</label>
+          <input type="text" id="dash-join-code" class="form-control" placeholder="e.g. EDU-A7K92P" required style="width: 100%; text-transform: uppercase; font-weight: 700; padding: 0.6rem;">
+        </div>
+        <button type="submit" class="btn-lime" style="width: 100%; justify-content: center; font-size: 1rem; padding: 0.75rem;">Connect to Classroom →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: MCQ Quiz Taking -->
+  <div id="quiz-taking-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 650px;">
+      <button class="modal-close" onclick="closeQuizModal()">&times;</button>
+      <div style="border-bottom: 1.5px solid #18181b; padding-bottom: 1rem; margin-bottom: 1.25rem;">
+        <span class="badge-lime" id="quiz-modal-subject" style="font-size: 0.78rem;">MAT101</span>
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: #18181b; margin-top: 0.3rem;" id="quiz-modal-title">Quiz Title</h2>
+      </div>
+
+      <form id="quiz-taking-form">
+        <input type="hidden" id="active-quiz-id">
+        <div id="quiz-questions-container" style="margin-bottom: 1.5rem;">
+          <!-- Dynamically populated when quiz modal opens -->
+        </div>
+        <button type="submit" class="btn-lime" style="width: 100%; justify-content: center; font-size: 1rem; padding: 0.75rem;">Submit MCQ Quiz Answers →</button>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer" style="background: #18181b; color: #ffffff; padding: 2.5rem 0; margin-top: 4rem;">
+    <div class="container" style="text-align: center;">
+      <p style="font-size: 0.85rem; color: #a1a1aa;">EduPredict Learning Analytics & Early Warning System | Student Portal</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script>
+    function closeJoinModal() {
+      const m = document.getElementById("join-classroom-modal");
+      if (m) m.classList.remove("active");
+    }
+    function closeQuizModal() {
+      const m = document.getElementById("quiz-taking-modal");
+      if (m) m.classList.remove("active");
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const feedbackEl = document.getElementById("dash-feedback");
+      if (feedbackEl) feedbackEl.style.display = "block";
+
+      let studentId = "STU-2026-001";
+      const userRaw = localStorage.getItem("edupredict_user");
+      if (userRaw) {
+        try {
+          const u = JSON.parse(userRaw);
+          if (u.studentId) studentId = u.studentId;
+        } catch(e) {}
+      }
+
+      // Logout handler
+      const logoutBtn = document.getElementById("btn-student-logout");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          try { await fetch("/api/auth/logout", { method: "POST" }); } catch(err) {}
+          localStorage.removeItem("edupredict_user");
+          window.location.href = "/login";
+        });
+      }
+
+      // Join Classroom Form Handler
+      const joinForm = document.getElementById("form-dash-join");
+      if (joinForm) {
+        joinForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const code = document.getElementById("dash-join-code").value.trim();
+          try {
+            const res = await fetch("/api/student/join-class", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ studentId, classCode: code })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+              alert(`✅ ${data.message}`);
+              closeJoinModal();
+              location.reload();
+            } else {
+              alert(data.error || "Failed to join classroom.");
+            }
+          } catch(err) { alert("Error connecting to server."); }
+        });
+      }
+
+      // Fetch Student Profile
+      try {
+        const student = await EduPredictAPI.getStudent(studentId);
+        
+        if (student) {
+          document.getElementById("dash-score").innerText = (student.academicScore || 78.4).toFixed(1) + "%";
+          document.getElementById("dash-attendance").innerText = (student.attendance || 87.0).toFixed(1) + "%";
+          const dailyHours = student.dailyStudyHours !== undefined
+            ? student.dailyStudyHours
+            : (student.studyHours > 6.0 ? (student.studyHours / 6.0) : (student.studyHours || 3.0));
+          document.getElementById("dash-hours").innerText = dailyHours.toFixed(1) + " hrs/day";
+
+          const riskBadge = document.getElementById("dash-risk-badge");
+          const riskProbEl = document.getElementById("dash-risk-prob");
+
+          if (student.riskCategory && student.riskCategory !== "PENDING") {
+            const riskCat = student.riskCategory;
+            riskBadge.innerText = "● " + riskCat + " RISK";
+            if (riskCat === "HIGH") riskBadge.className = "badge badge-risk-high";
+            else if (riskCat === "MEDIUM") riskBadge.className = "badge badge-risk-med";
+            else riskBadge.className = "badge badge-risk-low";
+            if (riskProbEl && typeof student.riskProbability === 'number') {
+              riskProbEl.innerText = `Logistic Reg Classifier (Prob: ${(student.riskProbability * 100).toFixed(1)}%)`;
+            }
+          }
+        }
+
+        // Fetch Joined Classes & Render My Classroom Section strictly based on membership
+        await renderClassroomSection(studentId);
+
+        // Load Topic Analysis, Quizzes & Progress Charts
+        await loadTopicAnalysis(studentId);
+        await loadClassroomQuizzes(studentId);
+        await loadPerformanceCharts(studentId);
+
+        // Fetch Recommendations for Focus Area Card
+        const payload = {
+          attendance: (student && student.attendance) || 87.0,
+          study_hours: (student && student.studyHours) || 3.5,
+          previous_semester_percentage: (student && student.previousPercentage) || 79.0,
+          assignment_average: (student && student.assignmentAvg) || 82.5,
+          internal_assessment: (student && student.internalAssessment) || 76.0,
+          quiz_average: (student && student.quizAvg) || 80.0,
+          completed_assignments: (student && student.completedAssignments) || 14,
+          total_assignments: 15,
+          backlog_count: (student && student.backlogCount) || 0,
+          studentSubjects: (student && student.studentSubjects) || []
+        };
+
+        const res = await EduPredictAPI.predictRisk(payload);
+        if (res && res.data && res.data.success) {
+          const recs = res.data.recommendations || [];
+          const attEl = document.getElementById("insight-attention");
+          if (attEl) {
+            if (recs.length > 0) {
+              const topRec = recs[0];
+              const recText = typeof topRec === 'string' ? topRec : (topRec.recommendation || topRec.title || topRec.factor);
+              attEl.innerHTML = `<strong>Priority 1:</strong> ${recText}`;
+            } else {
+              attEl.innerHTML = `<strong>All Attributes Healthy!</strong> Academic indicators are on track.`;
+            }
+          }
+        }
+
+        // Populate Performance Breakdown Table with Assigned Subject Faculty
+        await renderSubjectBreakdown(studentId, student);
+
+        if (feedbackEl) feedbackEl.style.display = "none";
+
+      } catch (err) {
+        console.error("Dashboard error loading student data:", err);
+        if (feedbackEl) {
+          feedbackEl.className = "alert alert-warning";
+          feedbackEl.innerText = "⚠️ Unable to load complete academic data. Displaying cached DB profile.";
+        }
+      }
+    });
+
+    async function renderClassroomSection(studentId) {
+      const loadingBox = document.getElementById("classroom-loading-box");
+      const contentBox = document.getElementById("classroom-content-box");
+
+      try {
+        const cRes = await fetch(`/api/student/${studentId}/classes`);
+        const cData = await cRes.json();
+
+        if (loadingBox) loadingBox.style.display = "none";
+        if (!contentBox) return;
+        contentBox.style.display = "block";
+
+        if (cRes.ok && cData.success && cData.classes && cData.classes.length > 0) {
+          const cls = cData.classes[0];
+          // Enrolled State UI: Show Enrolled Classroom, Status, and Subject Faculty
+          contentBox.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1.5px solid #e4e4e7; padding-bottom: 1rem; margin-bottom: 1.25rem;">
+              <div>
+                <span class="badge-lime" style="font-size: 0.75rem; margin-bottom: 0.3rem; display: inline-block;">MY CLASSROOM</span>
+                <h2 style="font-size: 1.4rem; font-weight: 800; color: #18181b; margin-top: 0.2rem;">${cls.class_name}</h2>
+                <p style="font-size: 0.85rem; color: #52525b; margin-top: 0.2rem;">
+                  Join Code: <strong>${cls.class_code}</strong> | Official academic records are managed by your assigned subject faculty.
+                </p>
+              </div>
+              <span class="badge" style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; font-weight: 800; padding: 0.35rem 0.85rem; font-size: 0.85rem;">
+                🟢 ENROLLED
+              </span>
+            </div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: #18181b; margin-bottom: 0.6rem;">
+              Enrolled Course Subjects & Assigned Faculty
+            </div>
+            <div id="enrolled-faculty-grid" class="grid grid-4" style="gap: 0.75rem;">
+              <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 0.75rem; border-radius: 6px;">
+                <strong style="display:block; color: #18181b; font-size: 0.85rem;">CS102 Data Structures</strong>
+                <span style="font-size: 0.78rem; color: #52525b;">Dr. Sarah Jenkins</span>
+              </div>
+              <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 0.75rem; border-radius: 6px;">
+                <strong style="display:block; color: #18181b; font-size: 0.85rem;">MAT101 Mathematics</strong>
+                <span style="font-size: 0.78rem; color: #52525b;">Prof. Ananya Roy</span>
+              </div>
+              <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 0.75rem; border-radius: 6px;">
+                <strong style="display:block; color: #18181b; font-size: 0.85rem;">PHY101 Physics</strong>
+                <span style="font-size: 0.78rem; color: #52525b;">Prof. Sunita Sharma</span>
+              </div>
+              <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 0.75rem; border-radius: 6px;">
+                <strong style="display:block; color: #18181b; font-size: 0.85rem;">CS101 Programming</strong>
+                <span style="font-size: 0.78rem; color: #52525b;">Prof. Rajesh Verma</span>
+              </div>
+            </div>
+          `;
+        } else {
+          // Unenrolled State UI: Show Join Form directly in dashboard section
+          contentBox.innerHTML = `
+            <div style="max-width: 540px;">
+              <span class="badge-lime" style="font-size: 0.75rem; margin-bottom: 0.3rem; display: inline-block;">CLASSROOM ENROLLMENT</span>
+              <h2 style="font-size: 1.3rem; font-weight: 800; color: #18181b; margin-top: 0.2rem; margin-bottom: 0.4rem;">Join a Faculty Classroom</h2>
+              <p style="font-size: 0.88rem; color: #52525b; margin-bottom: 1.25rem;">
+                Enter the 6-character Join Code provided by your faculty member to connect your account to official class attendance and evaluation records.
+              </p>
+              <form id="inline-join-form" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                <input type="text" id="inline-join-code" class="form-control" placeholder="e.g. EDU-A7K92P" required style="width: 220px; font-weight: 700; text-transform: uppercase; padding: 0.55rem 0.85rem;">
+                <button type="submit" class="btn-lime" style="padding: 0.55rem 1.1rem; font-size: 0.88rem;">Connect to Classroom →</button>
+              </form>
+            </div>
+          `;
+
+          const inlineForm = document.getElementById("inline-join-form");
+          if (inlineForm) {
+            inlineForm.addEventListener("submit", async (e) => {
+              e.preventDefault();
+              const code = document.getElementById("inline-join-code").value.trim();
+              try {
+                const res = await fetch("/api/student/join-class", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ studentId, classCode: code })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                  alert(`✅ ${data.message}`);
+                  location.reload();
+                } else {
+                  alert(data.error || "Failed to join classroom.");
+                }
+              } catch(err) { alert("Error connecting to server."); }
+            });
+          }
+        }
+      } catch(err) {
+        if (loadingBox) loadingBox.style.display = "none";
+        if (contentBox) {
+          contentBox.style.display = "block";
+          contentBox.innerHTML = `<p style="color:#71717a; font-size:0.88rem;">Classroom membership status unavailable.</p>`;
+        }
+      }
+    }
+
+    async function renderSubjectBreakdown(studentId, studentObj) {
+      const tbody = document.getElementById("subject-table-body");
+      if (!tbody) return;
+
+      let subjects = [];
+      try {
+        const res = await fetch(`/api/student/${studentId}/subjects`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.subjects && data.subjects.length > 0) {
+            subjects = data.subjects;
+          }
+        }
+      } catch(e) {}
+
+      if (subjects.length === 0 && studentObj && studentObj.studentSubjects) {
+        subjects = studentObj.studentSubjects;
+      }
+
+      if (subjects.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="padding: 1rem; text-align: center; color: #71717a;">No subject performance records found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = subjects.map(s => {
+        let badgeStyle = "background: #dcfce7; color: #15803d; border: 1px solid #86efac;";
+        if (s.priority === "HIGH") badgeStyle = "background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5;";
+        else if (s.priority === "MEDIUM") badgeStyle = "background: #fef3c7; color: #b45309; border: 1px solid #fde047;";
+
+        const facName = s.faculty || s.faculty_name || "Assigned Faculty";
+
+        return `
+          <tr style="border-bottom: 1px solid #e4e4e7;">
+            <td style="padding: 0.75rem 0.85rem;"><strong>${s.code}</strong></td>
+            <td style="padding: 0.75rem 0.85rem;">${s.name}</td>
+            <td style="padding: 0.75rem 0.85rem; font-size: 0.85rem; color: #0284c7; font-weight: 600;">👨‍🏫 ${facName}</td>
+            <td style="padding: 0.75rem 0.85rem; font-weight: 700;">${(s.score || 75).toFixed(1)}%</td>
+            <td style="padding: 0.75rem 0.85rem;">${(s.attendance || 85).toFixed(1)}%</td>
+            <td style="padding: 0.75rem 0.85rem;"><span class="badge" style="${badgeStyle} font-weight: 800; font-size: 0.75rem; padding: 0.2rem 0.5rem;">${s.priority}</span></td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function loadTopicAnalysis(studentId) {
+      const box = document.getElementById("topic-analysis-box");
+      if (!box) return;
+      try {
+        const res = await fetch(`/api/student/${studentId}/topic-analysis`);
+        const data = await res.json();
+        if (res.ok && data.success && data.analysis) {
+          const a = data.analysis;
+          if (!a.hasData) {
+            box.innerHTML = `<p style="color:#71717a; font-size:0.88rem;">${a.insight || 'Complete classroom quizzes to generate topic weakness analysis.'}</p>`;
+            return;
+          }
+
+          let html = `<p style="font-size:0.85rem; font-weight:700; color:#18181b; margin-bottom:0.75rem;">${a.insight}</p>`;
+          html += `<div style="display:flex; gap:0.4rem; flex-wrap:wrap;">`;
+          for (const [topic, item] of Object.entries(a.topicSummary)) {
+            const badgeClass = item.status === 'WEAK' ? 'topic-badge-weak' : 'topic-badge-strong';
+            html += `<span class="${badgeClass}">${topic}: ${item.percentage}%</span>`;
+          }
+          html += `</div>`;
+          box.innerHTML = html;
+        }
+      } catch (err) {
+        box.textContent = "Topic weakness analysis unavailable.";
+      }
+    }
+
+    async function loadClassroomQuizzes(studentId) {
+      const box = document.getElementById("classroom-quizzes-box");
+      if (!box) return;
+      try {
+        const res = await fetch(`/api/student/${studentId}/quizzes`);
+        const data = await res.json();
+        if (res.ok && data.success && data.quizzes && data.quizzes.length > 0) {
+          box.innerHTML = data.quizzes.map(q => `
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e4e4e7; padding:0.6rem 0;">
+              <div>
+                <strong style="display:block; font-size:0.88rem; color:#18181b;">${q.title}</strong>
+                <span style="font-size:0.78rem; color:#71717a;">${q.subject_code} | ${q.question_count} Questions</span>
+              </div>
+              <button type="button" class="btn-lime" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;" onclick="openQuizModal(${q.quiz_id})">Start Quiz →</button>
+            </div>
+          `).join("");
+        } else {
+          box.innerHTML = `<p style="color:#71717a; font-size:0.88rem;">No active classroom quizzes available right now.</p>`;
+        }
+      } catch (err) {
+        box.innerHTML = `<p style="color:#71717a; font-size:0.88rem;">Quizzes list unavailable.</p>`;
+      }
+    }
+
+    async function openQuizModal(quizId) {
+      const modal = document.getElementById("quiz-taking-modal");
+      document.getElementById("active-quiz-id").value = quizId;
+      const container = document.getElementById("quiz-questions-container");
+      container.innerHTML = "Loading quiz questions...";
+
+      try {
+        const res = await fetch(`/api/student/quizzes/${quizId}`);
+        const data = await res.json();
+        if (res.ok && data.success && data.quiz) {
+          const qz = data.quiz;
+          document.getElementById("quiz-modal-subject").textContent = qz.subjectCode;
+          document.getElementById("quiz-modal-title").textContent = qz.title;
+
+          let html = "";
+          qz.questions.forEach((q, idx) => {
+            html += `
+              <div style="margin-bottom: 1.25rem; background: #fafaf9; padding: 1rem; border-radius: 8px; border: 1.5px solid #18181b;">
+                <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:0.4rem; color: #18181b;">
+                  <span>Q${idx+1}: ${q.questionText}</span>
+                  <span class="badge-lime" style="font-size:0.72rem;">Topic: ${q.topic}</span>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; font-size:0.85rem; margin-top:0.6rem;">
+                  <label style="cursor:pointer;"><input type="radio" name="q_${q.questionId}" value="A" required> A) ${q.optionA}</label>
+                  <label style="cursor:pointer;"><input type="radio" name="q_${q.questionId}" value="B"> B) ${q.optionB}</label>
+                  <label style="cursor:pointer;"><input type="radio" name="q_${q.questionId}" value="C"> C) ${q.optionC}</label>
+                  <label style="cursor:pointer;"><input type="radio" name="q_${q.questionId}" value="D"> D) ${q.optionD}</label>
+                </div>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+          modal.classList.add("active");
+        } else {
+          container.innerHTML = `<div style="color:#b91c1c; font-weight:700;">Failed to load quiz questions.</div>`;
+        }
+      } catch (err) {
+        container.innerHTML = `<div style="color:#b91c1c; font-weight:700;">Error connecting to quiz server.</div>`;
+      }
+    }
+
+    const quizForm = document.getElementById("quiz-taking-form");
+    if (quizForm) {
+      quizForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const quizId = document.getElementById("active-quiz-id").value;
+        const formData = new FormData(quizForm);
+
+        const answers = {};
+        for (const [key, val] of formData.entries()) {
+          if (key.startsWith("q_")) {
+            const qid = key.replace("q_", "");
+            answers[qid] = val;
+          }
+        }
+
+        let studentId = "STU-2026-001";
+        const userRaw = localStorage.getItem("edupredict_user");
+        if (userRaw) {
+          try { const u = JSON.parse(userRaw); if (u.studentId) studentId = u.studentId; } catch(e) {}
+        }
+
+        try {
+          const res = await fetch(`/api/student/quizzes/${quizId}/attempt`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ studentId, answers })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            alert(`🎉 ${data.message}`);
+            closeQuizModal();
+            await loadTopicAnalysis(studentId);
+            await loadPerformanceCharts(studentId);
+          } else {
+            alert(data.error || "Failed to submit quiz.");
+          }
+        } catch(err) {
+          alert("Error submitting quiz attempt.");
+        }
+      });
+    }
+
+    async function loadPerformanceCharts(studentId) {
+      const perfContainer = document.getElementById("chart-perf-time-container");
+      const riskContainer = document.getElementById("chart-risk-trend-container");
+
+      try {
+        const res = await fetch(`/api/student/${studentId}/history`);
+        const data = await res.json();
+        const history = (data && data.history) ? data.history : [];
+
+        if (!history || history.length < 2) {
+          if (perfContainer) {
+            perfContainer.innerHTML = `
+              <div style="margin: 0; width: 100%; text-align: center; font-size: 0.85rem; color: #71717a;">
+                ℹ️ Insufficient historical data to render performance timeline.<br>
+                <span style="font-size: 0.78rem;">Complete at least 2 dated assessments or quizzes to build trend history.</span>
+              </div>
+            `;
+          }
+        } else {
+          const sorted = [...history].sort((a,b) => new Date(a.submitted_at || 0) - new Date(b.submitted_at || 0));
+          if (perfContainer) {
+            perfContainer.innerHTML = renderSVGLineChart(sorted, [
+              { key: 'final_score', label: 'Semester Score (%)', color: '#18181b' },
+              { key: 'attendance', label: 'Attendance (%)', color: '#84cc16' }
+            ]);
+          }
+        }
+
+        if (!history || history.length < 2) {
+          if (riskContainer) {
+            riskContainer.innerHTML = `
+              <div style="margin: 0; width: 100%; text-align: center; font-size: 0.85rem; color: #71717a;">
+                ℹ️ Insufficient historical prediction records to render risk trend.<br>
+                <span style="font-size: 0.78rem;">Run additional prediction snapshots over time to build model risk timeline.</span>
+              </div>
+            `;
+          }
+        } else {
+          const sorted = [...history].sort((a,b) => new Date(a.submitted_at || 0) - new Date(b.submitted_at || 0));
+          if (riskContainer) {
+            riskContainer.innerHTML = renderSVGRiskTrendChart(sorted);
+          }
+        }
+      } catch(err) {
+        if (perfContainer) perfContainer.innerHTML = `<span style="color:#71717a;">Timeline chart unavailable.</span>`;
+        if (riskContainer) riskContainer.innerHTML = `<span style="color:#71717a;">Risk trend unavailable.</span>`;
+      }
+    }
+
+    function renderSVGLineChart(historyItems, metrics) {
+      const w = 500, h = 180, padL = 40, padR = 20, padT = 20, padB = 30;
+      const chartW = w - padL - padR;
+      const chartH = h - padT - padB;
+      const n = historyItems.length;
+
+      let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:100%; height:auto;">`;
+      
+      [0, 50, 100].forEach(val => {
+        const y = padT + chartH - (val / 100) * chartH;
+        svg += `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="#e4e4e7" stroke-dasharray="3 3"/>`;
+        svg += `<text x="${padL - 6}" y="${y + 4}" font-size="10" fill="#71717a" text-anchor="end">${val}%</text>`;
+      });
+
+      metrics.forEach(m => {
+        const pts = historyItems.map((item, idx) => {
+          const val = Math.min(100, Math.max(0, parseFloat(item[m.key] || 0)));
+          const x = padL + (idx / Math.max(1, n - 1)) * chartW;
+          const y = padT + chartH - (val / 100) * chartH;
+          return { x, y, val, date: item.submitted_at ? item.submitted_at.substring(0, 10) : `Run #${idx+1}` };
+        });
+
+        const polyStr = pts.map(p => `${p.x},${p.y}`).join(" ");
+        svg += `<polyline points="${polyStr}" fill="none" stroke="${m.color}" stroke-width="2.5" stroke-linecap="round"/>`;
+
+        pts.forEach(p => {
+          svg += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="${m.color}"><title>${m.label}: ${p.val.toFixed(1)}% (${p.date})</title></circle>`;
+        });
+      });
+
+      svg += `</svg>`;
+      return svg;
+    }
+
+    function renderSVGRiskTrendChart(historyItems) {
+      const w = 500, h = 180, padL = 40, padR = 20, padT = 20, padB = 30;
+      const chartW = w - padL - padR;
+      const chartH = h - padT - padB;
+      const n = historyItems.length;
+
+      let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:100%; height:auto;">`;
+      
+      const y60 = padT + chartH - (60 / 100) * chartH;
+      const y75 = padT + chartH - (75 / 100) * chartH;
+
+      svg += `<rect x="${padL}" y="${padT}" width="${chartW}" height="${y75 - padT}" fill="#dcfce7" opacity="0.6"/>`;
+      svg += `<rect x="${padL}" y="${y75}" width="${chartW}" height="${y60 - y75}" fill="#fef3c7" opacity="0.6"/>`;
+      svg += `<rect x="${padL}" y="${y60}" width="${chartW}" height="${padT + chartH - y60}" fill="#fee2e2" opacity="0.6"/>`;
+
+      svg += `<line x1="${padL}" y1="${y75}" x2="${w - padR}" y2="${y75}" stroke="#16a34a" stroke-dasharray="4 2" stroke-width="1.5"/>`;
+      svg += `<text x="${w - padR - 4}" y="${y75 - 4}" font-size="9" fill="#15803d" font-weight="bold" text-anchor="end">LOW THRESHOLD (75%)</text>`;
+
+      svg += `<line x1="${padL}" y1="${y60}" x2="${w - padR}" y2="${y60}" stroke="#dc2626" stroke-dasharray="4 2" stroke-width="1.5"/>`;
+      svg += `<text x="${w - padR - 4}" y="${y60 - 4}" font-size="9" fill="#b91c1c" font-weight="bold" text-anchor="end">HIGH THRESHOLD (60%)</text>`;
+
+      [0, 60, 75, 100].forEach(val => {
+        const y = padT + chartH - (val / 100) * chartH;
+        svg += `<text x="${padL - 6}" y="${y + 4}" font-size="10" fill="#71717a" text-anchor="end">${val}%</text>`;
+      });
+
+      const pts = historyItems.map((item, idx) => {
+        const val = Math.min(100, Math.max(0, parseFloat(item.final_score || 0)));
+        const x = padL + (idx / Math.max(1, n - 1)) * chartW;
+        const y = padT + chartH - (val / 100) * chartH;
+        return { x, y, val, date: item.submitted_at ? item.submitted_at.substring(0, 10) : `Run #${idx+1}` };
+      });
+
+      const polyStr = pts.map(p => `${p.x},${p.y}`).join(" ");
+      svg += `<polyline points="${polyStr}" fill="none" stroke="#18181b" stroke-width="3" stroke-linecap="round"/>`;
+
+      pts.forEach(p => {
+        let dotColor = "#16a34a";
+        if (p.val < 60) dotColor = "#dc2626";
+        else if (p.val < 75) dotColor = "#d97706";
+        svg += `<circle cx="${p.x}" cy="${p.y}" r="5" fill="${dotColor}" stroke="#ffffff" stroke-width="2"><title>Score: ${p.val.toFixed(1)}% (${p.date})</title></circle>`;
+      });
+
+      svg += `</svg>`;
+      return svg;
+    }
+  </script>
+</body>
+</html>

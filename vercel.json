@@ -1,8 +1,19 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "functions": {
+    "api/index.py": {
+      "includeFiles": [
+        "data/**",
+        "models/**",
+        "eda/**",
+        "recommendations/**",
+        "backend/**",
+        "ml/**"
+      ]
+    }
+  },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/app.py" },
-    { "source": "/(.*)", "destination": "/app.py" }
+    { "source": "/api/(.*)", "destination": "/api/index.py" }
   ]
 }
