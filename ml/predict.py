@@ -67,38 +67,53 @@ def predict_academic_profile(feature_dict):
 
     from ml.dataset import FEATURE_COLUMNS
 
-    # Build DataFrame matching feature order
+    # Build DataFrame matching feature order safely
     input_row = {}
     for col in FEATURE_COLUMNS:
         val = feature_dict.get(col)
-        if val is None:
+        if val is None or val == "":
             # Defaults if missing
-            val = 75.0 if 'percentage' in col or 'score' in col or 'average' in col or 'attendance' in col else 10.0
-        input_row[col] = [float(val)]
+            val = 75.0 if ('percentage' in col or 'score' in col or 'average' in col or 'attendance' in col) else (0.0 if col == 'backlog_count' else 10.0)
+        try:
+            val_f = float(val)
+        except (ValueError, TypeError):
+            return None, f"Invalid value for '{col}': expected numeric value, got '{val}'."
+        input_row[col] = [val_f]
 
     X_input = pd.DataFrame(input_row)
 
-    # Execute predictions
-    predicted_score = float(regressor.predict(X_input)[0])
-    predicted_score = round(min(99.5, max(20.0, predicted_score)), 1)
+    # Execute predictions inside guarded block
+    try:
+        predicted_score = float(regressor.predict(X_input)[0])
+        predicted_score = round(min(99.5, max(20.0, predicted_score)), 1)
 
-    risk_cat = str(classifier.predict(X_input)[0])
+        risk_cat = str(classifier.predict(X_input)[0])
 
-    # Probability prediction from Logistic Regression predict_proba()
-    prob_dict = {}
-    if hasattr(classifier, "predict_proba"):
-        classes = classifier.classes_
-        probs = classifier.predict_proba(X_input)[0]
-        for cls_name, p in zip(classes, probs):
-            prob_dict[str(cls_name)] = round(float(p), 3)
+        # Probability prediction from Logistic Regression predict_proba()
+        prob_dict = {}
+        if hasattr(classifier, "predict_proba"):
+            classes = classifier.classes_
+            probs = classifier.predict_proba(X_input)[0]
+            for cls_name, p in zip(classes, probs):
+                prob_dict[str(cls_name)] = round(float(p), 3)
 
-    # Risk probability for predicted category or HIGH risk
-    risk_prob = prob_dict.get("HIGH", prob_dict.get(risk_cat, 0.15))
+        # Calibrated risk probability:
+        # HIGH risk -> probability of HIGH
+        # MEDIUM risk -> probability of MEDIUM
+        # LOW risk -> probability of HIGH
+        if risk_cat == "HIGH":
+            risk_prob = prob_dict.get("HIGH", 0.85)
+        elif risk_cat == "MEDIUM":
+            risk_prob = prob_dict.get("MEDIUM", 0.50)
+        else:
+            risk_prob = prob_dict.get("HIGH", 0.0)
 
-    return {
-        "predicted_score": predicted_score,
-        "risk_category": risk_cat,
-        "risk_probability": round(float(risk_prob), 3),
-        "class_probabilities": prob_dict,
-        "isRealModelOutput": True
-    }, None
+        return {
+            "predicted_score": predicted_score,
+            "risk_category": risk_cat,
+            "risk_probability": round(float(risk_prob), 3),
+            "class_probabilities": prob_dict,
+            "isRealModelOutput": True
+        }, None
+    except Exception as e:
+        return None, f"Model inference execution error: {str(e)}"

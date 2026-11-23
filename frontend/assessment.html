@@ -366,15 +366,15 @@
       document.getElementById("dynamic-assessment-form").addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const attAtt = parseFloat(attAttended.value);
-        const attH = parseFloat(attHeld.value);
-        const attendance = ((attAtt / attH) * 100);
+        const attAtt = parseFloat(attAttended.value) || 0;
+        const attH = parseFloat(attHeld.value) || 1;
+        const attendance = attH > 0 ? Math.min(100, Math.max(0, (attAtt / attH) * 100)) : 75.0;
 
-        const studyHours = parseFloat(document.getElementById("study_hours").value);
+        const studyHours = parseFloat(document.getElementById("study_hours").value) || 0;
 
-        const prevObt = parseFloat(prevObtained.value);
-        const prevM = parseFloat(prevMax.value);
-        const previous_semester_percentage = ((prevObt / prevM) * 100);
+        const prevObt = parseFloat(prevObtained.value) || 0;
+        const prevM = parseFloat(prevMax.value) || 1;
+        const previous_semester_percentage = prevM > 0 ? Math.min(100, Math.max(0, (prevObt / prevM) * 100)) : 75.0;
 
         let internal_assessment = 76.0;
         if (assessments.length > 0) {

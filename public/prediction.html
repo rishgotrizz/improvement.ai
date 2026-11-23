@@ -200,22 +200,32 @@
       if (lastInput) {
         try {
           const payload = JSON.parse(lastInput);
-          const xaiRes = await fetch("/api/xai", {
+          const predRes = await fetch("/api/predict", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
           });
-          const xaiData = await xaiRes.json();
-          if (xaiData.success && xaiData.explanation) {
-            const predRes = await fetch("/api/predict", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload)
-            });
-            const predJson = await predRes.json();
-            predData = { ...predJson, explanation: xaiData.explanation };
+          const predJson = await predRes.json();
+          if (predJson && predJson.success) {
+            predData = predJson;
+            // If explanation is withheld (e.g. session initialized after payload submission), fetch XAI
+            if (!predData.explanation) {
+              try {
+                const xaiRes = await fetch("/api/xai", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(payload)
+                });
+                const xaiData = await xaiRes.json();
+                if (xaiData.success && xaiData.explanation) {
+                  predData.explanation = xaiData.explanation;
+                }
+              } catch (xaiErr) {}
+            }
           }
-        } catch(e) {}
+        } catch(e) {
+          console.warn("Prediction fetch error on load:", e);
+        }
       }
 
       if (!predData || !predData.predicted_score) {
@@ -258,10 +268,16 @@
     function renderPrediction(data) {
       const score = typeof data.predicted_score === 'number' ? data.predicted_score : parseFloat(data.predicted_score) || 75.0;
       const risk = data.risk_category || "LOW";
-      const prob = typeof data.risk_probability === 'number' ? (data.risk_probability * 100).toFixed(1) : "0.0";
+      
+      let probDisplay = "0.0%";
+      if (typeof data.risk_probability === 'number') {
+        probDisplay = (data.risk_probability * 100).toFixed(1) + "%";
+      } else if (data.class_probabilities && data.class_probabilities[risk] !== undefined) {
+        probDisplay = (data.class_probabilities[risk] * 100).toFixed(1) + "%";
+      }
 
       document.getElementById("pred-score").innerText = score.toFixed(1) + "%";
-      document.getElementById("pred-risk-prob").innerText = prob + "%";
+      document.getElementById("pred-risk-prob").innerText = probDisplay;
       document.getElementById("pred-risk-title").innerText = risk === "HIGH" ? "High Risk" : (risk === "MEDIUM" ? "Medium Risk" : "Low Risk");
 
       const badge = document.getElementById("pred-risk-badge");
@@ -345,6 +361,12 @@
             `;
           }).join("");
         }
+      } else {
+        document.getElementById("signal-pred-class").innerText = risk;
+        document.getElementById("positive-signals-list").innerHTML = `<li>XAI signals are enabled for authenticated student sessions.</li>`;
+        document.getElementById("negative-signals-list").innerHTML = `<li>Log in to inspect detailed model drivers for this profile.</li>`;
+        const tbody = document.getElementById("contributions-table-body");
+        tbody.innerHTML = `<tr><td colspan="7" style="padding: 1.5rem; text-align: center; color: #71717a;">Feature-level model contributions ($z_i \\cdot \\beta_i$) are available for authenticated student sessions. <a href="/login?next=/prediction" class="link-lime" style="font-weight: 700; text-decoration: underline;">Log in to view</a></td></tr>`;
       }
 
       // Render Recommendations

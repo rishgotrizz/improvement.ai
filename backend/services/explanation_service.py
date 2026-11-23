@@ -64,13 +64,17 @@ def explain_individual_prediction(input_data):
             "error": "Trained model pipelines unavailable for explanation."
         }
 
-    # 1. Build DataFrame matching feature order
+    # 1. Build DataFrame matching feature order safely
     input_row = {}
     for col in FEATURE_COLUMNS:
         val = input_data.get(col)
-        if val is None:
-            val = 75.0 if 'percentage' in col or 'score' in col or 'average' in col or 'attendance' in col else 10.0
-        input_row[col] = [float(val)]
+        if val is None or val == "":
+            val = 75.0 if ('percentage' in col or 'score' in col or 'average' in col or 'attendance' in col) else (0.0 if col == 'backlog_count' else 10.0)
+        try:
+            val_f = float(val)
+        except (ValueError, TypeError):
+            val_f = 75.0 if ('percentage' in col or 'score' in col or 'average' in col or 'attendance' in col) else (0.0 if col == 'backlog_count' else 10.0)
+        input_row[col] = [val_f]
 
     X_input = pd.DataFrame(input_row)
 
