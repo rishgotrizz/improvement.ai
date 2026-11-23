@@ -111,15 +111,7 @@
       </div>
     </div>
 
-    <!-- 2. MY CLASSROOM SECTION (Strict Enrolled vs Unenrolled State) -->
-    <div id="classroom-section" class="paper-card" style="padding: 1.75rem; margin-bottom: 2rem;">
-      <div id="classroom-loading-box" style="font-size: 0.9rem; color: #71717a; font-weight: 600;">
-        ⌛ Loading classroom membership status...
-      </div>
-      <div id="classroom-content-box" style="display: none;"></div>
-    </div>
-
-    <!-- 3. STUDENT PERFORMANCE BREAKDOWN TABLE (Read-Only) -->
+    <!-- 2. STUDENT PERFORMANCE BREAKDOWN TABLE (Read-Only) -->
     <div class="paper-card" style="padding: 1.75rem; margin-bottom: 2rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1.5px solid #e4e4e7; padding-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
         <div>
@@ -135,7 +127,6 @@
             <tr style="background: #18181b; color: #ffffff;">
               <th style="padding: 0.65rem 0.85rem; font-weight: 700;">Course Code</th>
               <th style="padding: 0.65rem 0.85rem; font-weight: 700;">Academic Course Name</th>
-              <th style="padding: 0.65rem 0.85rem; font-weight: 700;">Course Instructor</th>
               <th style="padding: 0.65rem 0.85rem; font-weight: 700;">Score (%)</th>
               <th style="padding: 0.65rem 0.85rem; font-weight: 700;">Attendance (%)</th>
               <th style="padding: 0.65rem 0.85rem; font-weight: 700;">Study Priority</th>
@@ -143,7 +134,7 @@
           </thead>
           <tbody id="subject-table-body" style="background: #ffffff;">
             <tr>
-              <td colspan="6" style="padding: 1.25rem; text-align: center; color: #71717a; font-style: italic;">
+              <td colspan="5" style="padding: 1.25rem; text-align: center; color: #71717a; font-style: italic;">
                 Loading course performance records...
               </td>
             </tr>
@@ -221,23 +212,6 @@
       </div>
     </div>
   </main>
-
-  <!-- MODAL: Join Classroom (Triggered only if needed) -->
-  <div id="join-classroom-modal" class="modal-overlay">
-    <div class="modal-card" style="max-width: 480px;">
-      <button class="modal-close" onclick="closeJoinModal()">&times;</button>
-      <h3 style="font-size: 1.3rem; font-weight: 800; color: #18181b; margin-bottom: 0.5rem;">🏫 Join an Academic Classroom</h3>
-      <p style="font-size: 0.88rem; color: #52525b; margin-bottom: 1.25rem;">Enter the 6-character Join Code provided for your class section.</p>
-
-      <form id="form-dash-join">
-        <div style="margin-bottom: 1.25rem;">
-          <label class="form-label" style="font-size: 0.85rem; font-weight: 700; color: #18181b; display: block; margin-bottom: 0.4rem;">Class Join Code</label>
-          <input type="text" id="dash-join-code" class="form-control" placeholder="e.g. EDU-A7K92P" required style="width: 100%; text-transform: uppercase; font-weight: 700; padding: 0.6rem;">
-        </div>
-        <button type="submit" class="btn-lime" style="width: 100%; justify-content: center; font-size: 1rem; padding: 0.75rem;">Connect to Classroom →</button>
-      </form>
-    </div>
-  </div>
 
   <!-- MODAL: MCQ Quiz Taking -->
   <div id="quiz-taking-modal" class="modal-overlay">
@@ -350,9 +324,6 @@
           }
         }
 
-        // Fetch Joined Classes & Render My Classroom Section strictly based on membership
-        await renderClassroomSection(studentId);
-
         // Load Topic Analysis, Quizzes & Progress Charts
         await loadTopicAnalysis(studentId);
         await loadClassroomQuizzes(studentId);
@@ -401,103 +372,6 @@
       }
     });
 
-    async function renderClassroomSection(studentId) {
-      const loadingBox = document.getElementById("classroom-loading-box");
-      const contentBox = document.getElementById("classroom-content-box");
-
-      try {
-        const cRes = await fetch(`/api/student/${studentId}/classes`);
-        const cData = await cRes.json();
-
-        if (loadingBox) loadingBox.style.display = "none";
-        if (!contentBox) return;
-        contentBox.style.display = "block";
-
-        if (cRes.ok && cData.success && cData.classes && cData.classes.length > 0) {
-          const cls = cData.classes[0];
-          // Enrolled State UI: Show Enrolled Classroom, Status, and Course Instructors
-          contentBox.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1.5px solid #e4e4e7; padding-bottom: 1rem; margin-bottom: 1.25rem;">
-              <div>
-                <span class="badge-lime" style="font-size: 0.75rem; margin-bottom: 0.3rem; display: inline-block;">MY CLASSROOM</span>
-                <h2 style="font-size: 1.4rem; font-weight: 800; color: #18181b; margin-top: 0.2rem;">${cls.class_name}</h2>
-                <p style="font-size: 0.85rem; color: #52525b; margin-top: 0.2rem;">
-                  Join Code: <strong>${cls.class_code}</strong> | Enrolled in official classroom cohort.
-                </p>
-              </div>
-              <span class="badge" style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; font-weight: 800; padding: 0.35rem 0.85rem; font-size: 0.85rem;">
-                🟢 ENROLLED
-              </span>
-            </div>
-            <div style="font-size: 0.88rem; font-weight: 700; color: #18181b; margin-bottom: 0.6rem;">
-              Enrolled Course Subjects & Course Instructors
-            </div>
-            <div id="enrolled-instructors-grid" class="grid grid-4" style="gap: 0.75rem;">
-              <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 0.75rem; border-radius: 6px;">
-                <strong style="display:block; color: #18181b; font-size: 0.85rem;">CS102 Data Structures</strong>
-                <span style="font-size: 0.78rem; color: #52525b;">Dr. Sarah Jenkins</span>
-              </div>
-              <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 0.75rem; border-radius: 6px;">
-                <strong style="display:block; color: #18181b; font-size: 0.85rem;">MAT101 Mathematics</strong>
-                <span style="font-size: 0.78rem; color: #52525b;">Prof. Ananya Roy</span>
-              </div>
-              <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 0.75rem; border-radius: 6px;">
-                <strong style="display:block; color: #18181b; font-size: 0.85rem;">PHY101 Physics</strong>
-                <span style="font-size: 0.78rem; color: #52525b;">Prof. Sunita Sharma</span>
-              </div>
-              <div style="background: #fafaf9; border: 1.5px solid #18181b; padding: 0.75rem; border-radius: 6px;">
-                <strong style="display:block; color: #18181b; font-size: 0.85rem;">CS101 Programming</strong>
-                <span style="font-size: 0.78rem; color: #52525b;">Prof. Rajesh Verma</span>
-              </div>
-            </div>
-          `;
-        } else {
-          // Unenrolled State UI: Show Join Form directly in dashboard section
-          contentBox.innerHTML = `
-            <div style="max-width: 540px;">
-              <span class="badge-lime" style="font-size: 0.75rem; margin-bottom: 0.3rem; display: inline-block;">CLASSROOM ENROLLMENT</span>
-              <h2 style="font-size: 1.3rem; font-weight: 800; color: #18181b; margin-top: 0.2rem; margin-bottom: 0.4rem;">Join an Academic Classroom</h2>
-              <p style="font-size: 0.88rem; color: #52525b; margin-bottom: 1.25rem;">
-                Enter the 6-character Join Code provided for your class section to connect your account to official class attendance and evaluation records.
-              </p>
-              <form id="inline-join-form" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-                <input type="text" id="inline-join-code" class="form-control" placeholder="e.g. EDU-A7K92P" required style="width: 220px; font-weight: 700; text-transform: uppercase; padding: 0.55rem 0.85rem;">
-                <button type="submit" class="btn-lime" style="padding: 0.55rem 1.1rem; font-size: 0.88rem;">Connect to Classroom →</button>
-              </form>
-            </div>
-          `;
-
-          const inlineForm = document.getElementById("inline-join-form");
-          if (inlineForm) {
-            inlineForm.addEventListener("submit", async (e) => {
-              e.preventDefault();
-              const code = document.getElementById("inline-join-code").value.trim();
-              try {
-                const res = await fetch("/api/student/join-class", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ studentId, classCode: code })
-                });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                  alert(`✅ ${data.message}`);
-                  location.reload();
-                } else {
-                  alert(data.error || "Failed to join classroom.");
-                }
-              } catch(err) { alert("Error connecting to server."); }
-            });
-          }
-        }
-      } catch(err) {
-        if (loadingBox) loadingBox.style.display = "none";
-        if (contentBox) {
-          contentBox.style.display = "block";
-          contentBox.innerHTML = `<p style="color:#71717a; font-size:0.88rem;">Classroom membership status unavailable.</p>`;
-        }
-      }
-    }
-
     async function renderSubjectBreakdown(studentId, studentObj) {
       const tbody = document.getElementById("subject-table-body");
       if (!tbody) return;
@@ -518,7 +392,7 @@
       }
 
       if (subjects.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="padding: 1rem; text-align: center; color: #71717a;">No subject performance records found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="padding: 1rem; text-align: center; color: #71717a;">No subject performance records found.</td></tr>`;
         return;
       }
 
@@ -527,13 +401,10 @@
         if (s.priority === "HIGH") badgeStyle = "background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5;";
         else if (s.priority === "MEDIUM") badgeStyle = "background: #fef3c7; color: #b45309; border: 1px solid #fde047;";
 
-        const facName = s.instructor || s.faculty || s.faculty_name || "Course Instructor";
-
         return `
           <tr style="border-bottom: 1px solid #e4e4e7;">
             <td style="padding: 0.75rem 0.85rem;"><strong>${s.code}</strong></td>
             <td style="padding: 0.75rem 0.85rem;">${s.name}</td>
-            <td style="padding: 0.75rem 0.85rem; font-size: 0.85rem; color: #0284c7; font-weight: 600;">👨‍🏫 ${facName}</td>
             <td style="padding: 0.75rem 0.85rem; font-weight: 700;">${(s.score || 75).toFixed(1)}%</td>
             <td style="padding: 0.75rem 0.85rem;">${(s.attendance || 85).toFixed(1)}%</td>
             <td style="padding: 0.75rem 0.85rem;"><span class="badge" style="${badgeStyle} font-weight: 800; font-size: 0.75rem; padding: 0.2rem 0.5rem;">${s.priority}</span></td>

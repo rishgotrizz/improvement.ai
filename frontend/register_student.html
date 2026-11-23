@@ -110,33 +110,6 @@
     </div>
   </main>
 
-  <!-- STUDENT POST-REGISTRATION MODAL (Join Classroom vs Skip) -->
-  <div id="post-reg-modal" class="post-reg-overlay">
-    <div class="post-reg-card">
-      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎉</div>
-      <h2 style="font-size: 1.5rem; font-weight: 800; color: #18181b; margin-bottom: 0.5rem;">Welcome to EduPredict!</h2>
-      <p style="font-size: 0.9rem; color: #52525b; margin-bottom: 1.5rem;">Your student account has been created. Join a classroom section now using your class code.</p>
-
-      <div id="join-code-box" style="margin-bottom: 1.5rem; display: none; text-align: left; background: #fafaf9; border: 1.5px solid #18181b; padding: 1.25rem; border-radius: 8px;">
-        <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">Enter Class Join Code</label>
-        <div style="display: flex; gap: 0.5rem; margin-top: 0.4rem;">
-          <input type="text" id="post-class-code" class="form-control" placeholder="e.g. EDU-A7K92P" style="flex: 1; text-transform: uppercase;">
-          <button type="button" id="btn-submit-code" class="btn-lime" style="padding: 0.5rem 1rem; font-size: 0.88rem;">Join</button>
-        </div>
-        <div id="join-feedback" style="font-size: 0.82rem; margin-top: 0.4rem; color: #dc2626; display: none;"></div>
-      </div>
-
-      <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
-        <button type="button" id="btn-show-code-input" class="btn-lime" style="font-size: 0.92rem;">
-          🏫 Join a Classroom
-        </button>
-        <button type="button" id="btn-skip-post-reg" class="btn-paper-outline" style="font-size: 0.92rem;">
-          ⏩ Skip for Now
-        </button>
-      </div>
-    </div>
-  </div>
-
   <footer class="footer" style="background: #18181b; color: #ffffff; padding: 2.5rem 0; margin-top: 4rem;">
     <div class="container" style="text-align: center;">
       <p style="font-size: 0.85rem; color: #a1a1aa;">EduPredict Learning Analytics & Early Warning System</p>
@@ -180,7 +153,9 @@
 
           if (res.ok && data.success) {
             localStorage.setItem("edupredict_user", JSON.stringify(data.user));
-            document.getElementById("post-reg-modal").classList.add("active");
+            const targetUrl = localStorage.getItem("edupredict_target_url") || new URLSearchParams(window.location.search).get("next") || "/dashboard";
+            localStorage.removeItem("edupredict_target_url");
+            window.location.href = targetUrl;
           } else {
             alertBox.textContent = data.error || "Student registration failed.";
             alertBox.style.display = "block";
@@ -188,53 +163,6 @@
         } catch(err) {
           alertBox.textContent = "Network error registering student account.";
           alertBox.style.display = "block";
-        }
-      });
-
-      const codeBox = document.getElementById("join-code-box");
-      document.getElementById("btn-show-code-input").addEventListener("click", () => {
-        codeBox.style.display = "block";
-      });
-
-      function finishStudentAuthRedirect() {
-        const targetUrl = localStorage.getItem("edupredict_target_url") || new URLSearchParams(window.location.search).get("next") || "/dashboard";
-        localStorage.removeItem("edupredict_target_url");
-        window.location.href = targetUrl;
-      }
-
-      document.getElementById("btn-skip-post-reg").addEventListener("click", () => {
-        finishStudentAuthRedirect();
-      });
-
-      document.getElementById("btn-submit-code").addEventListener("click", async () => {
-        const code = document.getElementById("post-class-code").value.trim();
-        const fb = document.getElementById("join-feedback");
-        fb.style.display = "none";
-
-        if (!code) {
-          fb.textContent = "Please enter a class join code.";
-          fb.style.display = "block";
-          return;
-        }
-
-        try {
-          const res = await fetch("/api/student/join-class", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ classCode: code })
-          });
-          const data = await res.json();
-
-          if (res.ok && data.success) {
-            alert(`✅ ${data.message}`);
-            finishStudentAuthRedirect();
-          } else {
-            fb.textContent = data.error || "Invalid join code.";
-            fb.style.display = "block";
-          }
-        } catch(err) {
-          fb.textContent = "Error joining classroom.";
-          fb.style.display = "block";
         }
       });
     });
