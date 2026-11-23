@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "functions": {
     "api/index.py": {
@@ -9,17 +9,8 @@
         "eda/**",
         "recommendations/**",
         "backend/**",
-        "ml/**"
-      ]
-    },
-    "app.py": {
-      "includeFiles": [
-        "data/**",
-        "models/**",
-        "eda/**",
-        "recommendations/**",
-        "backend/**",
-        "ml/**"
+        "ml/**",
+        "frontend/**"
       ]
     }
   },
