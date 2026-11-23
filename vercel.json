@@ -3,15 +3,7 @@
   "cleanUrls": true,
   "functions": {
     "api/index.py": {
-      "includeFiles": [
-        "data/**",
-        "models/**",
-        "eda/**",
-        "recommendations/**",
-        "backend/**",
-        "ml/**",
-        "frontend/**"
-      ]
+      "includeFiles": "{data/**,models/**,eda/**,recommendations/**,backend/**,ml/**,frontend/**}"
     }
   },
   "rewrites": [
