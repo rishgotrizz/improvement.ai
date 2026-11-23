@@ -413,13 +413,22 @@
           const data = await res.json();
 
           if (res.ok && data.success) {
-            alert(`✅ Dynamic Prediction Calculated!\nRisk Category: ${data.prediction.risk_category}\nEstimated Semester Score: ${data.prediction.predicted_score}%`);
+            const riskCategory = data.risk_category || (data.prediction && data.prediction.risk_category) || "LOW";
+            const scoreVal = data.predicted_score !== undefined ? data.predicted_score : (data.prediction && data.prediction.predicted_score);
+            const score = typeof scoreVal === 'number' ? scoreVal.toFixed(1) : (scoreVal || "0.0");
+
+            // Cache payload and response for prediction.html and what-if.html
+            localStorage.setItem("edupredict_last_input", JSON.stringify(payload));
+            localStorage.setItem("edupredict_last_prediction", JSON.stringify(data));
+
+            alert(`✅ Dynamic Prediction Calculated!\nRisk Category: ${riskCategory}\nEstimated Semester Score: ${score}%`);
             window.location.href = "/prediction";
           } else {
             alert("Error running prediction: " + (data.error || "Server error"));
           }
         } catch(err) {
-          alert("Network error running prediction.");
+          console.error("Dynamic prediction submission error:", err);
+          alert("Error running prediction: " + (err.message || "Network error connecting to prediction API."));
         }
       });
     });
